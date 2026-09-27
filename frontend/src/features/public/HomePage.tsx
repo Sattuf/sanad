@@ -4,7 +4,6 @@ import { api } from "../../api/client";
 import type { Transparency } from "../../api/types";
 import { AnimatedLamp, ParticleField } from "../../components/motion/Lamp";
 import { Card } from "../../components/ui";
-import { useMe } from "../../api/hooks";
 
 const tracks = [
   { key: "WaqfFree", title: "وقفي مجاني", text: "جهات وقفية وخيرية تقدّم خدماتها بلا مقابل." },
@@ -14,7 +13,6 @@ const tracks = [
 ];
 
 export function HomePage() {
-  const { data: me } = useMe();
   const stats = useQuery({ queryKey: ["transparency"], queryFn: () => api.get<Transparency>("/api/v1/directory/transparency", { auth: false }) });
 
   return (
@@ -32,8 +30,8 @@ export function HomePage() {
             <Link to="/directory" className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-contrast">
               تصفّح الدليل
             </Link>
-            <Link to={me ? "/library" : "/login"} className="rounded-xl border border-border bg-surface px-5 py-3 font-semibold">
-              مكتبة الرقية
+            <Link to="/ruqyah" className="rounded-xl border border-border bg-surface px-5 py-3 font-semibold">
+              الرقية والتحصين
             </Link>
           </div>
         </div>

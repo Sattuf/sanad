@@ -11,6 +11,7 @@ import {
 } from "../features/coordinator-portal/StaffPortal";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
+import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
 import { MyRecommendationsPage } from "../features/patient-care/MyRecommendations";
 import { CaseNoteEditor, RecommendationComposer } from "../features/patient-care/ProviderEditors";
 import {
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       { path: "/providers/:id", element: <ProviderPage /> },
       { path: "/organizations/:id", element: <OrganizationPage /> },
       { path: "/emergency", element: <EmergencyPage /> },
+      // الرقية والتحصين المكتوبة: عامة بلا تسجيل (محتوى ثابت، لا بيانات مستخدم)
+      { path: "/ruqyah", element: <RuqyahHubPage /> },
+      { path: "/ruqyah/guide/:guideId", element: <RuqyahGuidePage /> },
+      { path: "/ruqyah/:collectionId", element: <RuqyahCollectionPage /> },
       { path: "/about-verification", element: <AboutVerificationPage /> },
       { path: "/terms", element: <TermsPage /> },
       { path: "/privacy", element: <PrivacyPage /> },
