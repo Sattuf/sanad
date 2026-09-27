@@ -1,11 +1,15 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useMe } from "../../api/hooks";
 import { cx } from "../../lib/cx";
 import { NotFoundPage } from "../../app/NotFoundPage";
-import { collections, findCollection, findGuide, groups, guides, type Collection, type CollectionGroup, type Item } from "./content";
+import { collections, findCollection, findGuide, groups, guides, type Collection, type CollectionGroup, type Item, type SceneTheme } from "./content";
 import { quran, type QuranKey } from "./quran";
+import { useDailyProgress, useCollectionEntries, useMyWird, type MyWird } from "./progress";
+import { DueWirdNudge, ReminderCard } from "./ReminderWidgets";
+import { renderShareCard, shareOrDownload } from "./shareImage";
+import { reciters, useActiveAyah, useRecitation, type QueueEntry } from "./recitation";
 import { Ornament, Scene } from "./Scene";
 
 const arNum = (n: number) => n.toLocaleString("ar-EG");
@@ -31,6 +35,7 @@ function suggestedWird(hour: number): { id: string; label: string } {
 
 export function RuqyahHubPage() {
   const { data: me } = useMe();
+  const myWird = useMyWird(Boolean(me));
   const wird = useMemo(() => suggestedWird(new Date().getHours()), []);
   const order: CollectionGroup[] = ["treatment", "prevention", "relief"];
 
@@ -54,6 +59,9 @@ export function RuqyahHubPage() {
           </Link>
         </div>
       </Scene>
+
+      <DueWirdNudge wird={myWird.data} />
+      {myWird.data && <StreakCard wird={myWird.data} />}
 
       {order.map((g) => (
         <section key={g} aria-labelledby={`g-${g}`}>
@@ -88,6 +96,8 @@ export function RuqyahHubPage() {
         </ul>
       </section>
 
+      <ReminderCard />
+
       <section className="rounded-3xl border border-border bg-surface p-6 md:flex md:items-center md:justify-between md:gap-6">
         <div>
           <h2 className="text-xl font-bold">استمع للرقية بأصوات القرّاء</h2>
@@ -98,6 +108,47 @@ export function RuqyahHubPage() {
         </Link>
       </section>
     </div>
+  );
+}
+
+/** المداومة: أيام متتالية أُتمّ فيها ورد واحد على الأقل، وآخر 30 يوماً كنقاط. */
+function StreakCard({ wird }: { wird: MyWird }) {
+  const reduce = useReducedMotion();
+  const done = new Set(wird.completedDays);
+  const days = Array.from({ length: 30 }, (_, k) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - k));
+    const p = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  });
+  return (
+    <section className="flex flex-wrap items-center gap-6 rounded-3xl border border-border bg-surface p-6" aria-label="المداومة">
+      <div>
+        <p className="text-sm text-muted">مداومتك على الورد</p>
+        {wird.streak > 0 ? (
+          <p className="mt-1 text-3xl font-bold">
+            <span className="num text-lamp">{arNum(wird.streak)}</span> {wird.streak === 1 ? "يوم" : wird.streak === 2 ? "يومان" : wird.streak <= 10 ? "أيام" : "يوماً"}
+          </p>
+        ) : (
+          <p className="mt-1 text-xl font-bold">ابدأ مداومتك اليوم بإتمام ورد واحد</p>
+        )}
+      </div>
+      <ol className="flex flex-1 flex-wrap gap-1.5" aria-label="آخر ٣٠ يوماً">
+        {days.map((d, k) => (
+          <motion.li
+            key={d}
+            title={d}
+            initial={reduce ? false : { scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: k * 0.015 }}
+            className={cx("h-3.5 w-3.5 rounded-full", done.has(d) ? "bg-lamp-glow shadow-[0_0_8px_var(--lamp-glow)]" : "bg-surface-2 ring-1 ring-border")}
+          >
+            <span className="sr-only">{d}{done.has(d) ? " — مكتمل" : ""}</span>
+          </motion.li>
+        ))}
+      </ol>
+      <p className="w-full text-sm text-muted">«أحبّ الأعمال إلى الله أدومها وإن قلّ»</p>
+    </section>
   );
 }
 
@@ -176,28 +227,6 @@ function readScale(): number {
   }
 }
 
-/** تقدّم اليوم لكل مجموعة — يُحفظ في جهاز الزائر فقط ويُصفَّر تلقائياً مع يوم جديد. */
-function useDailyProgress(collectionId: string) {
-  const key = `sanad.ruqyah.progress.${collectionId}.${new Date().toISOString().slice(0, 10)}`;
-  const [counts, setCounts] = useState<Record<number, number>>(() => {
-    try {
-      return JSON.parse(localStorage.getItem(key) ?? "{}") as Record<number, number>;
-    } catch {
-      return {};
-    }
-  });
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(counts));
-    } catch {
-      /* التخزين اختياري */
-    }
-  }, [key, counts]);
-  const bump = useCallback((i: number, max: number) => setCounts((c) => ({ ...c, [i]: Math.min(max, (c[i] ?? 0) + 1) })), []);
-  const reset = useCallback(() => setCounts({}), []);
-  return { counts, bump, reset };
-}
-
 export function RuqyahCollectionPage() {
   const { collectionId } = useParams();
   const c = findCollection(collectionId);
@@ -208,11 +237,15 @@ export function RuqyahCollectionPage() {
 function CollectionReader({ collection: c }: { collection: Collection }) {
   const [scale, setScale] = useState(readScale);
   const [showSources, setShowSources] = useState(true);
-  const { counts, bump, reset } = useDailyProgress(c.id);
-  const done = c.items.filter((it, i) => (counts[i] ?? 0) >= (it.repeat ?? 1)).length;
-  const pct = Math.round((done / c.items.length) * 100);
+  const entries = useCollectionEntries(c.id, c.items);
+  const { counts, bump, reset, completed: done, synced } = useDailyProgress(c.id, entries);
+  const pct = Math.round((done / entries.length) * 100);
   const idx = collections.indexOf(c);
   const next = collections[(idx + 1) % collections.length];
+  const quranQueue: QueueEntry[] = entries.flatMap(({ item }, i) => (item.kind === "quran" ? [{ itemIndex: i, ref: item.ref }] : []));
+
+  // لا تستمر التلاوة بعد مغادرة المجموعة (فهارس الطابور تخصّها وحدها)
+  useEffect(() => () => useRecitation.getState().stop(), []);
 
   const changeScale = (dir: 1 | -1) => {
     const k = Math.min(fontScales.length - 1, Math.max(0, fontScales.indexOf(scale) + dir));
@@ -238,8 +271,8 @@ function CollectionReader({ collection: c }: { collection: Collection }) {
         </motion.p>
         <div className="mt-6 max-w-md">
           <div className="flex justify-between text-xs text-[#d9d2c3]">
-            <span>ورد اليوم</span>
-            <span className="num">{arNum(done)} / {arNum(c.items.length)}</span>
+            <span>ورد اليوم{synced ? " · محفوظ في حسابك" : ""}</span>
+            <span className="num">{arNum(done)} / {arNum(entries.length)}</span>
           </div>
           <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/15" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="التقدّم">
             <motion.div className="h-full rounded-full bg-lamp-glow" initial={false} animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease }} />
@@ -255,12 +288,13 @@ function CollectionReader({ collection: c }: { collection: Collection }) {
         <button type="button" aria-pressed={showSources} onClick={() => setShowSources((s) => !s)} className={cx("rounded-xl border px-3 py-1.5 text-sm font-semibold", showSources ? "border-primary text-primary" : "border-border text-muted")}>
           التخريج والفوائد
         </button>
+        {quranQueue.length > 0 && <RecitationControls queue={quranQueue} />}
         {done > 0 && <button type="button" onClick={reset} className="ms-auto rounded-xl px-3 py-1.5 text-sm text-muted hover:text-text">إعادة الورد</button>}
       </div>
 
       <ol className="mt-6 flex flex-col gap-5">
-        {c.items.map((it, i) => (
-          <ItemCard key={i} item={it} n={i + 1} scale={scale} showSources={showSources} count={counts[i] ?? 0} onCount={() => bump(i, it.repeat ?? 1)} />
+        {entries.map(({ key, item }, i) => (
+          <ItemCard key={key} index={i} item={item} theme={c.theme} n={i + 1} scale={scale} showSources={showSources} count={counts[key] ?? 0} onCount={() => bump(key, item.repeat ?? 1)} />
         ))}
       </ol>
 
@@ -287,9 +321,12 @@ function CollectionReader({ collection: c }: { collection: Collection }) {
   );
 }
 
-function ItemCard({ item, n, scale, showSources, count, onCount }: {
-  item: Item; n: number; scale: number; showSources: boolean; count: number; onCount: () => void;
+function ItemCard({ index, item, theme, n, scale, showSources, count, onCount }: {
+  index: number; item: Item; theme: SceneTheme; n: number; scale: number; showSources: boolean; count: number; onCount: () => void;
 }) {
+  const [sharing, setSharing] = useState(false);
+  const activeAyah = useActiveAyah(index);
+  const playItem = useRecitation((s) => s.play);
   const repeat = item.repeat ?? 1;
   const complete = count >= repeat;
   const [copied, setCopied] = useState(false);
@@ -325,18 +362,49 @@ function ItemCard({ item, n, scale, showSources, count, onCount }: {
             {passage && <p className="text-xs text-muted">سورة {passage.surahName} · {passage.from === passage.to ? `الآية ${arNum(passage.from)}` : `الآيات ${arNum(passage.from)}–${arNum(passage.to)}`}</p>}
           </div>
         </div>
+        <div className="flex shrink-0 items-center gap-1">
+        {item.kind === "quran" && (
+          <button
+            type="button"
+            onClick={() => (activeAyah === null ? playItem([{ itemIndex: index, ref: item.ref }]) : useRecitation.getState().toggle())}
+            className={cx("rounded-lg px-2 py-1 text-xs font-semibold hover:bg-surface-2", activeAyah !== null ? "text-lamp" : "text-primary")}
+            aria-label={activeAyah !== null ? "إيقاف التلاوة مؤقتاً" : `استمع إلى ${item.title}`}
+          >
+            {activeAyah !== null ? "❚❚ إيقاف" : "▶ استمع"}
+          </button>
+        )}
+        <button
+          type="button"
+          disabled={sharing}
+          onClick={async () => {
+            setSharing(true);
+            try {
+              const blob = await renderShareCard(passage
+                ? { theme, quran: true, title: item.title, text: passage.ayat.map((a, k) => `${a}\u00a0﴿${arNum(passage.from + k)}﴾`).join(" "), source: `[${passage.surahName}: ${arNum(passage.from)}${passage.to > passage.from ? `–${arNum(passage.to)}` : ""}]` }
+                : { theme, quran: false, title: item.title, text: item.kind === "dua" ? item.text : "", source: item.kind === "dua" ? item.source : "" });
+              await shareOrDownload(blob, `sanad-${n}`);
+            } finally {
+              setSharing(false);
+            }
+          }}
+          className="shrink-0 rounded-lg px-2 py-1 text-xs text-muted hover:bg-surface-2 hover:text-text disabled:opacity-50"
+          aria-label="مشاركة كصورة"
+        >
+          {sharing ? "…" : "صورة"}
+        </button>
         <button type="button" onClick={copy} className="shrink-0 rounded-lg px-2 py-1 text-xs text-muted hover:bg-surface-2 hover:text-text" aria-label="نسخ النص">
           {copied ? "نُسخ ✓" : "نسخ"}
         </button>
+        </div>
       </header>
 
       <div className="mt-5" style={{ fontSize: `${scale}rem` }}>
         {passage ? (
           <p className="font-quran text-[1.4em] leading-[2.3] md:text-[1.65em] md:leading-[2.4] text-text" dir="rtl">
             {passage.ayat.map((a, k) => (
-              <span key={k}>
+              <AyahSpan key={k} active={activeAyah === k}>
                 {a} <span className="text-lamp">﴿{arNum(passage.from + k)}﴾</span>{" "}
-              </span>
+              </AyahSpan>
             ))}
           </p>
         ) : item.kind === "dua" ? (
@@ -359,6 +427,49 @@ function ItemCard({ item, n, scale, showSources, count, onCount }: {
         <Counter count={count} repeat={repeat} onCount={onCount} />
       </div>
     </motion.li>
+  );
+}
+
+/** الآية الجارية تلاوتها: خلفية ذهبية خافتة، وتمرير هادئ إليها إن خرجت من الشاشة. */
+function AyahSpan({ active, children }: { active: boolean; children: ReactNode }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!active || !el) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < 120 || r.bottom > window.innerHeight - 40) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [active]);
+  return (
+    <span
+      ref={ref}
+      className={cx("rounded-lg transition-colors duration-500 [box-decoration-break:clone]", active && "bg-[color-mix(in_srgb,var(--lamp-glow)_22%,transparent)]")}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** اختيار القارئ وتشغيل آيات المجموعة كلها متتابعة. */
+function RecitationControls({ queue }: { queue: QueueEntry[] }) {
+  const { reciter, status, setReciter, play, toggle, stop } = useRecitation();
+  const active = status !== "idle";
+  return (
+    <div className="flex items-center gap-1 rounded-xl border border-border bg-surface p-1">
+      <button
+        type="button"
+        onClick={() => (active ? toggle() : play(queue))}
+        className="rounded-lg bg-primary px-3 py-1 text-sm font-semibold text-primary-contrast"
+      >
+        {status === "playing" || status === "loading" ? "❚❚ إيقاف مؤقت" : status === "paused" ? "▶ متابعة" : status === "error" ? "↻ أعد المحاولة" : "▶ استمع للآيات"}
+      </button>
+      {active && <button type="button" onClick={stop} className="rounded-lg px-2 py-1 text-sm text-muted hover:text-text" aria-label="إنهاء التلاوة">■</button>}
+      <label htmlFor="reciter" className="sr-only">القارئ</label>
+      <select id="reciter" value={reciter} onChange={(e) => setReciter(e.target.value)} className="max-w-40 rounded-lg bg-transparent px-2 py-1 text-sm text-muted">
+        {reciters.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+      </select>
+      {status === "loading" && <span className="px-1 text-xs text-muted" aria-live="polite">يُحمَّل…</span>}
+      {status === "error" && <span className="px-1 text-xs text-warning" aria-live="polite">تعذّر التشغيل</span>}
+    </div>
   );
 }
 

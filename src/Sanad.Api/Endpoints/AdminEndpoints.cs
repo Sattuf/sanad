@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sanad.Api.Authorization;
 using Sanad.Application.Modules.Accounts;
 using Sanad.Application.Modules.Directory;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Application.Modules.Safety;
 using Sanad.Application.Modules.Verification;
@@ -103,6 +104,14 @@ public static class AdminEndpoints
         lib.MapGet("/catalog", async (ISender s) => Results.Ok(await s.Send(new GetLibraryCatalogQuery())));
         lib.MapPost("/catalog/import", async (ImportCatalogTrackCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
         lib.MapPost("/youtube", async (AddYouTubeTrackCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
+
+        // ── الأدعية المكتوبة (ContentManager): مسودة ← مراجعة ← نشر بيد مدير محتوى آخر ──
+        var duas = app.MapGroup("/api/v1/admin/ruqyah/duas").WithTags("Admin.Ruqyah").RequireAuthorization(Policies.ManageContentLibrary);
+        duas.MapGet("", async (ISender s) => Results.Ok(await s.Send(new GetAdminDuasQuery())));
+        duas.MapPost("", async (CreateWrittenDuaCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
+        duas.MapPut("/{id:guid}", async (Guid id, UpdateWrittenDuaCommand cmd, ISender s) => Results.Ok(await s.Send(cmd with { Id = id })));
+        duas.MapPost("/{id:guid}/review", async (Guid id, ReviewWrittenDuaCommand cmd, ISender s) => Results.Ok(await s.Send(cmd with { Id = id })));
+        duas.MapDelete("/{id:guid}", async (Guid id, ISender s) => { await s.Send(new DeleteWrittenDuaCommand(id)); return Results.NoContent(); });
 
         // ── إدارة الأدوار (SystemAdmin فقط) — لا منح SystemAdmin من التطبيق إطلاقاً ──
         var users = app.MapGroup("/api/v1/admin/users").WithTags("Admin.Users").RequireAuthorization(Policies.AssignSystemRoles);

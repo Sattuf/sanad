@@ -29,7 +29,7 @@ public sealed class LibrarySourcesFixture : IDisposable
 
     public void Dispose() => Factory.Dispose();
 
-    private sealed class FakeCatalog : ILibraryCatalog
+    internal sealed class FakeCatalog : ILibraryCatalog
     {
         public Task<LibraryCatalogDto> GetCatalogAsync(CancellationToken ct) => Task.FromResult(new LibraryCatalogDto(
             [new CatalogSurahDto(1, "الفاتحة", 7)], [new CatalogReciterDto(7, "قارئ تجريبي", [new CatalogMoshafDto(70, "حفص عن عاصم", [1])])],
@@ -41,6 +41,14 @@ public sealed class LibrarySourcesFixture : IDisposable
 
         public Task<CatalogAudio> FetchAyatAsync(string ayahReciterId, int surah, int fromAyah, int toAyah, CancellationToken ct) =>
             throw new ExternalSourceException("تعذّر الوصول إلى المصدر الآن. حاول بعد قليل.");
+
+        public int AyahFetches;
+
+        public Task<CatalogAudio> FetchAyahAsync(string reciterFolder, int surah, int ayah, CancellationToken ct)
+        {
+            Interlocked.Increment(ref AyahFetches);
+            return Task.FromResult(new CatalogAudio(new MemoryStream(Mp3(20)), 1, $"{surah}:{ayah}", reciterFolder, "https://everyayah.com/data/x.mp3"));
+        }
 
         public Task<CatalogAudio> FetchAdhkarAsync(int adhkarId, CancellationToken ct) =>
             Task.FromResult(new CatalogAudio(new MemoryStream("<html>not audio</html>"u8.ToArray()), 5, "ذكر", "حصن المسلم", "https://www.hisnmuslim.com/audio/ar/x.mp3"));
@@ -136,5 +144,27 @@ public sealed class LibrarySourcesTests(LibrarySourcesFixture fixture) : IClassF
         (await beneficiary.GetAsync("/api/v1/admin/library/catalog")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
         (await beneficiary.PostAsync("/api/v1/admin/library/youtube", Body(new { url = "https://youtu.be/dQw4w9WgXcQ", category = "Dua" })))
             .StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Ayah_recitation_is_public_fetched_once_then_served_from_sanad_storage()
+    {
+        var catalog = (LibrarySourcesFixture.FakeCatalog)_api.Factory.Services.GetRequiredService<ILibraryCatalog>();
+        var anonymous = _api.Client();
+        var reciters = await Ok(await anonymous.GetAsync("/api/v1/public/recitation/reciters"));
+        reciters.AsArray().Select(r => r!["id"]!.GetValue<string>()).Should().Contain("Alafasy_128kbps");
+
+        var before = catalog.AyahFetches;
+        for (var i = 0; i < 2; i++)
+        {
+            var res = await anonymous.GetAsync("/api/v1/public/recitation/Husary_128kbps/113/1");
+            res.StatusCode.Should().Be(HttpStatusCode.OK);
+            res.Content.Headers.ContentType!.MediaType.Should().Be("audio/mpeg");
+        }
+        catalog.AyahFetches.Should().Be(before + 1);
+
+        (await anonymous.GetAsync("/api/v1/public/recitation/unknown_reciter/1/1")).StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (await anonymous.GetAsync("/api/v1/public/recitation/Husary_128kbps/1/8")).StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (await anonymous.GetAsync("/api/v1/public/recitation/Husary_128kbps/115/1")).StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

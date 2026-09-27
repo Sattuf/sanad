@@ -48,6 +48,9 @@ public interface ILibraryCatalog
     /// <summary>آية أو نطاق آيات متتالية من everyayah.com، تُدمج في ملف واحد.</summary>
     Task<CatalogAudio> FetchAyatAsync(string ayahReciterId, int surah, int fromAyah, int toAyah, CancellationToken ct);
 
+    /// <summary>آية واحدة من everyayah.com بقارئ من <see cref="RecitationReciters"/> — للاستماع في «الرقية والتحصين».</summary>
+    Task<CatalogAudio> FetchAyahAsync(string reciterFolder, int surah, int ayah, CancellationToken ct);
+
     /// <summary>باب من حصن المسلم (hisnmuslim.com).</summary>
     Task<CatalogAudio> FetchAdhkarAsync(int adhkarId, CancellationToken ct);
 }

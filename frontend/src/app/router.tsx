@@ -9,6 +9,7 @@ import {
   LibraryAdminPage, OrganizationsAdminPage, ProvidersAdminPage, ReportsAdminPage, SafetyAlertsPage, StaffIndex, StaffLayout, UsersAdminPage,
   VerificationQueuePage,
 } from "../features/coordinator-portal/StaffPortal";
+import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
 import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
@@ -95,6 +96,7 @@ export const router = createBrowserRouter([
           { path: "reports", element: <RequireRole roles={["Coordinator"]}><ReportsAdminPage /></RequireRole> },
           { path: "safety-alerts", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><SafetyAlertsPage /></RequireRole> },
           { path: "library", element: <RequireRole roles={["ContentManager", "SystemAdmin"]}><LibraryAdminPage /></RequireRole> },
+          { path: "duas", element: <RequireRole roles={["ContentManager"]}><RuqyahDuasAdminPage /></RequireRole> },
           { path: "users", element: <RequireRole roles={["SystemAdmin"]}><UsersAdminPage /></RequireRole> },
         ],
       },
