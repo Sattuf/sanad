@@ -1,0 +1,52 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # يفشل البناء إن وُجدت أي بقايا كود دفع — references/07-safety-guardrails.md §7.8
+  no-payment-code-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          ! grep -riE "payment|subscription|FinanceOfficer" --include="*.cs" -r src/
+
+  backend:
+    needs: [secret-scan, no-payment-code-check]
+    runs-on: ubuntu-latest
+    env:
+      SANAD_TEST_POSTGRES: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "9.0.x" }
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore
+      - run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
+      - run: dotnet format --verify-no-changes --severity error
+      - run: dotnet list package --vulnerable --include-transitive
+
+  frontend:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: frontend }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high

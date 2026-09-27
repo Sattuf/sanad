@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/*
+  رموز التصميم — هادئ نهاري + ليلي دافئ (references/13-visual-motion-design.md §13.3).
+  قاعدة: الأحمر (danger) محجوز حصراً للخطر الحقيقي. توهّج المصباح (lamp) لا يُستخدم لأي تنبيه.
+*/
+:root {
+  --bg: #f6f3ec;
+  --bg-deep: #efe9dd;
+  --surface: #ffffff;
+  --surface-2: #faf8f3;
+  --text: #1d2126;
+  --muted: #5a626d;
+  --border: #e3ddd1;
+  --primary: #0f5c58;
+  --primary-hover: #0b4a47;
+  --primary-contrast: #ffffff;
+  --lamp: #b8802a;
+  --lamp-glow: #f2c675;
+  --success: #1f6f47;
+  --success-bg: #e6f4ec;
+  --warning: #85570a;
+  --warning-bg: #fbf1dc;
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --private: #7a1f1f;
+  --private-bg: #fbeaea;
+  --focus: #2f7ec7;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0f14;
+    --bg-deep: #090b0f;
+    --surface: #171a21;
+    --surface-2: #1d212a;
+    --text: #ece9e2;
+    --muted: #a4a9b3;
+    --border: #2a2f3a;
+    --primary: #5fb3ad;
+    --primary-hover: #7cc4bf;
+    --primary-contrast: #0b1a19;
+    --lamp: #f2c675;
+    --lamp-glow: #f2c675;
+    --success: #6fcf97;
+    --success-bg: #13261c;
+    --warning: #f2c675;
+    --warning-bg: #2a2314;
+    --danger: #ff7b6e;
+    --danger-bg: #2c1513;
+    --private: #ff9a92;
+    --private-bg: #2b1414;
+    --focus: #7ab8f5;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d0f14;
+  --bg-deep: #090b0f;
+  --surface: #171a21;
+  --surface-2: #1d212a;
+  --text: #ece9e2;
+  --muted: #a4a9b3;
+  --border: #2a2f3a;
+  --primary: #5fb3ad;
+  --primary-hover: #7cc4bf;
+  --primary-contrast: #0b1a19;
+  --lamp: #f2c675;
+  --lamp-glow: #f2c675;
+  --success: #6fcf97;
+  --success-bg: #13261c;
+  --warning: #f2c675;
+  --warning-bg: #2a2314;
+  --danger: #ff7b6e;
+  --danger-bg: #2c1513;
+  --private: #ff9a92;
+  --private-bg: #2b1414;
+  --focus: #7ab8f5;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-lamp: var(--lamp);
+  --color-lamp-glow: var(--lamp-glow);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-private: var(--private);
+  --color-private-bg: var(--private-bg);
+  --font-sans: "IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  line-height: 1.7;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--lamp-glow) 40%, transparent);
+}
+
+/* أرقام وتواريخ داخل نص عربي */
+.num {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

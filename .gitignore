@@ -1,0 +1,27 @@
+bin/
+obj/
+*.user
+.vs/
+.vscode/*
+!.vscode/extensions.json
+TestResults/
+
+# قواعد SQLite وملفات التخزين المحلية — بيانات تطوير فقط
+*.db
+*.db-shm
+*.db-wal
+src/Sanad.Api/storage/
+src/Sanad.Api/storage-dev/
+
+# الأسرار لا تُكتب في المستودع أبداً — dotnet user-secrets محلياً، Key Vault في الإنتاج
+appsettings.*.local.json
+*.pfx
+.env
+.env.*
+
+# الواجهة الأمامية
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
