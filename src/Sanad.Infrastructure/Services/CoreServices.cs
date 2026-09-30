@@ -108,7 +108,11 @@ public sealed class DbIdempotencyStore(SanadDbContext db, IDateTime clock) : IId
     {
         db.IdempotencyRecords.Add(new IdempotencyRecord
         {
-            Key = key, UserId = userId, RequestName = requestName, ResponseJson = responseJson, CreatedAtUtc = clock.UtcNow,
+            Key = key,
+            UserId = userId,
+            RequestName = requestName,
+            ResponseJson = responseJson,
+            CreatedAtUtc = clock.UtcNow,
         });
         try
         {

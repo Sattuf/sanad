@@ -5,6 +5,7 @@ using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
 using Sanad.Domain.PatientCare;
+using Sanad.Domain.Ruqyah;
 using Sanad.Domain.RuqyahLibrary;
 using Sanad.Domain.Safety;
 using Sanad.Domain.Scheduling;
@@ -26,6 +27,8 @@ public interface IApplicationDbContext
     DbSet<ProviderRecommendation> ProviderRecommendations { get; }
     DbSet<AudioTrack> AudioTracks { get; }
     DbSet<UserFavoriteTrack> UserFavoriteTracks { get; }
+    DbSet<DailyWirdProgress> DailyWirdProgress { get; }
+    DbSet<WrittenDua> WrittenDuas { get; }
     DbSet<SharedContentLink> SharedContentLinks { get; }
     DbSet<ConsentRecord> ConsentRecords { get; }
     DbSet<Report> Reports { get; }

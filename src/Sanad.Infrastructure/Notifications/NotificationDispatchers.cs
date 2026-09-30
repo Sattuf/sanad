@@ -29,7 +29,11 @@ public sealed class CompositeNotificationDispatcher(
     {
         var entity = new UserNotification
         {
-            UserId = message.RecipientUserId, Kind = message.Kind, Title = message.Title, Body = message.Body, Link = message.Link,
+            UserId = message.RecipientUserId,
+            Kind = message.Kind,
+            Title = message.Title,
+            Body = message.Body,
+            Link = message.Link,
             CreatedAtUtc = clock.UtcNow,
         };
         db.UserNotifications.Add(entity);

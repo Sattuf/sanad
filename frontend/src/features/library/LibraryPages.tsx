@@ -9,6 +9,7 @@ import { TrackMedia } from "../../components/TrackMedia";
 import { AnimatedLamp } from "../../components/motion/Lamp";
 import { Banner, Button, Card, EmptyState, ErrorState, Input, Loading, PageHeader } from "../../components/ui";
 import { cx } from "../../lib/cx";
+import { Scene } from "../ruqyah/Scene";
 
 const categories: Array<AudioCategory | ""> = ["", "QuranRecitation", "Dua", "Adhkar"];
 
@@ -29,8 +30,8 @@ export function LibraryPage() {
   return (
     <div>
       <PageHeader
-        title="مكتبة الرقية"
-        subtitle="تلاوات وأدعية وأذكار معروفة من مصادر موثوقة، تُدار مركزياً. للاستماع والطمأنينة — لا تُقدَّم كوصفة علاجية مضمونة النتيجة."
+        title="المكتبة الصوتية"
+        subtitle="تلاوات وأدعية وأذكار بأصوات القرّاء من مصادر موثوقة، تُراجَع قبل نشرها. اقرأ واستمع بيقين، والشفاء بيد الله وحده."
         actions={
           <div className="flex gap-2">
             {me?.roles.includes("ContentManager") && (
@@ -40,6 +41,15 @@ export function LibraryPage() {
           </div>
         }
       />
+      <Link to="/ruqyah" className="group mb-6 block">
+        <Scene theme="mihrab" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-4 ring-1 ring-white/10 transition-all group-hover:ring-lamp-glow/60">
+          <div>
+            <p className="font-bold">الرقية والتحصين مكتوبةً</p>
+            <p className="text-sm text-[#d9d2c3]">آيات الرقية بخط المصحف، وأدعية السنة بتخريجها، مع عدّاد للأذكار.</p>
+          </div>
+          <span className="text-sm font-semibold text-lamp-glow">افتح ←</span>
+        </Scene>
+      </Link>
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <div className="flex gap-1 rounded-xl border border-border bg-surface p-1" role="tablist" aria-label="التصنيف">
           {categories.map((c) => (

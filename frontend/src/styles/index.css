@@ -128,6 +128,16 @@ body {
   background: color-mix(in srgb, var(--lamp-glow) 40%, transparent);
 }
 
+/* خط المصحف للآيات (يدعم علامات الرسم العثماني)، والنسخ للأدعية والأدلة */
+.font-quran {
+  font-family: "Amiri Quran", "Amiri", "Traditional Arabic", serif;
+  font-feature-settings: "calt", "liga";
+}
+
+.font-naskh {
+  font-family: "Amiri", "Traditional Arabic", serif;
+}
+
 /* أرقام وتواريخ داخل نص عربي */
 .num {
   font-variant-numeric: tabular-nums;

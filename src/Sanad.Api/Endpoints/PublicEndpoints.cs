@@ -1,6 +1,7 @@
 using MediatR;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Modules.Directory;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Application.Modules.Safety;
 using Sanad.Application.Modules.Scheduling;
@@ -57,6 +58,23 @@ public static class PublicEndpoints
                 return Results.Stream(stream, media.ContentType, enableRangeProcessing: true);
             })
             .WithTags("Media").AllowAnonymous().RequireRateLimiting("media");
+
+        // ── تلاوة آيات «الرقية والتحصين»: عامة، يجلبها الخادم من المصدر مرة واحدة ثم يخدمها من تخزينه ──
+        app.MapGet("/api/v1/public/recitation/reciters", async (ISender s) => Results.Ok(await s.Send(new GetRecitationRecitersQuery())))
+            .WithTags("Recitation").AllowAnonymous().RequireRateLimiting("public");
+        app.MapGet("/api/v1/public/recitation/{reciter}/{surah:int}/{ayah:int}", async (string reciter, int surah, int ayah, HttpContext http, ISender s, IFileStorage storage) =>
+            {
+                var media = await s.Send(new GetAyahAudioQuery(reciter, surah, ayah));
+                var stream = await storage.OpenReadAsync(media.StorageKey, http.RequestAborted);
+                if (stream is null) return Results.NotFound();
+                http.Response.Headers.CacheControl = "public, max-age=604800, immutable";
+                return Results.Stream(stream, media.ContentType, enableRangeProcessing: true);
+            })
+            .WithTags("Recitation").AllowAnonymous().RequireRateLimiting("media");
+
+        // ── الأدعية المكتوبة المنشورة (بعد المراجعة) — تُدمج في مجموعات «الرقية والتحصين» ──
+        app.MapGet("/api/v1/public/ruqyah/duas", async (ISender s) => Results.Ok(await s.Send(new GetPublishedDuasQuery())))
+            .WithTags("Ruqyah").AllowAnonymous().RequireRateLimiting("public");
 
         // ── روابط المستندات الخاصة الموقّعة قصيرة الأجل ──
         app.MapGet("/api/v1/files/signed", async (string key, long exp, string sig, HttpContext http, LocalFileStorage storage) =>

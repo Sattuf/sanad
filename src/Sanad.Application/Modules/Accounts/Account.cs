@@ -217,6 +217,7 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
         foreach (var entry in await db.AuditLogEntries.Where(a => a.ActorUserId == userId).ToListAsync(cancellationToken))
             entry.AnonymizeActor();
         db.UserFavoriteTracks.RemoveRange(await db.UserFavoriteTracks.Where(f => f.UserId == userId).ToListAsync(cancellationToken));
+        db.DailyWirdProgress.RemoveRange(await db.DailyWirdProgress.Where(p => p.UserId == userId).ToListAsync(cancellationToken));
 
         var provider = await db.ProviderProfiles.FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
         if (provider is not null && provider.Status != PublicationStatus.Suspended)
@@ -234,7 +235,7 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
 // ── تصدير بياناتي ──────────────────────────────────────────────────────────────
 public sealed record MyDataExportDto(object Account, IReadOnlyList<object> Consents, IReadOnlyList<object> Bookings,
     IReadOnlyList<object> RecommendationsReceived, IReadOnlyList<object> MessagesSent, IReadOnlyList<object> Favorites,
-    IReadOnlyList<object> ReportsSubmitted, DateTimeOffset GeneratedAtUtc);
+    IReadOnlyList<object> ReportsSubmitted, IReadOnlyList<object> WirdProgress, DateTimeOffset GeneratedAtUtc);
 
 public sealed record ExportMyDataQuery : IQuery<MyDataExportDto>, ISensitiveRequest;
 
@@ -253,6 +254,7 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
         var messages = await db.Messages.AsNoTracking().Where(m => m.SenderUserId == userId).ToListAsync(cancellationToken);
         var favorites = await db.UserFavoriteTracks.AsNoTracking().Where(f => f.UserId == userId).ToListAsync(cancellationToken);
         var reports = await db.Reports.AsNoTracking().Where(r => r.ReporterUserId == userId).ToListAsync(cancellationToken);
+        var wird = await db.DailyWirdProgress.AsNoTracking().Where(p => p.UserId == userId).ToListAsync(cancellationToken);
 
         await audit.LogAsync("Accounts.DataExported", "Account", userId, ct: cancellationToken);
 
@@ -261,7 +263,10 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             consents.Select(c => (object)new { Type = c.Type.ToString(), c.PolicyVersion, c.AcceptedAtUtc, c.RevokedAtUtc }).ToList(),
             bookings.Select(b => (object)new
             {
-                b.Id, Status = b.Status.ToString(), b.ServiceOfferingId, b.CreatedAtUtc,
+                b.Id,
+                Status = b.Status.ToString(),
+                b.ServiceOfferingId,
+                b.CreatedAtUtc,
                 MyNoteToProvider = b.BeneficiaryNoteEncrypted is null ? null : encryptor.Decrypt(b.BeneficiaryNoteEncrypted),
             }).ToList(),
             recs.Select(r => (object)new { r.Id, r.BookingRequestId, GuidanceText = encryptor.Decrypt(r.GuidanceTextEncrypted), r.RecommendedAudioTrackIds, r.RecordedAtUtc }).ToList(),
@@ -269,9 +274,13 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             favorites.Select(f => (object)new { f.AudioTrackId, f.AddedAtUtc }).ToList(),
             reports.Select(r => (object)new
             {
-                r.Id, Category = r.Category.ToString(), Status = r.Status.ToString(), r.SubmittedAtUtc,
+                r.Id,
+                Category = r.Category.ToString(),
+                Status = r.Status.ToString(),
+                r.SubmittedAtUtc,
                 Description = r.DescriptionEncrypted is null ? null : encryptor.Decrypt(r.DescriptionEncrypted),
             }).ToList(),
+            wird.OrderBy(p => p.Day).Select(p => (object)new { p.Day, p.CollectionId, p.Counts, p.CompletedItems, p.TotalItems }).ToList(),
             clock.UtcNow);
     }
 }

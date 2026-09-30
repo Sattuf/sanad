@@ -49,7 +49,10 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         var coordinator = _api.Client(await _api.CoordinatorAsync());
         var org = await Ok(await coordinator.PostAsync("/api/v1/admin/organizations", Body(new
         {
-            legalName = "جمعية وقفية تجريبية", track = "WaqfFree", issuingAuthorityName = "وزارة الموارد", publicDescription = "خدمات إرشاد مجانية",
+            legalName = "جمعية وقفية تجريبية",
+            track = "WaqfFree",
+            issuingAuthorityName = "وزارة الموارد",
+            publicDescription = "خدمات إرشاد مجانية",
         })));
         var publish = await coordinator.PostAsync($"/api/v1/admin/organizations/{org["id"]}/publish", null);
         publish.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -86,7 +89,11 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
             var reporter = await _api.RegisterBeneficiaryAsync();
             var report = await Ok(await _api.Client(reporter, Guid.NewGuid().ToString()).PostAsync("/api/v1/reports", Body(new
             {
-                targetType = "UserAccount", targetId = target.UserId, category = "Harassment", severity = "Medium", description = "رسائل مزعجة متكررة",
+                targetType = "UserAccount",
+                targetId = target.UserId,
+                category = "Harassment",
+                severity = "Medium",
+                description = "رسائل مزعجة متكررة",
             })));
             await Ok(await coordinator.PostAsync($"/api/v1/admin/reports/{report["id"]}/review", Body(new { substantiated = true, involvesPossibleCrimeOrMinorRisk = false })));
         }
@@ -105,7 +112,9 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         var second = await _api.RegisterBeneficiaryAsync();
         var res = await _api.Client(second, Guid.NewGuid().ToString()).PostAsync("/api/v1/bookings", Body(new
         {
-            serviceOfferingId = p.OfferingId, availabilitySlotId = p.SlotIds[0], beneficiaryNote = "لم أعد أحتمل وأفكر في الانتحار",
+            serviceOfferingId = p.OfferingId,
+            availabilitySlotId = p.SlotIds[0],
+            beneficiaryNote = "لم أعد أحتمل وأفكر في الانتحار",
             consentToSensitiveNoteProcessing = true,
         }));
 
@@ -123,7 +132,10 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         var beneficiary = await _api.RegisterBeneficiaryAsync();
         var res = await _api.Client(beneficiary, Guid.NewGuid().ToString()).PostAsync("/api/v1/bookings", Body(new
         {
-            serviceOfferingId = p.OfferingId, availabilitySlotId = p.SlotIds[1], beneficiaryNote = "أريد أن أؤذي نفسي", consentToSensitiveNoteProcessing = true,
+            serviceOfferingId = p.OfferingId,
+            availabilitySlotId = p.SlotIds[1],
+            beneficiaryNote = "أريد أن أؤذي نفسي",
+            consentToSensitiveNoteProcessing = true,
         }));
         var body = await Ok(res);
         body["emergencyReferral"]!["required"]!.GetValue<bool>().Should().BeTrue();
@@ -139,7 +151,10 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
         var offering = await practitioner.PostAsync("/api/v1/me/provider-profile/offerings", Body(new
         {
-            category = "رقية", description = "شفاء مضمون من السحر والعين", cancellationPolicy = "لا", sessionDurationMinutes = 30,
+            category = "رقية",
+            description = "شفاء مضمون من السحر والعين",
+            cancellationPolicy = "لا",
+            sessionDurationMinutes = 30,
         }));
         offering.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         (await ReadJson(offering))["code"]!.GetValue<string>().Should().Be("content_policy_violation");
@@ -153,7 +168,11 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         var trackId = await _api.TrackAsync(publish: false);
         var update = await cm.PutAsync($"/api/v1/admin/library/tracks/{trackId}", Body(new
         {
-            title = "رقية", sourceLabel = "مصدر", description = "علاج ناجع للسحر نهائياً", category = "Dua", durationSeconds = 60,
+            title = "رقية",
+            sourceLabel = "مصدر",
+            description = "علاج ناجع للسحر نهائياً",
+            category = "Dua",
+            durationSeconds = 60,
         }));
         update.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -391,7 +410,10 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
         var offering = await _api.Client(p.Session).PostAsync("/api/v1/me/provider-profile/offerings", Body(new
         {
-            category = "استشارة", description = "خذ 500 ملغ مرتين يومياً", cancellationPolicy = "مرن", sessionDurationMinutes = 30,
+            category = "استشارة",
+            description = "خذ 500 ملغ مرتين يومياً",
+            cancellationPolicy = "مرن",
+            sessionDurationMinutes = 30,
         }));
         var offeringBody = await ReadJson(offering);
         recBody["policyCategory"]!.GetValue<string>().Should().Be(offeringBody["policyCategory"]!.GetValue<string>());

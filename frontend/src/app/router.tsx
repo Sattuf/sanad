@@ -9,8 +9,10 @@ import {
   LibraryAdminPage, OrganizationsAdminPage, ProvidersAdminPage, ReportsAdminPage, SafetyAlertsPage, StaffIndex, StaffLayout, UsersAdminPage,
   VerificationQueuePage,
 } from "../features/coordinator-portal/StaffPortal";
+import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
+import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
 import { MyRecommendationsPage } from "../features/patient-care/MyRecommendations";
 import { CaseNoteEditor, RecommendationComposer } from "../features/patient-care/ProviderEditors";
 import {
@@ -42,6 +44,10 @@ export const router = createBrowserRouter([
       { path: "/providers/:id", element: <ProviderPage /> },
       { path: "/organizations/:id", element: <OrganizationPage /> },
       { path: "/emergency", element: <EmergencyPage /> },
+      // الرقية والتحصين المكتوبة: عامة بلا تسجيل (محتوى ثابت، لا بيانات مستخدم)
+      { path: "/ruqyah", element: <RuqyahHubPage /> },
+      { path: "/ruqyah/guide/:guideId", element: <RuqyahGuidePage /> },
+      { path: "/ruqyah/:collectionId", element: <RuqyahCollectionPage /> },
       { path: "/about-verification", element: <AboutVerificationPage /> },
       { path: "/terms", element: <TermsPage /> },
       { path: "/privacy", element: <PrivacyPage /> },
@@ -90,6 +96,7 @@ export const router = createBrowserRouter([
           { path: "reports", element: <RequireRole roles={["Coordinator"]}><ReportsAdminPage /></RequireRole> },
           { path: "safety-alerts", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><SafetyAlertsPage /></RequireRole> },
           { path: "library", element: <RequireRole roles={["ContentManager", "SystemAdmin"]}><LibraryAdminPage /></RequireRole> },
+          { path: "duas", element: <RequireRole roles={["ContentManager"]}><RuqyahDuasAdminPage /></RequireRole> },
           { path: "users", element: <RequireRole roles={["SystemAdmin"]}><UsersAdminPage /></RequireRole> },
         ],
       },

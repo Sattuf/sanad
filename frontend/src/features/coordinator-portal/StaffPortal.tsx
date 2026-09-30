@@ -21,6 +21,7 @@ const tabs: Array<{ to: string; label: string; roles: Role[] }> = [
   { to: "/staff/reports", label: "البلاغات والتصعيد", roles: ["Coordinator"] },
   { to: "/staff/safety-alerts", label: "تنبيهات السلامة", roles: ["Coordinator", "ClinicalSupervisor"] },
   { to: "/staff/library", label: "المكتبة", roles: ["ContentManager", "SystemAdmin"] },
+  { to: "/staff/duas", label: "الأدعية المكتوبة", roles: ["ContentManager"] },
   { to: "/staff/users", label: "الأدوار", roles: ["SystemAdmin"] },
 ];
 

@@ -9,6 +9,7 @@ using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
 using Sanad.Domain.PatientCare;
+using Sanad.Domain.Ruqyah;
 using Sanad.Domain.RuqyahLibrary;
 using Sanad.Domain.Safety;
 using Sanad.Domain.Scheduling;
@@ -44,6 +45,8 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     public DbSet<ProviderRecommendation> ProviderRecommendations => Set<ProviderRecommendation>();
     public DbSet<AudioTrack> AudioTracks => Set<AudioTrack>();
     public DbSet<UserFavoriteTrack> UserFavoriteTracks => Set<UserFavoriteTrack>();
+    public DbSet<DailyWirdProgress> DailyWirdProgress => Set<DailyWirdProgress>();
+    public DbSet<WrittenDua> WrittenDuas => Set<WrittenDua>();
     public DbSet<SharedContentLink> SharedContentLinks => Set<SharedContentLink>();
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
     public DbSet<Report> Reports => Set<Report>();

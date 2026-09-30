@@ -2,7 +2,8 @@ export const ar = {
   app: { name: "سند", tagline: "دليل موثّق إدارياً — مجاني بالكامل" },
   nav: {
     directory: "الدليل",
-    library: "مكتبة الرقية",
+    ruqyah: "الرقية والتحصين",
+    library: "المكتبة الصوتية",
     bookings: "حجوزاتي",
     recommendations: "توصياتي",
     favorites: "المفضلة",

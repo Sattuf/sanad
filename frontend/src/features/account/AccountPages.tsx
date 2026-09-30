@@ -50,9 +50,12 @@ export function DashboardPage() {
           <Link to="/recommendations" className="mt-3 inline-block text-sm font-semibold text-primary">عرض التوصيات</Link>
         </Card>
         <Card>
-          <h2 className="font-bold">مكتبة الرقية</h2>
-          <p className="mt-2 text-muted">تلاوات وأدعية وأذكار من مصادر معروفة.</p>
-          <Link to="/library" className="mt-3 inline-block text-sm font-semibold text-primary">افتح المكتبة</Link>
+          <h2 className="font-bold">الرقية والتحصين</h2>
+          <p className="mt-2 text-muted">آيات الرقية وأدعية السنة وأذكار اليوم مكتوبة، وتلاوات مسموعة من مصادر موثوقة.</p>
+          <div className="mt-3 flex gap-4">
+            <Link to="/ruqyah" className="text-sm font-semibold text-primary">اقرأ الأذكار</Link>
+            <Link to="/library" className="text-sm font-semibold text-primary">المكتبة الصوتية</Link>
+          </div>
         </Card>
         {!isProvider && (
           <Card className="md:col-span-2">

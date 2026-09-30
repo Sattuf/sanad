@@ -7,6 +7,7 @@ using Sanad.Application.Modules.Consent;
 using Sanad.Application.Modules.Directory;
 using Sanad.Application.Modules.Messaging;
 using Sanad.Application.Modules.PatientCare;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Application.Modules.Safety;
 using Sanad.Application.Modules.Scheduling;
@@ -73,6 +74,10 @@ public static class AccountEndpoints
         me.MapGet("/favorites", async (ISender s) => Results.Ok(await s.Send(new GetMyFavoritesQuery())));
         me.MapPost("/favorites", async (FavoriteRequest req, ISender s) => { await s.Send(new AddFavoriteTrackCommand(req.AudioTrackId)); return Results.NoContent(); });
         me.MapDelete("/favorites/{trackId:guid}", async (Guid trackId, ISender s) => { await s.Send(new RemoveFavoriteTrackCommand(trackId)); return Results.NoContent(); });
+
+        // ── الورد اليومي (شخصي) ──
+        me.MapGet("/wird", async (DateOnly day, ISender s) => Results.Ok(await s.Send(new GetMyWirdQuery(day))));
+        me.MapPut("/wird", async (SaveMyWirdCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); });
 
         // ── الإشعارات داخل التطبيق (نص عام فقط) ──
         me.MapGet("/notifications", async (SanadDbContext db, ICurrentUser user) =>

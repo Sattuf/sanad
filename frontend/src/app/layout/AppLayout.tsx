@@ -39,6 +39,7 @@ function SiteHeader() {
 
   const links: Array<{ to: string; label: string; show: boolean }> = [
     { to: "/directory", label: t("nav.directory"), show: true },
+    { to: "/ruqyah", label: t("nav.ruqyah"), show: true },
     { to: "/library", label: t("nav.library"), show: Boolean(me) },
     { to: "/bookings", label: t("nav.bookings"), show: Boolean(me) },
     { to: "/recommendations", label: t("nav.recommendations"), show: Boolean(me) },

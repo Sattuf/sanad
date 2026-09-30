@@ -127,7 +127,9 @@ builder.Services.AddRateLimiter(o =>
     RateLimitPartition<string> Fixed(string key, string name, int defaultLimit, TimeSpan window) =>
         RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
         {
-            PermitLimit = limits.GetValue(name, defaultLimit), Window = window, QueueLimit = 0,
+            PermitLimit = limits.GetValue(name, defaultLimit),
+            Window = window,
+            QueueLimit = 0,
         });
 
     o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx => Fixed(Partition(ctx), "GlobalPerMinute", 300, TimeSpan.FromMinutes(1)));
@@ -164,7 +166,10 @@ builder.Services.AddSwaggerGen(o =>
     });
     o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Type = SecuritySchemeType.Http, Scheme = "bearer", BearerFormat = "JWT", In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
     });
     o.AddSecurityRequirement(new OpenApiSecurityRequirement
     {

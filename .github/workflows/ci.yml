@@ -5,6 +5,10 @@ on: [push, pull_request]
 jobs:
   secret-scan:
     runs-on: ubuntu-latest
+    # gitleaks يقرأ قائمة commits طلب الدمج؛ بدون هذه الصلاحية يفشل بـ 403 على أحداث pull_request
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
