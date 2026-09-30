@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Safety;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Domain.Common;
 using Sanad.Infrastructure.Caching;
@@ -126,6 +127,12 @@ public static class DependencyInjection
         services.AddScoped<IExternalNotificationChannel, FcmNotificationChannel>();
         services.AddScoped<IExternalNotificationChannel, WhatsAppNotificationChannel>();
 
+        // ── تذكير الأذكار عبر Web Push (VAPID) ──
+        services.Configure<WebPushOptions>(config.GetSection(WebPushOptions.Section));
+        services.AddHttpClient(WebPushReminderSender.HttpClientName, c => c.Timeout = TimeSpan.FromSeconds(15))
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AllowAutoRedirect = false, ConnectTimeout = TimeSpan.FromSeconds(10) });
+        services.TryAddSingleton<IReminderPushSender, WebPushReminderSender>();
+
         // ── CAPTCHA ──
         services.AddHttpClient<ICaptchaVerifier, TurnstileCaptchaVerifier>(c => c.Timeout = TimeSpan.FromSeconds(5));
 
@@ -136,6 +143,8 @@ public static class DependencyInjection
         services.AddHostedService(sp => sp.GetRequiredService<OutboxProcessor>());
         services.AddSingleton<VerificationExpiryCheckJob>();
         services.AddHostedService(sp => sp.GetRequiredService<VerificationExpiryCheckJob>());
+        services.AddSingleton<AdhkarReminderJob>();
+        services.AddHostedService(sp => sp.GetRequiredService<AdhkarReminderJob>());
 
         // ── فحوصات الصحة ──
         var health = services.AddHealthChecks().AddCheck<ObjectStorageHealthCheck>("object-storage", tags: ["ready"]);

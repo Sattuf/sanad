@@ -13,8 +13,12 @@ import { RouterProvider } from "react-router-dom";
 import { ApiError } from "./api/client";
 import { initTheme } from "./app/theme";
 import { router } from "./app/router";
+import { registerServiceWorker } from "./features/ruqyah/push";
 
 initTheme();
+
+// تطبيق قابل للتثبيت على الجوال + استقبال تذكير الأذكار (في التطوير يُسجَّل عند تفعيل الإشعارات فقط)
+if (import.meta.env.PROD) window.addEventListener("load", () => void registerServiceWorker()?.catch(() => undefined));
 
 const queryClient = new QueryClient({
   defaultOptions: {

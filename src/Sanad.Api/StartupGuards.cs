@@ -26,6 +26,9 @@ public static class StartupGuards
             if (config.GetValue("Otp:DevelopmentLogCodes", false)) problems.Add("Otp:DevelopmentLogCodes مسموح في التطوير فقط.");
             if (string.IsNullOrWhiteSpace(config["Otp:HmacKeyBase64"])) problems.Add("Otp:HmacKeyBase64 غير مُعدّ.");
             if (string.IsNullOrWhiteSpace(config["Storage:UrlSigningKeyBase64"])) problems.Add("Storage:UrlSigningKeyBase64 غير مُعدّ.");
+            if (config.GetValue("WebPush:Enabled", false) &&
+                (string.IsNullOrWhiteSpace(config["WebPush:PublicKey"]) || string.IsNullOrWhiteSpace(config["WebPush:PrivateKey"])))
+                problems.Add("WebPush:Enabled مفعّل بلا مفاتيح VAPID (WebPush:PublicKey / WebPush:PrivateKey).");
         }
 
         if (problems.Count > 0)

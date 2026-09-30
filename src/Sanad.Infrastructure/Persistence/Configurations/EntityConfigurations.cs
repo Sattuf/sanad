@@ -237,6 +237,21 @@ public sealed class DailyWirdProgressConfiguration : IEntityTypeConfiguration<Da
     }
 }
 
+public sealed class ReminderDeviceConfiguration : IEntityTypeConfiguration<ReminderDevice>
+{
+    public void Configure(EntityTypeBuilder<ReminderDevice> b)
+    {
+        b.ToTable("ReminderDevices");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.Endpoint).HasMaxLength(1000).IsRequired();
+        b.Property(x => x.P256dh).HasMaxLength(200).IsRequired();
+        b.Property(x => x.Auth).HasMaxLength(100).IsRequired();
+        b.Property(x => x.TimeZone).HasMaxLength(64).IsRequired();
+        b.HasIndex(x => x.Endpoint).IsUnique();
+        b.HasIndex(x => x.UserId);
+    }
+}
+
 public sealed class WrittenDuaConfiguration : IEntityTypeConfiguration<WrittenDua>
 {
     public void Configure(EntityTypeBuilder<WrittenDua> b)

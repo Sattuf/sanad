@@ -218,6 +218,7 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
             entry.AnonymizeActor();
         db.UserFavoriteTracks.RemoveRange(await db.UserFavoriteTracks.Where(f => f.UserId == userId).ToListAsync(cancellationToken));
         db.DailyWirdProgress.RemoveRange(await db.DailyWirdProgress.Where(p => p.UserId == userId).ToListAsync(cancellationToken));
+        db.ReminderDevices.RemoveRange(await db.ReminderDevices.Where(d => d.UserId == userId).ToListAsync(cancellationToken));
 
         var provider = await db.ProviderProfiles.FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
         if (provider is not null && provider.Status != PublicationStatus.Suspended)
@@ -235,7 +236,8 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
 // ── تصدير بياناتي ──────────────────────────────────────────────────────────────
 public sealed record MyDataExportDto(object Account, IReadOnlyList<object> Consents, IReadOnlyList<object> Bookings,
     IReadOnlyList<object> RecommendationsReceived, IReadOnlyList<object> MessagesSent, IReadOnlyList<object> Favorites,
-    IReadOnlyList<object> ReportsSubmitted, IReadOnlyList<object> WirdProgress, DateTimeOffset GeneratedAtUtc);
+    IReadOnlyList<object> ReportsSubmitted, IReadOnlyList<object> WirdProgress,
+    IReadOnlyList<object> ReminderDevices, DateTimeOffset GeneratedAtUtc);
 
 public sealed record ExportMyDataQuery : IQuery<MyDataExportDto>, ISensitiveRequest;
 
@@ -255,6 +257,7 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
         var favorites = await db.UserFavoriteTracks.AsNoTracking().Where(f => f.UserId == userId).ToListAsync(cancellationToken);
         var reports = await db.Reports.AsNoTracking().Where(r => r.ReporterUserId == userId).ToListAsync(cancellationToken);
         var wird = await db.DailyWirdProgress.AsNoTracking().Where(p => p.UserId == userId).ToListAsync(cancellationToken);
+        var reminders = await db.ReminderDevices.AsNoTracking().Where(d => d.UserId == userId).ToListAsync(cancellationToken);
 
         await audit.LogAsync("Accounts.DataExported", "Account", userId, ct: cancellationToken);
 
@@ -281,6 +284,7 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
                 Description = r.DescriptionEncrypted is null ? null : encryptor.Decrypt(r.DescriptionEncrypted),
             }).ToList(),
             wird.OrderBy(p => p.Day).Select(p => (object)new { p.Day, p.CollectionId, p.Counts, p.CompletedItems, p.TotalItems }).ToList(),
+            reminders.OrderBy(d => d.CreatedAtUtc).Select(d => (object)new { d.Endpoint, d.TimeZone, d.MorningAt, d.EveningAt, d.SleepAt, d.CreatedAtUtc }).ToList(),
             clock.UtcNow);
     }
 }
