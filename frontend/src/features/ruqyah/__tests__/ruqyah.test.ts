@@ -71,9 +71,5 @@ describe("guides", () => {
     expect(new Set(guides.map((g) => g.id)).size).toBe(guides.length);
     expect(awarenessGuides.map((g) => g.id)).toEqual(["sihr", "sihr-response", "yoga", "energy", "occult"]);
   });
-
-  it("contemporary-ijtihad pages carry a review notice", () => {
-    for (const id of ["yoga", "energy"]) expect(guides.find((g) => g.id === id)?.review).toBeTruthy();
-  });
 });
 

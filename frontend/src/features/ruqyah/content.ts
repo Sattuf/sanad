@@ -264,11 +264,10 @@ export interface GuideSection { heading: string; points: GuidePoint[]; cta?: { l
 
 /**
  * method: منهج الوقاية والعلاج. awareness: توعية وتحذير.
- * review: مسألة اجتهادية معاصرة — تُعرض الأقوال بنسبتها، ويظهر تنبيه بأن الصفحة تحت المراجعة الشرعية.
  */
 export interface Guide {
   id: string; title: string; subtitle: string; theme: SceneTheme; intro: string; sections: GuideSection[];
-  kind?: "method" | "awareness"; review?: string;
+  kind?: "method" | "awareness";
 }
 
 const methodGuideList: Guide[] = [
@@ -393,8 +392,6 @@ const methodGuideList: Guide[] = [
 // ── توعية وتحذير ────────────────────────────────────────────────────────────
 // تعريف وتحذير فقط: لا يُذكر هنا أي وصف لطريقة عمل سحر أو طقس، ولا يُتّهم أحد بعينه.
 
-const REVIEW_CONTEMPORARY = "مسألة معاصرة اجتهد فيها أهل العلم؛ عرضنا الأقوال بنسبتها، والصفحة تحت المراجعة الشرعية.";
-
 const awarenessGuides: Guide[] = [
   {
     id: "sihr",
@@ -472,7 +469,6 @@ const awarenessGuides: Guide[] = [
     title: "اليوغا في ميزان الشرع",
     subtitle: "أصلها وحكم ممارستها",
     theme: "dawn",
-    review: REVIEW_CONTEMPORARY,
     intro: "اليوغا ليست رياضة في أصلها، بل منظومة روحية من الهندوسية غايتها الاتحاد بالمطلق؛ ولذلك يُفرَّق فيها بين الطقوس والحركات.",
     sections: [
       {
@@ -506,7 +502,6 @@ const awarenessGuides: Guide[] = [
     title: "«الطاقة» والشاكرات والريكي",
     subtitle: "وقانون الجذب والكريستال",
     theme: "night",
-    review: REVIEW_CONTEMPORARY,
     intro: "تنتشر اليوم دورات «الطاقة» تحت عناوين تطوير الذات والعلاج البديل، وأغلبها فلسفات روحية شرقية أُلبست ثوباً علمياً.",
     sections: [
       {
