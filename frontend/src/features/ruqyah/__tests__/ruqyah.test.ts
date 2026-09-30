@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { awarenessGuides, collections, guides } from "../content";
+import { awarenessGuides, collections, guidePath, guides, healthGuides } from "../content";
 import { localDay } from "../progress";
 import { citedAyat, quran } from "../quran";
 import { buildIcs, dueWird } from "../reminders";
@@ -70,6 +70,27 @@ describe("guides", () => {
   it("guide ids are unique and awareness pages exist", () => {
     expect(new Set(guides.map((g) => g.id)).size).toBe(guides.length);
     expect(awarenessGuides.map((g) => g.id)).toEqual(["sihr", "sihr-response", "yoga", "energy", "occult"]);
+  });
+});
+
+describe("health guides", () => {
+  const text = (g: (typeof healthGuides)[number]) =>
+    [g.title, g.subtitle, g.intro, ...g.sections.flatMap((s) => [s.heading, ...s.points.flatMap((p) => [p.text, p.evidence ?? ""])])].join(" ");
+
+  it("live under /health and are separate from the ruqyah guides", () => {
+    expect(healthGuides.map((g) => g.id)).toEqual(["treatment-and-ruqyah", "anxiety-ocd-depression", "sleep-daily", "when-to-see-doctor", "choose-provider"]);
+    for (const g of healthGuides) expect(guidePath(g)).toBe(`/health/${g.id}`);
+    expect(guidePath(guides.find((g) => g.id === "sihr")!)).toBe("/ruqyah/guide/sihr");
+  });
+
+  it("contain no dose, dose unit, or guaranteed-cure wording", () => {
+    const forbidden = [/\d+\s*(ملغ|مغ|ملجم|مجم|مل|mg|mcg|ml)\b/i, /(ملغ|مليغرام|ملجم)/, /جرع(ة|ات|تين)/, /(حبة|قرص|كبسولة)\s*(يومياً|يوميا|كل|مرتين)/, /شفاء\s*(مضمون|مؤكد|تام|كامل)/, /نضمن/];
+    for (const g of healthGuides) for (const re of forbidden) expect(text(g), `${g.id} ${re}`).not.toMatch(re);
+  });
+
+  it("point to emergency help where danger signs are listed", () => {
+    for (const id of ["anxiety-ocd-depression", "when-to-see-doctor"])
+      expect(healthGuides.find((g) => g.id === id)!.sections.some((s) => s.cta?.to === "/emergency")).toBe(true);
   });
 });
 

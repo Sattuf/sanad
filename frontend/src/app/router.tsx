@@ -12,6 +12,7 @@ import {
 import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
+import { HealthHubPage } from "../features/health/HealthPages";
 import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
 import { MyRecommendationsPage } from "../features/patient-care/MyRecommendations";
 import { CaseNoteEditor, RecommendationComposer } from "../features/patient-care/ProviderEditors";
@@ -48,6 +49,9 @@ export const router = createBrowserRouter([
       { path: "/ruqyah", element: <RuqyahHubPage /> },
       { path: "/ruqyah/guide/:guideId", element: <RuqyahGuidePage /> },
       { path: "/ruqyah/:collectionId", element: <RuqyahCollectionPage /> },
+      // الصحة والطمأنينة: توعية عامة، عامة بلا تسجيل؛ صفحة الدليل نفسها بمسار القسم
+      { path: "/health", element: <HealthHubPage /> },
+      { path: "/health/:guideId", element: <RuqyahGuidePage /> },
       { path: "/about-verification", element: <AboutVerificationPage /> },
       { path: "/terms", element: <TermsPage /> },
       { path: "/privacy", element: <PrivacyPage /> },

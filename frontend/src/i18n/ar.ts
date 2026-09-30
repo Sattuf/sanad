@@ -3,6 +3,7 @@ export const ar = {
   nav: {
     directory: "الدليل",
     ruqyah: "الرقية والتحصين",
+    health: "الصحة والطمأنينة",
     library: "المكتبة الصوتية",
     bookings: "حجوزاتي",
     recommendations: "توصياتي",

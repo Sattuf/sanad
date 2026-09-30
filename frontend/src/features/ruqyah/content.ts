@@ -1,3 +1,4 @@
+import { healthGuides } from "../health/content";
 import type { QuranKey } from "./quran";
 
 /*
@@ -263,11 +264,11 @@ export interface GuidePoint { text: string; evidence?: string }
 export interface GuideSection { heading: string; points: GuidePoint[]; cta?: { label: string; to: string } }
 
 /**
- * method: منهج الوقاية والعلاج. awareness: توعية وتحذير.
+ * method: منهج الوقاية والعلاج. awareness: توعية وتحذير. health: «الصحة والطمأنينة» (قسم مستقل على /health).
  */
 export interface Guide {
   id: string; title: string; subtitle: string; theme: SceneTheme; intro: string; sections: GuideSection[];
-  kind?: "method" | "awareness";
+  kind?: "method" | "awareness" | "health";
 }
 
 const methodGuideList: Guide[] = [
@@ -570,7 +571,11 @@ const awarenessGuides: Guide[] = [
 
 export const methodGuides = methodGuideList;
 export { awarenessGuides };
-export const guides: Guide[] = [...methodGuideList, ...awarenessGuides];
+export { healthGuides };
+export const guides: Guide[] = [...methodGuideList, ...awarenessGuides, ...healthGuides];
+
+/** رابط صفحة الدليل حسب قسمه. */
+export const guidePath = (g: Guide) => (g.kind === "health" ? `/health/${g.id}` : `/ruqyah/guide/${g.id}`);
 
 export const findCollection = (id: string | undefined) => collections.find((c) => c.id === id);
 export const findGuide = (id: string | undefined) => guides.find((g) => g.id === id);
