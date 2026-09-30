@@ -5,7 +5,7 @@ import type { SceneTheme } from "./content";
 
 /*
   خلفيات «الرقية والتحصين»: ثلاث طبقات — صورة المشهد (public/library/<theme>.jpg، مولَّدة بلا أي نص)،
-  تدرّج لوني يضمن تباين النص ويبقى وحده إن لم تتوفر الصورة، ونقش هندسي إسلامي SVG خفيف.
+  تدرّج لوني يضمن تباين النص (وأغمق في جهة النص للمشاهد الساطعة) ويبقى وحده إن لم تتوفر الصورة، ونقش هندسي إسلامي SVG خفيف.
   النص القرآني لا يُرسم داخل الصور أبداً: يُكتب فوقها بخط حقيقي حتى لا يُشوَّه حرف من كتاب الله.
 */
 
@@ -16,7 +16,7 @@ const tints: Record<SceneTheme, { overlay: string; base: string }> = {
     base: "linear-gradient(160deg, #0b2e33, #07151c)",
   },
   dawn: {
-    overlay: "linear-gradient(180deg, rgba(20,34,40,.15) 0%, rgba(14,30,36,.55) 55%, rgba(8,20,26,.9) 100%)",
+    overlay: "linear-gradient(to left, rgba(8,20,26,.72) 0%, rgba(8,20,26,.35) 55%, transparent 100%), linear-gradient(180deg, rgba(20,34,40,.25) 0%, rgba(14,30,36,.6) 55%, rgba(8,20,26,.9) 100%)",
     base: "linear-gradient(180deg, #f0c98c 0%, #c98f5a 40%, #28515a 100%)",
   },
   dusk: {
@@ -28,7 +28,7 @@ const tints: Record<SceneTheme, { overlay: string; base: string }> = {
     base: "linear-gradient(180deg, #0a1030 0%, #050814 100%)",
   },
   mihrab: {
-    overlay: "linear-gradient(180deg, rgba(10,30,30,.25) 0%, rgba(8,26,26,.7) 60%, rgba(5,16,16,.93) 100%), radial-gradient(ellipse at 50% 30%, rgba(242,198,117,.3), transparent 50%)",
+    overlay: "linear-gradient(to left, rgba(5,16,16,.75) 0%, rgba(5,16,16,.4) 55%, transparent 100%), linear-gradient(180deg, rgba(10,30,30,.35) 0%, rgba(8,26,26,.7) 60%, rgba(5,16,16,.93) 100%), radial-gradient(ellipse at 50% 30%, rgba(242,198,117,.2), transparent 50%)",
     base: "linear-gradient(180deg, #2c4f4a 0%, #0c1f1e 100%)",
   },
   manuscript: {
