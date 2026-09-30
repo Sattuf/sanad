@@ -52,7 +52,11 @@ public sealed class TestApi(SanadApiFactory factory)
         email ??= $"{Guid.NewGuid():N}@sanad.test";
         var res = await Client().PostAsync("/api/v1/auth/register/email", Body(new
         {
-            email, password = "Strong-Pass-123", displayName = "مستفيد تجريبي", acceptTerms = true, acceptPrivacyPolicy = true,
+            email,
+            password = "Strong-Pass-123",
+            displayName = "مستفيد تجريبي",
+            acceptTerms = true,
+            acceptPrivacyPolicy = true,
         }));
         return ToSession(await Ok(res));
     }
@@ -120,8 +124,11 @@ public sealed class TestApi(SanadApiFactory factory)
         var fileId = await UploadDocumentAsync(session);
         return await Ok(await Client(session).PostAsync("/api/v1/me/provider-upgrade-request", Body(new
         {
-            requestedType = type, declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
-            documentType, issuingAuthority = "جهة إصدار تجريبية", uploadedDocumentFileId = fileId,
+            requestedType = type,
+            declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
+            documentType,
+            issuingAuthority = "جهة إصدار تجريبية",
+            uploadedDocumentFileId = fileId,
         })));
     }
 
@@ -138,7 +145,8 @@ public sealed class TestApi(SanadApiFactory factory)
         var coordinator = await CoordinatorAsync();
         await Ok(await Client(coordinator).PostAsync($"/api/v1/admin/verifications/{request["id"]}/review", Body(new
         {
-            decision = "Approve", expiresAtUtc = DateTimeOffset.UtcNow.AddYears(1),
+            decision = "Approve",
+            expiresAtUtc = DateTimeOffset.UtcNow.AddYears(1),
         })));
 
         // منح الدور يبطل الجلسات القائمة — دخول جديد
@@ -146,16 +154,23 @@ public sealed class TestApi(SanadApiFactory factory)
         var practitioner = Client(session);
         await EnsureSuccess(await practitioner.PutAsync("/api/v1/me/provider-profile", Body(new
         {
-            displayName = "د. مختص تجريبي", declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
-            practiceScope = "استشارات وتوجيه ضمن نطاق مهني محدد", languages = new[] { "ar" }, deliveryMode = "Remote", city = "الرياض",
+            displayName = "د. مختص تجريبي",
+            declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
+            practiceScope = "استشارات وتوجيه ضمن نطاق مهني محدد",
+            languages = new[] { "ar" },
+            deliveryMode = "Remote",
+            city = "الرياض",
             professionalBoundariesNote = "لا تشخيص عبر المنصة، والإحالة للطوارئ عند الخطر",
         })));
         await EnsureSuccess(await practitioner.PostAsync("/api/v1/me/provider-profile/publish", null));
         var profile = await Ok(await practitioner.GetAsync("/api/v1/me/provider-profile"));
         var offering = await Ok(await practitioner.PostAsync("/api/v1/me/provider-profile/offerings", Body(new
         {
-            category = "استشارة فردية", description = "جلسة استشارية عن بعد", cancellationPolicy = "الإلغاء قبل 24 ساعة",
-            explicitExclusions = new[] { "لا وصفات دوائية" }, sessionDurationMinutes = 45,
+            category = "استشارة فردية",
+            description = "جلسة استشارية عن بعد",
+            cancellationPolicy = "الإلغاء قبل 24 ساعة",
+            explicitExclusions = new[] { "لا وصفات دوائية" },
+            sessionDurationMinutes = 45,
         })));
         var slotIds = new List<Guid>();
         for (var i = 0; i < slots; i++)
@@ -178,7 +193,10 @@ public sealed class TestApi(SanadApiFactory factory)
     {
         var node = await Ok(await Client(beneficiary, Guid.NewGuid().ToString()).PostAsync("/api/v1/bookings", Body(new
         {
-            serviceOfferingId = p.OfferingId, availabilitySlotId = p.SlotIds[slotIndex], beneficiaryNote = note, consentToSensitiveNoteProcessing = note is not null,
+            serviceOfferingId = p.OfferingId,
+            availabilitySlotId = p.SlotIds[slotIndex],
+            beneficiaryNote = note,
+            consentToSensitiveNoteProcessing = note is not null,
         })));
         return Guid.Parse(node["id"]!.GetValue<string>());
     }
@@ -203,8 +221,12 @@ public sealed class TestApi(SanadApiFactory factory)
         var upload = await Ok(await cm.PostAsync("/api/v1/admin/library/uploads", content));
         var track = await Ok(await cm.PostAsync("/api/v1/admin/library/tracks", Body(new
         {
-            title = "آية الكرسي", sourceLabel = "تلاوة — مصدر تجريبي", description = "تلاوة للاستماع", category = "QuranRecitation",
-            audioFileId = upload["id"]!.GetValue<string>(), durationSeconds = 90,
+            title = "آية الكرسي",
+            sourceLabel = "تلاوة — مصدر تجريبي",
+            description = "تلاوة للاستماع",
+            category = "QuranRecitation",
+            audioFileId = upload["id"]!.GetValue<string>(),
+            durationSeconds = 90,
         })));
         var id = Guid.Parse(track["id"]!.GetValue<string>());
         if (publish) await Ok(await cm.PostAsync($"/api/v1/admin/library/tracks/{id}/publish", null));

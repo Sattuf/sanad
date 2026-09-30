@@ -64,7 +64,10 @@ public sealed class AspNetIdentityService(
                 isNew = true;
                 user = new ApplicationUser
                 {
-                    Email = verifiedEmail, UserName = verifiedEmail, EmailConfirmed = true, CreatedAtUtc = clock.UtcNow,
+                    Email = verifiedEmail,
+                    UserName = verifiedEmail,
+                    EmailConfirmed = true,
+                    CreatedAtUtc = clock.UtcNow,
                     DisplayName = string.IsNullOrWhiteSpace(displayName) ? "مستخدم سند" : displayName.Trim()[..Math.Min(100, displayName.Trim().Length)],
                 };
                 var created = await userManager.CreateAsync(user);
@@ -94,8 +97,11 @@ public sealed class AspNetIdentityService(
             isNew = true;
             user = new ApplicationUser
             {
-                UserName = $"phone_{phoneNumberE164.TrimStart('+')}", PhoneNumber = phoneNumberE164, PhoneNumberConfirmed = true,
-                DisplayName = "مستخدم سند", CreatedAtUtc = clock.UtcNow,
+                UserName = $"phone_{phoneNumberE164.TrimStart('+')}",
+                PhoneNumber = phoneNumberE164,
+                PhoneNumberConfirmed = true,
+                DisplayName = "مستخدم سند",
+                CreatedAtUtc = clock.UtcNow,
             };
             if (!string.IsNullOrWhiteSpace(email))
             {
@@ -239,8 +245,10 @@ public sealed class AspNetIdentityService(
         var users = (await query.ToListAsync(ct)).OrderBy(u => u.DisplayName, StringComparer.Ordinal)
             .Skip((page - 1) * pageSize).Take(pageSize).ToList();
         var ids = users.Select(u => u.Id).ToList();
-        var roleRows = await (from ur in db.UserRoles join r in db.Roles on ur.RoleId equals r.Id
-                              where ids.Contains(ur.UserId) select new { ur.UserId, r.Name }).ToListAsync(ct);
+        var roleRows = await (from ur in db.UserRoles
+                              join r in db.Roles on ur.RoleId equals r.Id
+                              where ids.Contains(ur.UserId)
+                              select new { ur.UserId, r.Name }).ToListAsync(ct);
         return new UserPage(users.Select(u => ToSummary(u, roleRows.Where(x => x.UserId == u.Id).Select(x => x.Name!).ToList())).ToList(), total);
     }
 
@@ -359,7 +367,11 @@ public sealed class AspNetIdentityService(
         var refreshExp = now.AddDays(jwtOptions.Value.RefreshTokenDays);
         db.RefreshTokens.Add(new RefreshToken
         {
-            UserId = user.Id, TokenHash = JwtTokenService.Hash(refresh), AuthMethod = authMethod, CreatedAtUtc = now, ExpiresAtUtc = refreshExp,
+            UserId = user.Id,
+            TokenHash = JwtTokenService.Hash(refresh),
+            AuthMethod = authMethod,
+            CreatedAtUtc = now,
+            ExpiresAtUtc = refreshExp,
         });
         await db.SaveChangesAsync(ct);
         return new AuthTokens(access, accessExp, refresh, refreshExp);

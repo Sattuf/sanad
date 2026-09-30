@@ -263,7 +263,10 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             consents.Select(c => (object)new { Type = c.Type.ToString(), c.PolicyVersion, c.AcceptedAtUtc, c.RevokedAtUtc }).ToList(),
             bookings.Select(b => (object)new
             {
-                b.Id, Status = b.Status.ToString(), b.ServiceOfferingId, b.CreatedAtUtc,
+                b.Id,
+                Status = b.Status.ToString(),
+                b.ServiceOfferingId,
+                b.CreatedAtUtc,
                 MyNoteToProvider = b.BeneficiaryNoteEncrypted is null ? null : encryptor.Decrypt(b.BeneficiaryNoteEncrypted),
             }).ToList(),
             recs.Select(r => (object)new { r.Id, r.BookingRequestId, GuidanceText = encryptor.Decrypt(r.GuidanceTextEncrypted), r.RecommendedAudioTrackIds, r.RecordedAtUtc }).ToList(),
@@ -271,7 +274,10 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             favorites.Select(f => (object)new { f.AudioTrackId, f.AddedAtUtc }).ToList(),
             reports.Select(r => (object)new
             {
-                r.Id, Category = r.Category.ToString(), Status = r.Status.ToString(), r.SubmittedAtUtc,
+                r.Id,
+                Category = r.Category.ToString(),
+                Status = r.Status.ToString(),
+                r.SubmittedAtUtc,
                 Description = r.DescriptionEncrypted is null ? null : encryptor.Decrypt(r.DescriptionEncrypted),
             }).ToList(),
             wird.OrderBy(p => p.Day).Select(p => (object)new { p.Day, p.CollectionId, p.Counts, p.CompletedItems, p.TotalItems }).ToList(),

@@ -110,7 +110,13 @@ public sealed class LibrarySourcesTests(LibrarySourcesFixture fixture) : IClassF
 
         var down = await cm.PostAsync("/api/v1/admin/library/catalog/import", Body(new
         {
-            kind = "Ayat", category = "QuranRecitation", ayahReciterId = "Alafasy_128kbps", surah = 2, fromAyah = 255, toAyah = 255, publish = true,
+            kind = "Ayat",
+            category = "QuranRecitation",
+            ayahReciterId = "Alafasy_128kbps",
+            surah = 2,
+            fromAyah = 255,
+            toAyah = 255,
+            publish = true,
         }));
         down.StatusCode.Should().Be(HttpStatusCode.BadGateway);
         (await ReadJson(down))["code"]!.GetValue<string>().Should().Be("source_unavailable");

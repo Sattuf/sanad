@@ -53,7 +53,12 @@ public sealed class RuqyahTests(ApiFixture fixture)
 
         var dua = await Ok(await author.PostAsync("/api/v1/admin/ruqyah/duas", Body(new
         {
-            collectionId = "hamm", title, text = "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ", source = "رواه البخاري (6369)", repeat = 1, sortOrder = 10,
+            collectionId = "hamm",
+            title,
+            text = "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ",
+            source = "رواه البخاري (6369)",
+            repeat = 1,
+            sortOrder = 10,
         })));
         var id = dua["id"]!.GetValue<string>();
         dua["status"]!.GetValue<string>().Should().Be("Draft");
@@ -77,7 +82,12 @@ public sealed class RuqyahTests(ApiFixture fixture)
         // أي تعديل يعيده مسودة ويسحبه من العرض
         await Ok(await author.PutAsync($"/api/v1/admin/ruqyah/duas/{id}", Body(new
         {
-            collectionId = "hamm", title, text = "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ", source = "رواه البخاري (6369)", repeat = 1, sortOrder = 10,
+            collectionId = "hamm",
+            title,
+            text = "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ",
+            source = "رواه البخاري (6369)",
+            repeat = 1,
+            sortOrder = 10,
         })));
         (await IsPublic()).Should().BeFalse();
     }
@@ -88,7 +98,13 @@ public sealed class RuqyahTests(ApiFixture fixture)
         var cm = _api.Client(await _api.ContentManagerAsync());
         var claim = await cm.PostAsync("/api/v1/admin/ruqyah/duas", Body(new
         {
-            collectionId = "shifa", title = "دعاء", text = "نص", source = "مصدر", note = "شفاء مضمون 100%", repeat = 1, sortOrder = 0,
+            collectionId = "shifa",
+            title = "دعاء",
+            text = "نص",
+            source = "مصدر",
+            note = "شفاء مضمون 100%",
+            repeat = 1,
+            sortOrder = 0,
         }));
         claim.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

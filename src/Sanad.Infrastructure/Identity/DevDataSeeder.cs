@@ -114,11 +114,11 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
 
         var day = now.UtcDateTime.Date.AddDays(1);
         for (var d = 0; d < 10; d++)
-        for (var h = 0; h < 3; h++)
-        {
-            var start = new DateTimeOffset(day.AddDays(d).AddHours(14 + h * 2), TimeSpan.Zero);
-            db.AvailabilitySlots.Add(AvailabilitySlot.Create(profile.Id, start, start.AddMinutes(45), now));
-        }
+            for (var h = 0; h < 3; h++)
+            {
+                var start = new DateTimeOffset(day.AddDays(d).AddHours(14 + h * 2), TimeSpan.Zero);
+                db.AvailabilitySlots.Add(AvailabilitySlot.Create(profile.Id, start, start.AddMinutes(45), now));
+            }
     }
 
     private static async Task SeedTracksAsync(SanadDbContext db, IFileStorage storage, IContentPolicyChecker policy, Guid createdBy, DateTimeOffset now)
