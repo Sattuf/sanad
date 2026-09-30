@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useMe } from "../../api/hooks";
 import { cx } from "../../lib/cx";
 import { NotFoundPage } from "../../app/NotFoundPage";
-import { awarenessGuides, collections, findCollection, findGuide, groups, methodGuides, type Collection, type CollectionGroup, type Guide, type Item, type SceneTheme } from "./content";
+import { awarenessGuides, collections, findCollection, findGuide, groups, guidePath, healthGuides, methodGuides, type Collection, type CollectionGroup, type Guide, type Item, type SceneTheme } from "./content";
 import { quran, type QuranKey } from "./quran";
 import { useDailyProgress, useCollectionEntries, useMyWird, type MyWird } from "./progress";
 import { DueWirdNudge, ReminderCard } from "./ReminderWidgets";
@@ -82,6 +82,10 @@ export function RuqyahHubPage() {
         <h2 id="guides-title" className="text-2xl font-bold">منهج الوقاية والعلاج الشرعي</h2>
         <p className="mt-1 text-muted">خطوات عملية مدعومة بالدليل: كيف تتحصّن، وكيف ترقي نفسك، وما الذي تحذره.</p>
         <GuideGrid items={methodGuides} action="اقرأ المنهج ←" />
+        <Link to="/health/treatment-and-ruqyah" className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:border-primary">
+          <span><span className="font-bold">الرقية والتداوي معاً</span> <span className="text-muted">— «تداووا عباد الله»: كيف تجمع بين الرقية ومراجعة الطبيب.</span></span>
+          <span className="text-sm font-semibold text-primary">الصحة والطمأنينة ←</span>
+        </Link>
       </section>
 
       <section aria-labelledby="awareness-title">
@@ -147,12 +151,12 @@ function StreakCard({ wird }: { wird: MyWird }) {
   );
 }
 
-function GuideGrid({ items, action }: { items: Guide[]; action: string }) {
+export function GuideGrid({ items, action }: { items: Guide[]; action: string }) {
   return (
     <ul className="mt-5 grid gap-4 md:grid-cols-3">
       {items.map((g, i) => (
         <motion.li key={g.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08, ease }}>
-          <Link to={`/ruqyah/guide/${g.id}`} className="group block h-full">
+          <Link to={guidePath(g)} className="group block h-full">
             <Scene theme={g.theme} className="flex h-full min-h-44 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-lamp-glow/60">
               <h3 className="text-lg font-bold">{g.title}</h3>
               <p className="mt-1 text-sm text-[#d9d2c3]">{g.subtitle}</p>
@@ -541,18 +545,27 @@ function Counter({ count, repeat, onCount }: { count: number; repeat: number; on
 
 // ── صفحة المنهج ─────────────────────────────────────────────────────────────
 
+/** مسار التنقل والأدلة ذات الصلة لكل قسم. */
+const guideSections: Record<NonNullable<Guide["kind"]>, { root: { to: string; label: string }; crumb?: string; tag: string; list: Guide[] }> = {
+  method: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "المنهج", tag: "منهج", list: methodGuides },
+  awareness: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "توعية وتحذير", tag: "توعية", list: awarenessGuides },
+  health: { root: { to: "/health", label: "الصحة والطمأنينة" }, tag: "صحة", list: healthGuides },
+};
+
 export function RuqyahGuidePage() {
   const { guideId } = useParams();
   const g = findGuide(guideId);
   if (!g) return <NotFoundPage />;
-  const awareness = g.kind === "awareness";
-  const related = (awareness ? awarenessGuides : methodGuides).filter((x) => x.id !== g.id);
+  const kind = g.kind ?? "method";
+  const meta = guideSections[kind];
+  const related = meta.list.filter((x) => x.id !== g.id);
 
   return (
     <motion.div key={g.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <Scene theme={g.theme} pan className="rounded-3xl px-6 py-10 md:px-12 md:py-14">
         <nav aria-label="مسار التنقل" className="text-sm text-[#d9d2c3]">
-          <Link to="/ruqyah" className="hover:text-lamp-glow">الرقية والتحصين</Link> <span aria-hidden>/</span> {awareness ? "توعية وتحذير" : "المنهج"}
+          <Link to={meta.root.to} className="hover:text-lamp-glow">{meta.root.label}</Link>
+          {meta.crumb && <> <span aria-hidden>/</span> {meta.crumb}</>}
         </nav>
         <h1 className="mt-3 text-3xl font-bold md:text-4xl">{g.title}</h1>
         <p className="mt-3 max-w-2xl leading-8 text-[#e6dfd0]">{g.intro}</p>
@@ -585,7 +598,10 @@ export function RuqyahGuidePage() {
               ))}
             </ul>
             {s.cta && (
-              <Link to={s.cta.to} className="mt-5 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">
+              <Link
+                to={s.cta.to}
+                className={cx("mt-5 inline-block rounded-xl px-4 py-2 text-sm font-semibold", s.cta.to === "/emergency" ? "bg-danger text-white" : "bg-primary text-primary-contrast")}
+              >
                 {s.cta.label}
               </Link>
             )}
@@ -595,9 +611,9 @@ export function RuqyahGuidePage() {
 
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {related.map((x) => (
-          <Link key={x.id} to={`/ruqyah/guide/${x.id}`} className="group">
+          <Link key={x.id} to={guidePath(x)} className="group">
             <Scene theme={x.theme} className="rounded-2xl p-5 ring-1 ring-white/10 transition-all group-hover:ring-lamp-glow/60">
-              <p className="text-xs text-[#d9d2c3]">{awareness ? "توعية" : "منهج"}</p>
+              <p className="text-xs text-[#d9d2c3]">{meta.tag}</p>
               <p className="font-bold">{x.title}</p>
             </Scene>
           </Link>
