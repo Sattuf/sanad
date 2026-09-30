@@ -154,7 +154,6 @@ function GuideGrid({ items, action }: { items: Guide[]; action: string }) {
         <motion.li key={g.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08, ease }}>
           <Link to={`/ruqyah/guide/${g.id}`} className="group block h-full">
             <Scene theme={g.theme} className="flex h-full min-h-44 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-lamp-glow/60">
-              {g.review && <span className="absolute end-4 top-4 rounded-full bg-black/30 px-2.5 py-0.5 text-xs text-[#e6dfd0] backdrop-blur">مسألة معاصرة</span>}
               <h3 className="text-lg font-bold">{g.title}</h3>
               <p className="mt-1 text-sm text-[#d9d2c3]">{g.subtitle}</p>
               <span className="mt-3 text-sm font-semibold text-lamp-glow">{action}</span>
@@ -559,9 +558,6 @@ export function RuqyahGuidePage() {
         <p className="mt-3 max-w-2xl leading-8 text-[#e6dfd0]">{g.intro}</p>
       </Scene>
 
-      {g.review && (
-        <p className="mt-6 rounded-xl border border-lamp/40 bg-warning-bg px-4 py-3 text-sm leading-7 text-warning" role="note">{g.review}</p>
-      )}
 
       <div className="mt-8 flex flex-col gap-6">
         {g.sections.map((s, si) => (
