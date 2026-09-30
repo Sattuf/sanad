@@ -1,0 +1,14 @@
+# إعدادات gitleaks: القواعد الافتراضية كاملة، مع استثناء كلمات المرور الاصطناعية المعروفة
+# المستخدمة في الاختبارات وبيانات التطوير فقط (DevDataSeeder، TestApi، e2e). ليست أسراراً،
+# ولا تعمل خارج بيئتي Development/Testing (StartupGuards). أي سرّ حقيقي آخر ما زال يُكشف.
+title = "sanad"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic test/dev passwords"
+regexTarget = "secret"
+regexes = [
+  '''^(Strong-Pass-123|Demo-Pass-123|Admin-Strong-Pass-1|Bootstrap-Temp-Pass1)$''',
+]
