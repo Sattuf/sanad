@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useMe } from "../../api/hooks";
 import { cx } from "../../lib/cx";
 import { NotFoundPage } from "../../app/NotFoundPage";
-import { collections, findCollection, findGuide, groups, guides, type Collection, type CollectionGroup, type Item, type SceneTheme } from "./content";
+import { awarenessGuides, collections, findCollection, findGuide, groups, methodGuides, type Collection, type CollectionGroup, type Guide, type Item, type SceneTheme } from "./content";
 import { quran, type QuranKey } from "./quran";
 import { useDailyProgress, useCollectionEntries, useMyWird, type MyWird } from "./progress";
 import { DueWirdNudge, ReminderCard } from "./ReminderWidgets";
@@ -81,19 +81,14 @@ export function RuqyahHubPage() {
         <Ornament className="mb-6" />
         <h2 id="guides-title" className="text-2xl font-bold">منهج الوقاية والعلاج الشرعي</h2>
         <p className="mt-1 text-muted">خطوات عملية مدعومة بالدليل: كيف تتحصّن، وكيف ترقي نفسك، وما الذي تحذره.</p>
-        <ul className="mt-5 grid gap-4 md:grid-cols-3">
-          {guides.map((g, i) => (
-            <motion.li key={g.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08, ease }}>
-              <Link to={`/ruqyah/guide/${g.id}`} className="group block h-full">
-                <Scene theme={g.theme} className="flex h-full min-h-44 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-lamp-glow/60">
-                  <h3 className="text-lg font-bold">{g.title}</h3>
-                  <p className="mt-1 text-sm text-[#d9d2c3]">{g.subtitle}</p>
-                  <span className="mt-3 text-sm font-semibold text-lamp-glow">اقرأ المنهج ←</span>
-                </Scene>
-              </Link>
-            </motion.li>
-          ))}
-        </ul>
+        <GuideGrid items={methodGuides} action="اقرأ المنهج ←" />
+      </section>
+
+      <section aria-labelledby="awareness-title">
+        <Ornament className="mb-6" />
+        <h2 id="awareness-title" className="text-2xl font-bold">توعية وتحذير</h2>
+        <p className="mt-1 text-muted">السحر وأنواعه والموقف الشرعي منه، وحكم اليوغا و«الطاقة» والممارسات المعاصرة — تعريف وتحذير بالدليل.</p>
+        <GuideGrid items={awarenessGuides} action="اقرأ ←" />
       </section>
 
       <ReminderCard />
@@ -149,6 +144,25 @@ function StreakCard({ wird }: { wird: MyWird }) {
       </ol>
       <p className="w-full text-sm text-muted">«أحبّ الأعمال إلى الله أدومها وإن قلّ»</p>
     </section>
+  );
+}
+
+function GuideGrid({ items, action }: { items: Guide[]; action: string }) {
+  return (
+    <ul className="mt-5 grid gap-4 md:grid-cols-3">
+      {items.map((g, i) => (
+        <motion.li key={g.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08, ease }}>
+          <Link to={`/ruqyah/guide/${g.id}`} className="group block h-full">
+            <Scene theme={g.theme} className="flex h-full min-h-44 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-lamp-glow/60">
+              {g.review && <span className="absolute end-4 top-4 rounded-full bg-black/30 px-2.5 py-0.5 text-xs text-[#e6dfd0] backdrop-blur">مسألة معاصرة</span>}
+              <h3 className="text-lg font-bold">{g.title}</h3>
+              <p className="mt-1 text-sm text-[#d9d2c3]">{g.subtitle}</p>
+              <span className="mt-3 text-sm font-semibold text-lamp-glow">{action}</span>
+            </Scene>
+          </Link>
+        </motion.li>
+      ))}
+    </ul>
   );
 }
 
@@ -532,16 +546,22 @@ export function RuqyahGuidePage() {
   const { guideId } = useParams();
   const g = findGuide(guideId);
   if (!g) return <NotFoundPage />;
+  const awareness = g.kind === "awareness";
+  const related = (awareness ? awarenessGuides : methodGuides).filter((x) => x.id !== g.id);
 
   return (
     <motion.div key={g.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <Scene theme={g.theme} pan className="rounded-3xl px-6 py-10 md:px-12 md:py-14">
         <nav aria-label="مسار التنقل" className="text-sm text-[#d9d2c3]">
-          <Link to="/ruqyah" className="hover:text-lamp-glow">الرقية والتحصين</Link> <span aria-hidden>/</span> المنهج
+          <Link to="/ruqyah" className="hover:text-lamp-glow">الرقية والتحصين</Link> <span aria-hidden>/</span> {awareness ? "توعية وتحذير" : "المنهج"}
         </nav>
         <h1 className="mt-3 text-3xl font-bold md:text-4xl">{g.title}</h1>
         <p className="mt-3 max-w-2xl leading-8 text-[#e6dfd0]">{g.intro}</p>
       </Scene>
+
+      {g.review && (
+        <p className="mt-6 rounded-xl border border-lamp/40 bg-warning-bg px-4 py-3 text-sm leading-7 text-warning" role="note">{g.review}</p>
+      )}
 
       <div className="mt-8 flex flex-col gap-6">
         {g.sections.map((s, si) => (
@@ -568,9 +588,9 @@ export function RuqyahGuidePage() {
                 </li>
               ))}
             </ul>
-            {g.id === "conditions" && si === g.sections.length - 1 && (
-              <Link to="/directory?track=DawahGuidance" className="mt-5 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">
-                تصفّح المشايخ والرقاة الموثّقين
+            {s.cta && (
+              <Link to={s.cta.to} className="mt-5 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">
+                {s.cta.label}
               </Link>
             )}
           </motion.section>
@@ -578,10 +598,10 @@ export function RuqyahGuidePage() {
       </div>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {guides.filter((x) => x.id !== g.id).map((x) => (
+        {related.map((x) => (
           <Link key={x.id} to={`/ruqyah/guide/${x.id}`} className="group">
             <Scene theme={x.theme} className="rounded-2xl p-5 ring-1 ring-white/10 transition-all group-hover:ring-lamp-glow/60">
-              <p className="text-xs text-[#d9d2c3]">منهج</p>
+              <p className="text-xs text-[#d9d2c3]">{awareness ? "توعية" : "منهج"}</p>
               <p className="font-bold">{x.title}</p>
             </Scene>
           </Link>
