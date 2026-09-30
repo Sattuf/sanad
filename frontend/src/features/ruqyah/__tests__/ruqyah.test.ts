@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { collections } from "../content";
+import { awarenessGuides, collections, guides } from "../content";
 import { localDay } from "../progress";
-import { quran } from "../quran";
+import { citedAyat, quran } from "../quran";
 import { buildIcs, dueWird } from "../reminders";
 
 describe("reminders", () => {
@@ -36,7 +36,44 @@ describe("content", () => {
         }
   });
 
+  it("Quran text quoted in an item title is byte-identical to its own passage", () => {
+    let checked = 0;
+    for (const c of collections)
+      for (const it of c.items)
+        if (it.kind === "quran")
+          for (const [, text] of it.title.matchAll(/﴿([^﴾]+)﴾/g)) {
+            checked++;
+            expect(quran[it.ref].ayat.some((a) => a.includes(text)), `${c.id}: ${it.title}`).toBe(true);
+          }
+    expect(checked).toBeGreaterThanOrEqual(3);
+  });
+
   it("every dua carries its takhrij", () => {
     for (const c of collections) for (const it of c.items) if (it.kind === "dua") expect(it.source.length).toBeGreaterThan(5);
   });
 });
+
+describe("guides", () => {
+  const quotes = guides.flatMap((g) =>
+    g.sections.flatMap((s) => s.points.flatMap((p) => [...(p.evidence ?? "").matchAll(/﴿([^﴾]+)﴾\s*\[([^:\]]+):\s*(\d+)\]/g)])),
+  );
+
+  it("every Quran quote is byte-identical to the Mushaf text of the cited ayah", () => {
+    expect(quotes.length).toBeGreaterThan(10);
+    for (const [, text, surah, ayah] of quotes) {
+      const full = citedAyat[`${surah.trim()}:${ayah}`];
+      expect(full, `${surah}:${ayah} missing — rerun scripts/gen-quran.py`).toBeDefined();
+      expect(full.includes(text), `${surah}:${ayah}`).toBe(true);
+    }
+  });
+
+  it("guide ids are unique and awareness pages exist", () => {
+    expect(new Set(guides.map((g) => g.id)).size).toBe(guides.length);
+    expect(awarenessGuides.map((g) => g.id)).toEqual(["sihr", "sihr-response", "yoga", "energy", "occult"]);
+  });
+
+  it("contemporary-ijtihad pages carry a review notice", () => {
+    for (const id of ["yoga", "energy"]) expect(guides.find((g) => g.id === id)?.review).toBeTruthy();
+  });
+});
+
