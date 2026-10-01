@@ -29,7 +29,7 @@ function serve(routes: Record<string, () => Response>) {
 }
 
 function wrap(ui: ReactNode) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
   return render(<QueryClientProvider client={qc}>{ui}</QueryClientProvider>);
 }
 

@@ -1,12 +1,18 @@
 import { collections, groups, type CollectionGroup } from "@sanad/shared/content/ruqyah";
+import { slotForHour } from "@sanad/shared/content/wird";
 import { router } from "expo-router";
 import { AppText, RowLink, Screen } from "@/components/ui";
 
 const order: CollectionGroup[] = ["prevention", "treatment", "relief"];
 
 export default function RuqyahScreen() {
+  const now = slotForHour(new Date().getHours());
   return (
     <Screen>
+      {now ? (
+        <RowLink title={`حان وقت ${now.label}`} subtitle="افتح وردك الآن" onPress={() => router.push({ pathname: "/ruqyah/[id]", params: { id: now.collection } })} />
+      ) : null}
+      <RowLink title="تذكير الأذكار" subtitle="الصباح والمساء والنوم — إشعار في وقته" onPress={() => router.push("/reminders")} />
       {order.map((group) => (
         <Section key={group} group={group} />
       ))}

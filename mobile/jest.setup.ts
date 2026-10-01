@@ -15,3 +15,6 @@ jest.mock("react-native-webview", () => {
   const { View } = jest.requireActual("react-native");
   return { WebView: View };
 });
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- مصنع jest.mock يُستدعى قبل الاستيرادات
+jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));

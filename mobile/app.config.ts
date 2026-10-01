@@ -30,6 +30,7 @@ const config: ExpoConfig = {
     ["expo-localization", { forcesRTL: true, supportedLocales: { ios: ["ar"], android: ["ar"] } }],
     "expo-secure-store",
     "expo-apple-authentication",
+    ["expo-notifications", { color: "#0f5c58" }],
     // دخول جوجل الأصلي يحتاج مخطط عنوان iOS من معرّف عميل iOS المعكوس — يُضاف عند توفره فقط (EAS secret)
     ...(googleIosUrlScheme ? [["@react-native-google-signin/google-signin", { iosUrlScheme: googleIosUrlScheme }] as [string, object]] : []),
     "expo-font",

@@ -4,7 +4,8 @@ import { IBMPlexSansArabic_400Regular } from "@expo-google-fonts/ibm-plex-sans-a
 import { IBMPlexSansArabic_700Bold } from "@expo-google-fonts/ibm-plex-sans-arabic/700Bold";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import * as Notifications from "expo-notifications";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -12,10 +13,32 @@ import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
 import { UpdateGate } from "@/components/UpdateGate";
+import { safeNotificationPath } from "@/lib/reminders";
+import { pruneOldWird } from "@/lib/wird";
 import { useSession } from "@/stores/session";
 import { fonts, useColors } from "@/theme";
 
 void SplashScreen.preventAutoHideAsync();
+
+// تذكير يصل والتطبيق مفتوح يظهر أيضاً، بلا صوت مزعج
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+});
+
+/** النقر على تذكير يفتح ورده — مساراً داخلياً فقط. */
+function useNotificationRouting(ready: boolean) {
+  useEffect(() => {
+    if (!ready) return;
+    const open = (n: Notifications.Notification) => router.push(safeNotificationPath(n.request.content.data?.url) as never);
+    const last = Notifications.getLastNotificationResponse();
+    if (last?.notification) {
+      open(last.notification);
+      void Notifications.clearLastNotificationResponseAsync();
+    }
+    const sub = Notifications.addNotificationResponseReceivedListener((r) => open(r.notification));
+    return () => sub.remove();
+  }, [ready]);
+}
 
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 60_000 } } }));
@@ -30,6 +53,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     void useSession.getState().hydrate();
+    void pruneOldWird();
   }, []);
 
   // خطأ تحميل الخطوط لا يحبس المستخدم خلف شاشة البداية — يكمل بخط النظام
@@ -37,6 +61,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();
   }, [ready]);
+  useNotificationRouting(ready);
   if (!ready) return null;
 
   return (
@@ -55,6 +80,7 @@ export default function RootLayout() {
             >
               <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "سند" }} />
               <Stack.Screen name="ruqyah/[id]" options={{ title: "" }} />
+              <Stack.Screen name="reminders" options={{ title: "تذكير الأذكار" }} />
               <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
               <Stack.Screen name="auth/login" options={{ title: "الدخول" }} />
               <Stack.Screen name="auth/email" options={{ title: "البريد الإلكتروني" }} />
