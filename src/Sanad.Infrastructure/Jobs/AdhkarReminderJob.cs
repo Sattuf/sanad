@@ -43,9 +43,6 @@ public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPush
     /// <summary>صفحة الأجهزة المستحقة في كل استعلام — تبقي الذاكرة وحجم المعاملة ثابتين مهما كبر عدد الأجهزة.</summary>
     public const int PageSize = 500;
 
-    /// <summary>إرسالات متوازية لخدمات الدفع في الصفحة الواحدة (ذروة الصباح والمساء).</summary>
-    public const int MaxParallelSends = 16;
-
     public async Task<int> RunOnceAsync(CancellationToken ct)
     {
         var sent = 0;
@@ -69,7 +66,7 @@ public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPush
             lastId = page[^1].Id;
 
             var work = page.SelectMany(d => d.DueSlots(now).Select(due => (Device: d, due.Slot, due.Day))).ToList();
-            using var gate = new SemaphoreSlim(MaxParallelSends);
+            using var gate = new SemaphoreSlim(Math.Clamp(options.Value.MaxParallelSends, 1, 256));
             var results = await Task.WhenAll(work.Select(async w =>
             {
                 await gate.WaitAsync(ct);

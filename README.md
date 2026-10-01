@@ -62,7 +62,8 @@ npx playwright test                          # E2E — يتطلب تشغيل ا�
 
 - `Database:Provider=Postgres`. الهجرات: `dotnet tool run dotnet-ef database update -p src/Sanad.Infrastructure -s src/Sanad.Api`.
 - الأسرار عبر Key Vault (`KeyVault:Uri`). **الإقلاع يُرفض** إن غاب مفتاح التشفير أو مفتاح JWT أو تطابقا، أو إن عُطّل CAPTCHA، أو استُخدم SQLite (`StartupGuards`).
-- Redis اختياري (`ConnectionStrings:Redis`) لـ Cache وقائمة إبطال الرموز وBackplane لـ SignalR.
+- **Redis وتخزين S3 إلزاميان في الإنتاج** (Cache، إبطال الرموز، Backplane لـ SignalR؛ والملفات مشتركة بين النسخ والصوت عبر CDN)،
+  إلا لنشر بنسخة واحدة مع `Deployment:SingleInstance=true`. المهام الخلفية تعمل على نسخة واحدة بقفل PostgreSQL — راجع ADR-0020.
 
 ## الضوابط غير القابلة للتفاوض (مطبّقة ومختبرة)
 
