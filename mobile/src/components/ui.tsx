@@ -106,11 +106,45 @@ export function TextField({ label, hint, ltr, ...props }: TextInputProps & { lab
         placeholderTextColor={c.muted}
         {...props}
         // البريد والأرقام وكلمات المرور تُكتب من اليسار لليمين حتى في واجهة عربية
-        style={[styles.input, { borderColor: c.border, backgroundColor: c.surface, color: c.text, textAlign: ltr ? "left" : "right", writingDirection: ltr ? "ltr" : "rtl" }]}
+        style={[
+          styles.input,
+          { borderColor: c.border, backgroundColor: c.surface, color: c.text, textAlign: ltr ? "left" : "right", writingDirection: ltr ? "ltr" : "rtl" },
+          props.multiline ? { minHeight: 120, paddingTop: space.md, textAlignVertical: "top" } : null,
+        ]}
       />
       {hint ? <AppText variant="muted">{hint}</AppText> : null}
     </View>
   );
+}
+
+/** شريحة تصفية (فئة، نوع ممارسة...). */
+export function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  const c = useColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      style={[styles.chip, { borderColor: active ? c.primary : c.border, backgroundColor: active ? c.primary : c.surface }]}
+    >
+      <AppText style={{ color: active ? c.primaryContrast : c.text }}>{label}</AppText>
+    </Pressable>
+  );
+}
+
+/** وسم صغير (المسار، المدينة، طريقة التقديم). */
+export function Tag({ label, tone = "neutral" }: { label: string; tone?: "neutral" | "primary" | "success" }) {
+  const c = useColors();
+  const [fg, bg] = tone === "primary" ? [c.primary, c.surface2] : tone === "success" ? [c.success, c.successBg] : [c.muted, c.surface2];
+  return (
+    <View style={[styles.tag, { backgroundColor: bg }]}>
+      <Text style={{ color: fg, fontFamily: fonts.body, fontSize: 13 }}>{label}</Text>
+    </View>
+  );
+}
+
+export function Row({ children }: { children: ReactNode }) {
+  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>{children}</View>;
 }
 
 export function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: (v: boolean) => void; children: ReactNode }) {
@@ -144,6 +178,8 @@ const styles = StyleSheet.create({
   button: { minHeight: 52, borderRadius: radius.md, borderWidth: 1, paddingHorizontal: space.lg, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: space.sm },
   input: { minHeight: 50, borderWidth: 1, borderRadius: radius.md, paddingHorizontal: space.md, fontFamily: fonts.body, fontSize: 16 },
   banner: { borderWidth: 1, borderRadius: radius.md, padding: space.md },
+  chip: { paddingHorizontal: space.md, paddingVertical: space.xs, borderRadius: radius.xl, borderWidth: 1 },
+  tag: { paddingHorizontal: space.sm, paddingVertical: 2, borderRadius: radius.xl },
   box: { width: 24, height: 24, borderRadius: 6, borderWidth: 2, alignItems: "center", justifyContent: "center" },
   base: { fontFamily: fonts.body, fontSize: 16, lineHeight: 28, writingDirection: "rtl" },
   screen: { padding: space.lg, gap: space.md, paddingBottom: space.xxl },

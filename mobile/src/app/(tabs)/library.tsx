@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Linking, Pressable, Share, TextInput, View } from "react-native";
-import { AppText, Banner, Button, Card, Screen } from "@/components/ui";
+import { AppText, Banner, Button, Card, Chip, Row, Screen } from "@/components/ui";
 import { api, ApiError, mediaUrl } from "@/lib/api";
 import { WEB_BASE_URL } from "@/lib/links";
 import { usePlayer } from "@/lib/player";
@@ -61,22 +61,11 @@ function Library() {
         onChangeText={setSearch}
         style={{ minHeight: 48, borderWidth: 1, borderColor: c.border, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: c.surface, color: c.text, fontFamily: fonts.body, textAlign: "right" }}
       />
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space.sm }}>
-        {FILTERS.map((f) => {
-          const active = filter === f.value;
-          return (
-            <Pressable
-              key={f.label}
-              accessibilityRole="button"
-              accessibilityState={{ selected: active }}
-              onPress={() => setFilter(f.value)}
-              style={{ paddingHorizontal: space.md, paddingVertical: space.xs, borderRadius: radius.xl, borderWidth: 1, borderColor: active ? c.primary : c.border, backgroundColor: active ? c.primary : c.surface }}
-            >
-              <AppText style={{ color: active ? c.primaryContrast : c.text }}>{f.label}</AppText>
-            </Pressable>
-          );
-        })}
-      </View>
+      <Row>
+        {FILTERS.map((f) => (
+          <Chip key={f.label} label={f.label} active={filter === f.value} onPress={() => setFilter(f.value)} />
+        ))}
+      </Row>
       {list.isLoading ? <ActivityIndicator color={c.primary} /> : null}
       {list.isError ? <Banner tone="danger">{list.error instanceof ApiError ? list.error.friendly : "تعذّر تحميل المكتبة."}</Banner> : null}
       {list.data && list.data.length === 0 ? (

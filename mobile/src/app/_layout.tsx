@@ -81,6 +81,11 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "سند" }} />
               <Stack.Screen name="ruqyah/[id]" options={{ title: "" }} />
               <Stack.Screen name="reminders" options={{ title: "تذكير الأذكار" }} />
+              <Stack.Screen name="provider/[id]" options={{ title: "" }} />
+              <Stack.Screen name="organization/[id]" options={{ title: "" }} />
+              <Stack.Screen name="book/[providerId]" options={{ title: "حجز موعد" }} />
+              <Stack.Screen name="bookings/index" options={{ title: "حجوزاتي" }} />
+              <Stack.Screen name="bookings/[id]" options={{ title: "الحجز" }} />
               <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
               <Stack.Screen name="auth/login" options={{ title: "الدخول" }} />
               <Stack.Screen name="auth/email" options={{ title: "البريد الإلكتروني" }} />

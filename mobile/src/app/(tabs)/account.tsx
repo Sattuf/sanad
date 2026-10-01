@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { AppText, Banner, Button, Card, Screen } from "@/components/ui";
+import { AppText, Banner, Button, Card, RowLink, Screen } from "@/components/ui";
 import { signOut } from "@/lib/auth";
 import { useMe, useSignedIn } from "@/lib/queries";
 import { useColors } from "@/theme";
@@ -58,6 +58,7 @@ function SignedIn() {
           {me.data.phoneNumber ? <AppText>{`الهاتف: ‎${me.data.phoneNumber}`}</AppText> : null}
         </Card>
       ) : null}
+      <RowLink title="حجوزاتي" subtitle="طلباتك ومواعيدك مع المختصين" onPress={() => router.push("/bookings")} />
       <Card>
         <AppText variant="muted">الخصوصية، وتصدير بياناتك، وحذف الحساب — تصل إلى التطبيق قريباً، وهي متاحة الآن على موقع سند.</AppText>
       </Card>
