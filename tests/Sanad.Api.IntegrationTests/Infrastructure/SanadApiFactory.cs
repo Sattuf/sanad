@@ -15,7 +15,8 @@ namespace Sanad.Api.IntegrationTests.Infrastructure;
 /// ومزود SMS يلتقط الرموز. Outbox معطّل كخدمة خلفية ويُشغَّل يدوياً حيث يلزم.
 /// (Testcontainers/PostgreSQL متاح عبر SANAD_TEST_POSTGRES — راجع ADR-0002.)
 /// </summary>
-public sealed class SanadApiFactory(Action<IServiceCollection>? configureServices = null) : WebApplicationFactory<Program>
+public sealed class SanadApiFactory(Action<IServiceCollection>? configureServices = null, IReadOnlyDictionary<string, string>? extraSettings = null)
+    : WebApplicationFactory<Program>
 {
     public const string AdminEmail = "bootstrap-admin@sanad.test";
     public const string AdminTempPassword = "Bootstrap-Temp-Pass1";
@@ -55,6 +56,7 @@ public sealed class SanadApiFactory(Action<IServiceCollection>? configureService
             ["RateLimiting:PublicPerMinute"] = "100000",
             ["Serilog:MinimumLevel:Default"] = "Warning",
         };
+        foreach (var (k, v) in extraSettings ?? new Dictionary<string, string>()) settings[k] = v;
         foreach (var (k, v) in settings) builder.UseSetting(k, v);
 
         builder.ConfigureTestServices(services =>

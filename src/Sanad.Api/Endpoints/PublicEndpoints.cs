@@ -80,6 +80,12 @@ public static class PublicEndpoints
         app.MapGet("/api/v1/public/reminders/push-config", async (ISender s) => Results.Ok(await s.Send(new GetPushConfigQuery())))
             .WithTags("Ruqyah").AllowAnonymous().RequireRateLimiting("public");
 
+        // ── أدنى إصدار مدعوم من تطبيق الجوال: أقدم منه يُطلب منه التحديث (لا كسر لـ /api/v1 دون ذلك) ──
+        app.MapGet("/api/v1/public/app/min-version", (IConfiguration config) => Results.Ok(new MobileMinVersionDto(
+                config["MobileApp:MinVersion:Ios"] ?? "0.0.0", config["MobileApp:MinVersion:Android"] ?? "0.0.0",
+                config["MobileApp:StoreUrl:Ios"], config["MobileApp:StoreUrl:Android"])))
+            .WithTags("Mobile").AllowAnonymous().RequireRateLimiting("public");
+
         // ── روابط المستندات الخاصة الموقّعة قصيرة الأجل ──
         app.MapGet("/api/v1/files/signed", async (string key, long exp, string sig, HttpContext http, LocalFileStorage storage) =>
             {
@@ -99,3 +105,5 @@ public static class PublicEndpoints
         return app;
     }
 }
+
+public sealed record MobileMinVersionDto(string Ios, string Android, string? IosStoreUrl, string? AndroidStoreUrl);

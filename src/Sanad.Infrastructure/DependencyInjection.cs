@@ -75,6 +75,9 @@ public static class DependencyInjection
         services.AddScoped<SignInTicketStore>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IIdentityService, AspNetIdentityService>();
+        // دخول جوجل وأبل الأصلي من الجوال (ADR-0019) — مفاتيح المزودين مخزّنة مؤقتاً على مستوى التطبيق
+        services.AddSingleton<IExternalSigningKeys, OidcSigningKeys>();
+        services.AddSingleton<IExternalIdTokenValidator, ExternalIdTokenValidator>();
         services.AddScoped<AdminBootstrapSeeder>();
         if (env.IsDevelopment() && config.GetValue("Otp:DevelopmentLogCodes", false))
             services.TryAddSingleton<ISmsSender, DevelopmentLogSmsSender>();
