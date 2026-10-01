@@ -1,8 +1,8 @@
 import type { DirectoryFilters } from "@sanad/shared/api/directory";
-import type { DeliveryMode, DirectoryItem, PractitionerType } from "@sanad/shared/api/types";
+import type { DeliveryMode, DirectoryItem, OrganizationTrack, PractitionerType } from "@sanad/shared/api/types";
 import { ar } from "@sanad/shared/i18n/ar";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
 import { VerificationBadge } from "@/components/Safety";
@@ -22,11 +22,20 @@ const MODES: { value: DeliveryMode | null; label: string }[] = [
   { value: "InPerson", label: ar.deliveryMode.InPerson },
 ];
 
+const isTrack = (v: string | undefined): v is OrganizationTrack => !!v && v in ar.track;
+
 /** الدليل: الترتيب من مطابقة البحث وحالة التوثيق فقط — لا ترتيب مموَّل. عام بلا حساب. */
 export default function DirectoryScreen() {
   const c = useColors();
   const [text, setText] = useState("");
-  const [filters, setFilters] = useState<DirectoryFilters>({});
+  // روابط من الأدلة قد تفتح الدليل على مسار محدد (?track=LicensedHealth)
+  const { track } = useLocalSearchParams<{ track?: string }>();
+  const [filters, setFilters] = useState<DirectoryFilters>(() => ({ track: isTrack(track) ? track : null }));
+  const [lastTrack, setLastTrack] = useState(track);
+  if (track !== lastTrack) {
+    setLastTrack(track);
+    setFilters((f) => ({ ...f, track: isTrack(track) ? track : null }));
+  }
   const results = useInfiniteQuery({
     queryKey: ["directory", filters],
     queryFn: ({ pageParam }) => directory.search(filters, pageParam),
@@ -49,6 +58,11 @@ export default function DirectoryScreen() {
         onSubmitEditing={() => setFilters((f) => ({ ...f, q: text }))}
         style={{ minHeight: 48, borderWidth: 1, borderColor: c.border, borderRadius: radius.md, paddingHorizontal: space.md, backgroundColor: c.surface, color: c.text, fontFamily: fonts.body, textAlign: "right" }}
       />
+      {filters.track ? (
+        <Row>
+          <Chip label={`المسار: ${ar.track[filters.track]} ✕`} active onPress={() => setFilters((f) => ({ ...f, track: null }))} />
+        </Row>
+      ) : null}
       <Row>
         {TYPES.map((t) => (
           <Chip key={t.label} label={t.label} active={(filters.practitionerType ?? null) === t.value} onPress={() => setFilters((f) => ({ ...f, practitionerType: t.value }))} />

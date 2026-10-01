@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
+import { RealtimeBridge } from "@/components/Realtime";
 import { UpdateGate } from "@/components/UpdateGate";
 import { safeNotificationPath } from "@/lib/reminders";
 import { pruneOldWird } from "@/lib/wird";
@@ -67,6 +68,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
+        <RealtimeBridge />
         <View style={{ flex: 1, backgroundColor: c.bg }}>
           <EmergencyBanner />
           <UpdateGate>
@@ -86,6 +88,11 @@ export default function RootLayout() {
               <Stack.Screen name="book/[providerId]" options={{ title: "حجز موعد" }} />
               <Stack.Screen name="bookings/index" options={{ title: "حجوزاتي" }} />
               <Stack.Screen name="bookings/[id]" options={{ title: "الحجز" }} />
+              <Stack.Screen name="conversations/index" options={{ title: "محادثاتي" }} />
+              <Stack.Screen name="conversations/[id]" options={{ title: "المحادثة" }} />
+              <Stack.Screen name="recommendations" options={{ title: "توصياتي" }} />
+              <Stack.Screen name="health" options={{ title: "الصحة والطمأنينة" }} />
+              <Stack.Screen name="guide/[id]" options={{ title: "" }} />
               <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
               <Stack.Screen name="auth/login" options={{ title: "الدخول" }} />
               <Stack.Screen name="auth/email" options={{ title: "البريد الإلكتروني" }} />

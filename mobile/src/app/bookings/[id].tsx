@@ -1,11 +1,12 @@
-import { isCancellable } from "@sanad/shared/api/directory";
+import { isCancellable, isChatOpen } from "@sanad/shared/api/directory";
 import { formatDateTime } from "@sanad/shared/lib/format";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
 import { AppText, Banner, Button, Card, Screen, Tag } from "@/components/ui";
 import { ApiError } from "@/lib/api";
+import { care } from "@/lib/care";
 import { bookingStatusLabel, bookings, bookingTagTone } from "@/lib/directory";
 import { space, useColors } from "@/theme";
 
@@ -21,6 +22,12 @@ export default function BookingScreen() {
     mutationFn: (action: "accept" | "cancel") => (action === "accept" ? bookings.accept(id) : bookings.cancel(id)),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["bookings"] }),
     onError: (err) => setError(err instanceof ApiError ? err.friendly : "تعذّر تنفيذ الطلب."),
+  });
+
+  const openChat = useMutation({
+    mutationFn: () => care.openForBooking(id),
+    onSuccess: (conv) => router.push({ pathname: "/conversations/[id]", params: { id: conv.id } }),
+    onError: (err) => setError(err instanceof ApiError ? err.friendly : "تعذّر فتح المحادثة."),
   });
 
   if (booking.isLoading) return <ActivityIndicator style={{ flex: 1, backgroundColor: c.bg }} color={c.primary} />;
@@ -53,8 +60,12 @@ export default function BookingScreen() {
         {b.administrativeReasonForRejection ? <AppText variant="muted">{`السبب الإداري: ${b.administrativeReasonForRejection}`}</AppText> : null}
         {error ? <Banner tone="danger">{error}</Banner> : null}
         {b.status === "AlternativeProposed" ? <Button label="قبول الموعد البديل" busy={act.isPending} onPress={() => act.mutate("accept")} /> : null}
+        {isChatOpen(b.status) ? <Button label="المحادثة الإدارية" variant="secondary" busy={openChat.isPending} onPress={() => openChat.mutate()} /> : null}
         {isCancellable(b.status) ? <Button label="إلغاء الحجز" variant="ghost" disabled={act.isPending} onPress={confirmCancel} /> : null}
       </Card>
+      {b.status === "Accepted" || b.status === "AdministrativelyCompleted" ? (
+        <Button label="توصيات مختصك في «توصياتي»" variant="ghost" onPress={() => router.push("/recommendations")} />
+      ) : null}
       <Card>
         <AppText variant="heading">ملاحظتي للمختص</AppText>
         <AppText variant="muted">مشفّرة — لا يراها إلا المختص المُسنَد.</AppText>

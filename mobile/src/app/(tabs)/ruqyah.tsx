@@ -1,4 +1,4 @@
-import { collections, groups, type CollectionGroup } from "@sanad/shared/content/ruqyah";
+import { awarenessGuides, collections, groups, methodGuides, type CollectionGroup } from "@sanad/shared/content/ruqyah";
 import { slotForHour } from "@sanad/shared/content/wird";
 import { router } from "expo-router";
 import { AppText, RowLink, Screen } from "@/components/ui";
@@ -15,6 +15,10 @@ export default function RuqyahScreen() {
       <RowLink title="تذكير الأذكار" subtitle="الصباح والمساء والنوم — إشعار في وقته" onPress={() => router.push("/reminders")} />
       {order.map((group) => (
         <Section key={group} group={group} />
+      ))}
+      <AppText variant="heading">المنهج والتوعية</AppText>
+      {[...methodGuides, ...awarenessGuides].map((g) => (
+        <RowLink key={g.id} title={g.title} subtitle={g.subtitle} onPress={() => router.push({ pathname: "/guide/[id]", params: { id: g.id } })} />
       ))}
     </Screen>
   );
