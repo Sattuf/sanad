@@ -106,8 +106,17 @@ public static class DependencyInjection
         services.AddSingleton<IDirectorySearchCache, DistributedDirectorySearchCache>();
 
         // ── التخزين ──
-        services.AddSingleton<LocalFileStorage>();
-        services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+        // تخزين الملفات: محلي للتطوير، وكائنات متوافقة مع S3 مع CDN للإنتاج الموسّع (ADR-0020)
+        if (string.Equals(config["Storage:Provider"], "S3", StringComparison.OrdinalIgnoreCase))
+        {
+            services.Configure<S3StorageOptions>(config.GetSection(S3StorageOptions.Section));
+            services.AddSingleton<IFileStorage, S3FileStorage>();
+        }
+        else
+        {
+            services.AddSingleton<LocalFileStorage>();
+            services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+        }
         services.AddSingleton<IFileSignatureInspector, FileSignatureInspector>();
 
         // ── مصادر المكتبة المعتمدة (ADR-0015): بلا تحويل تلقائي — كل Redirect يُتحقق منه ضد قائمة السماح ──
