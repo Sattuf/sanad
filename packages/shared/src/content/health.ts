@@ -1,4 +1,4 @@
-import type { Guide } from "../ruqyah/content";
+import type { Guide } from "./ruqyah";
 
 /*
   «الصحة والطمأنينة»: توعية صحية عامة تكمّل قسم الرقية — الطبيب والشيخ مساران متكافئان في سند.

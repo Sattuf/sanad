@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { STAFF_ROLES, useMe, useSignOut } from "../../api/hooks";
-import type { AppNotification } from "../../api/types";
+import type { AppNotification } from "@sanad/shared/api/types";
 import { AdministrativeDisclaimerFooter, EmergencyReferralBanner } from "../../components/safety";
 import { cx } from "../../lib/cx";
 import { useRealtime } from "../../features/realtime/useRealtime";

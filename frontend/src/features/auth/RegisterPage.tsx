@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useEffect } from "react";
 import { ApiError, api } from "../../api/client";
 import { useCompleteSignIn } from "../../api/hooks";
-import type { AuthResponse } from "../../api/types";
+import type { AuthResponse } from "@sanad/shared/api/types";
 import { Banner, Button, Card, Checkbox, Field, Input, Loading } from "../../components/ui";
 import { captchaHeader } from "../../lib/captcha";
 

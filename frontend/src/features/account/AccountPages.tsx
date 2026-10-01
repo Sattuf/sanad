@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ApiError, api, downloadJson, newIdempotencyKey } from "../../api/client";
 import { queryKeys, useMe, useSignOut } from "../../api/hooks";
-import type { AccessLogEntry, AppNotification, BookingSummary, ConsentHistoryItem, ConsentStatus, ConsentType, Recommendation, ReportCategory, ReportSeverity } from "../../api/types";
+import type { AccessLogEntry, AppNotification, BookingSummary, ConsentHistoryItem, ConsentStatus, ConsentType, Recommendation, ReportCategory, ReportSeverity } from "@sanad/shared/api/types";
 import { Badge, Banner, Button, Card, Checkbox, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
-import { formatDate, formatDateTime } from "../../lib/format";
+import { formatDate, formatDateTime } from "@sanad/shared/lib/format";
 import { captchaHeader } from "../../lib/captcha";
-import { statusTone } from "../../lib/status";
+import { statusTone } from "@sanad/shared/lib/status";
 
 export function DashboardPage() {
   const { t } = useTranslation();

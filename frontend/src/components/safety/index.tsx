@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEmergency } from "../../stores/emergency";
-import type { VerificationBadge as Badge } from "../../api/types";
+import type { VerificationBadge as Badge } from "@sanad/shared/api/types";
 import { cx } from "../../lib/cx";
-import { formatDate } from "../../lib/format";
+import { formatDate } from "@sanad/shared/lib/format";
 
 /**
  * شريط الطوارئ — بلا أي حركة (الوضوح الفوري أولاً)، أعلى كل شاشة، لا يختفي تلقائياً.

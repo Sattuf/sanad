@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api/client";
 import { useMe } from "../../api/hooks";
-import { collections, type Item } from "./content";
+import { collections, type Item } from "@sanad/shared/content/ruqyah";
 
 /*
   الورد اليومي: يُحفظ فوراً في الجهاز، ويُزامَن مع الحساب لمن سجّل دخوله ليتابع من أي جهاز.

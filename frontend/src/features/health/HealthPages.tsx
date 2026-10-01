@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { GuideGrid } from "../ruqyah/RuqyahPages";
 import { Scene } from "../ruqyah/Scene";
-import { healthGuides } from "./content";
+import { healthGuides } from "@sanad/shared/content/health";
 
 /** «الصحة والطمأنينة»: توعية صحية عامة، بجانب «الرقية والتحصين» — الطبيب والشيخ مساران متكافئان. */
 export function HealthHubPage() {

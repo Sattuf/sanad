@@ -1,7 +1,7 @@
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { ApiError, api } from "../../api/client";
-import type { AuthResponse, TwoFactorSetupInfo } from "../../api/types";
+import type { AuthResponse, TwoFactorSetupInfo } from "@sanad/shared/api/types";
 import { Banner, Button, Field, Input } from "../../components/ui";
 
 /**

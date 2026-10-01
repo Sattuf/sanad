@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/client";
-import type { EmergencyReferral, Transparency } from "../../api/types";
+import type { EmergencyReferral, Transparency } from "@sanad/shared/api/types";
 import { FALLBACK_REFERRAL } from "../../stores/emergency";
 import { Card, PageHeader } from "../../components/ui";
 

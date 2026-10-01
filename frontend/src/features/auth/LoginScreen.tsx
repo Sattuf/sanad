@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE, ApiError, api } from "../../api/client";
 import { useCompleteSignIn } from "../../api/hooks";
-import type { AuthProviders, AuthResponse } from "../../api/types";
+import type { AuthProviders, AuthResponse } from "@sanad/shared/api/types";
 import { AnimatedLamp, ParticleField } from "../../components/motion/Lamp";
 import { Banner, Button, Field, Input } from "../../components/ui";
 import { SignInStages } from "./SignInStages";

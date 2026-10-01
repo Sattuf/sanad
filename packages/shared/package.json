@@ -1,0 +1,17 @@
+{
+  "name": "@sanad/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "منطق ومحتوى مشترك بين الويب والجوال — بلا أي اعتماد وقت تشغيل (ADR-0018)",
+  "sideEffects": false,
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check:pure": "node scripts/check-pure.mjs"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "vitest": "^5.0.1"
+  }
+}

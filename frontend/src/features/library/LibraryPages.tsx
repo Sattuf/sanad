@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
 import { useMe } from "../../api/hooks";
-import type { AudioCategory, AudioTrack, PublicSharedTrack, SharedLink } from "../../api/types";
+import type { AudioCategory, AudioTrack, PublicSharedTrack, SharedLink } from "@sanad/shared/api/types";
 import { TrackMedia } from "../../components/TrackMedia";
 import { AnimatedLamp } from "../../components/motion/Lamp";
 import { Banner, Button, Card, EmptyState, ErrorState, Input, Loading, PageHeader } from "../../components/ui";
