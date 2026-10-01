@@ -16,6 +16,7 @@ using Sanad.Infrastructure.Captcha;
 using Sanad.Infrastructure.Encryption;
 using Sanad.Infrastructure.Identity;
 using Sanad.Infrastructure.Jobs;
+using StackExchange.Redis;
 using Sanad.Infrastructure.Library;
 using Sanad.Infrastructure.Notifications;
 using Sanad.Infrastructure.Persistence;
@@ -100,7 +101,19 @@ public static class DependencyInjection
         // ── Cache: Redis إن وُجد، وإلا ذاكرة محلية ──
         var redis = config.GetConnectionString("Redis");
         if (!string.IsNullOrWhiteSpace(redis))
+        {
             services.AddStackExchangeRedisCache(o => { o.Configuration = redis; o.InstanceName = "sanad:"; });
+            // اتصال مشترك لحدود المعدل الموزّعة (ADR-0020) — لا يُسقط الإقلاع إن تأخر Redis، والحد يعود محلياً حتى يتصل
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+            {
+                var options = ConfigurationOptions.Parse(redis);
+                options.AbortOnConnectFail = false;
+                options.ConnectTimeout = Math.Min(options.ConnectTimeout, 3000);
+                options.SyncTimeout = Math.Min(options.SyncTimeout, 1000);
+                options.AsyncTimeout = Math.Min(options.AsyncTimeout, 1000);
+                return ConnectionMultiplexer.Connect(options);
+            });
+        }
         else
             services.AddDistributedMemoryCache();
         services.AddSingleton<IDirectorySearchCache, DistributedDirectorySearchCache>();

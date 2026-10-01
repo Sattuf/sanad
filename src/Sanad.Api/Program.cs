@@ -16,6 +16,7 @@ using Sanad.Api.Middleware;
 using Sanad.Application;
 using Sanad.Infrastructure;
 using Sanad.Infrastructure.Identity;
+using Sanad.Infrastructure.RateLimiting;
 using Sanad.Infrastructure.Realtime;
 using Serilog;
 
@@ -109,7 +110,7 @@ if (builder.Configuration["Auth:Google:ClientId"] is { Length: > 0 } googleClien
 
 builder.Services.AddAuthorization(Policies.Register);
 
-// ── حدود المعدل: مزدوجة (مستخدم/IP)، وصارمة على OTP ─────────────────────────
+// ── حدود المعدل: مزدوجة (مستخدم/IP)، وصارمة على OTP — مشتركة بين النسخ عبر Redis (ADR-0020) ──
 var limits = builder.Configuration.GetSection("RateLimiting");
 builder.Services.AddRateLimiter(o =>
 {
@@ -124,23 +125,19 @@ builder.Services.AddRateLimiter(o =>
         ctx.User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     static string Ip(HttpContext ctx) => ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-    RateLimitPartition<string> Fixed(string key, string name, int defaultLimit, TimeSpan window) =>
-        RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
-        {
-            PermitLimit = limits.GetValue(name, defaultLimit),
-            Window = window,
-            QueueLimit = 0,
-        });
+    // الحد المُعلَن في الإعداد هو الحد الكلي لكل النسخ معاً حين يوجد Redis؛ بدونه (تطوير/نسخة واحدة) لكل نسخة
+    RateLimitPartition<string> Fixed(HttpContext ctx, string subject, string name, int defaultLimit, TimeSpan window) =>
+        RateLimitPartitions.FixedWindow(ctx, name, subject, limits.GetValue(name, defaultLimit), window);
 
-    o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx => Fixed(Partition(ctx), "GlobalPerMinute", 300, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("auth", ctx => Fixed(Ip(ctx), "AuthPerMinute", 10, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("otp", ctx => Fixed(Ip(ctx), "OtpRequestsPerMinute", 3, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("otp-verify", ctx => Fixed(Ip(ctx), "OtpVerifyPerMinute", 10, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("share", ctx => Fixed(Partition(ctx), "ShareLinksPerHour", 30, TimeSpan.FromHours(1)));
-    o.AddPolicy("uploads", ctx => Fixed(Partition(ctx), "UploadsPerHour", 20, TimeSpan.FromHours(1)));
-    o.AddPolicy("messages", ctx => Fixed(Partition(ctx), "MessagesPerMinute", 30, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("public", ctx => Fixed(Ip(ctx), "PublicPerMinute", 120, TimeSpan.FromMinutes(1)));
-    o.AddPolicy("media", ctx => Fixed(Ip(ctx), "MediaPerMinute", 240, TimeSpan.FromMinutes(1)));
+    o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx => Fixed(ctx, Partition(ctx), "GlobalPerMinute", 300, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("auth", ctx => Fixed(ctx, Ip(ctx), "AuthPerMinute", 10, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("otp", ctx => Fixed(ctx, Ip(ctx), "OtpRequestsPerMinute", 3, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("otp-verify", ctx => Fixed(ctx, Ip(ctx), "OtpVerifyPerMinute", 10, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("share", ctx => Fixed(ctx, Partition(ctx), "ShareLinksPerHour", 30, TimeSpan.FromHours(1)));
+    o.AddPolicy("uploads", ctx => Fixed(ctx, Partition(ctx), "UploadsPerHour", 20, TimeSpan.FromHours(1)));
+    o.AddPolicy("messages", ctx => Fixed(ctx, Partition(ctx), "MessagesPerMinute", 30, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("public", ctx => Fixed(ctx, Ip(ctx), "PublicPerMinute", 120, TimeSpan.FromMinutes(1)));
+    o.AddPolicy("media", ctx => Fixed(ctx, Ip(ctx), "MediaPerMinute", 240, TimeSpan.FromMinutes(1)));
 });
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
