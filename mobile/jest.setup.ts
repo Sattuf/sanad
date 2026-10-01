@@ -18,3 +18,17 @@ jest.mock("react-native-webview", () => {
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports -- مصنع jest.mock يُستدعى قبل الاستيرادات
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
+
+// مشغّل الصوت وحدة أصلية — مشغّل وهمي افتراضي (اختبار المكتبة يستبدله بآخر يراقب الاستدعاءات)
+jest.mock("expo-audio", () => ({
+  createAudioPlayer: jest.fn(() => ({
+    playing: false,
+    replace: jest.fn(),
+    play: jest.fn(),
+    pause: jest.fn(),
+    setActiveForLockScreen: jest.fn(),
+    clearLockScreenControls: jest.fn(),
+    addListener: jest.fn(),
+  })),
+  setAudioModeAsync: jest.fn(async () => undefined),
+}));

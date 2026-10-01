@@ -31,6 +31,8 @@ const config: ExpoConfig = {
     "expo-secure-store",
     "expo-apple-authentication",
     ["expo-notifications", { color: "#0f5c58" }],
+    // تشغيل التلاوات في الخلفية وبقفل الشاشة؛ لا تسجيل صوت ولا إذن ميكروفون
+    ["expo-audio", { enableBackgroundPlayback: true, enableBackgroundRecording: false, microphonePermission: false, recordAudioAndroid: false }],
     // دخول جوجل الأصلي يحتاج مخطط عنوان iOS من معرّف عميل iOS المعكوس — يُضاف عند توفره فقط (EAS secret)
     ...(googleIosUrlScheme ? [["@react-native-google-signin/google-signin", { iosUrlScheme: googleIosUrlScheme }] as [string, object]] : []),
     "expo-font",

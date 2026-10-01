@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputProps, type TextProps, type ViewStyle } from "react-native";
 import { fonts, radius, space, useColors } from "@/theme";
+import { MiniPlayer } from "./MiniPlayer";
 
 type Variant = "body" | "title" | "heading" | "muted" | "dua" | "quran";
 
@@ -30,14 +31,17 @@ function variantStyle(v: Variant, muted: string) {
 export function Screen({ children, contentStyle }: { children: ReactNode; contentStyle?: ViewStyle }) {
   const c = useColors();
   return (
-    <ScrollView
-      style={{ backgroundColor: c.bg }}
-      contentContainerStyle={[styles.screen, contentStyle]}
-      contentInsetAdjustmentBehavior="automatic"
-      keyboardShouldPersistTaps="handled"
-    >
-      {children}
-    </ScrollView>
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[styles.screen, contentStyle]}
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="handled"
+      >
+        {children}
+      </ScrollView>
+      <MiniPlayer />
+    </View>
   );
 }
 
