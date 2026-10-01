@@ -79,6 +79,13 @@ public static class AccountEndpoints
         me.MapGet("/wird", async (DateOnly day, ISender s) => Results.Ok(await s.Send(new GetMyWirdQuery(day))));
         me.MapPut("/wird", async (SaveMyWirdCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); });
 
+        // ── تذكير الأذكار على هذا الجهاز (Web Push) ──
+        me.MapGet("/reminders/devices", async (ISender s) => Results.Ok(await s.Send(new GetMyReminderDevicesQuery())));
+        me.MapPut("/reminders/device", async (SaveMyReminderDeviceCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
+        me.MapPost("/reminders/device/remove", async (RemoveMyReminderDeviceCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); });
+        me.MapPost("/reminders/device/test", async (SendTestReminderCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); })
+            .RequireRateLimiting("public");
+
         // ── الإشعارات داخل التطبيق (نص عام فقط) ──
         me.MapGet("/notifications", async (SanadDbContext db, ICurrentUser user) =>
         {

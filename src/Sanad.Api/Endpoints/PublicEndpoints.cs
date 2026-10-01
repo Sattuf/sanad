@@ -76,6 +76,10 @@ public static class PublicEndpoints
         app.MapGet("/api/v1/public/ruqyah/duas", async (ISender s) => Results.Ok(await s.Send(new GetPublishedDuasQuery())))
             .WithTags("Ruqyah").AllowAnonymous().RequireRateLimiting("public");
 
+        // ── المفتاح العام لإشعارات الأذكار (VAPID) — Enabled=false إن لم تُعدّ ──
+        app.MapGet("/api/v1/public/reminders/push-config", async (ISender s) => Results.Ok(await s.Send(new GetPushConfigQuery())))
+            .WithTags("Ruqyah").AllowAnonymous().RequireRateLimiting("public");
+
         // ── روابط المستندات الخاصة الموقّعة قصيرة الأجل ──
         app.MapGet("/api/v1/files/signed", async (string key, long exp, string sig, HttpContext http, LocalFileStorage storage) =>
             {

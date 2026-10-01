@@ -42,6 +42,7 @@ public sealed class SanadApiFactory(Action<IServiceCollection>? configureService
             ["Storage:RootPath"] = _storagePath,
             ["Captcha:Enabled"] = "false",
             ["Outbox:Enabled"] = "false",
+            ["WebPush:SchedulerEnabled"] = "false",
             ["Bootstrap:AdminEmail"] = AdminEmail,
             ["Bootstrap:AdminTempPassword"] = AdminTempPassword,
             ["RateLimiting:GlobalPerMinute"] = "100000",

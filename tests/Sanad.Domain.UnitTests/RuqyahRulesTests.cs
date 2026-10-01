@@ -68,3 +68,53 @@ public class DailyWirdProgressTests
         act.Should().Throw<DomainException>();
     }
 }
+
+public class ReminderDeviceTests
+{
+    private static ReminderDevice Device(string tz, TimeOnly? morning = null, TimeOnly? evening = null, TimeOnly? sleep = null)
+    {
+        var d = ReminderDevice.Register(Guid.NewGuid(), "https://fcm.googleapis.com/fcm/send/abc", new string('B', 87), new string('a', 22), Now);
+        d.Schedule(tz, morning, evening, sleep, Now);
+        return d;
+    }
+
+    [Fact]
+    public void Slot_is_due_in_the_users_local_time_once_per_day()
+    {
+        // 03:40 UTC = 06:40 في الرياض (UTC+3)
+        var device = Device("Asia/Riyadh", morning: new TimeOnly(6, 30));
+        var at = new DateTimeOffset(2026, 9, 30, 3, 40, 0, TimeSpan.Zero);
+
+        var due = device.DueSlots(at);
+        due.Should().ContainSingle().Which.Should().Be((ReminderSlot.Morning, new DateOnly(2026, 9, 30)));
+
+        device.MarkSent(ReminderSlot.Morning, new DateOnly(2026, 9, 30));
+        device.DueSlots(at.AddMinutes(1)).Should().BeEmpty("أُرسل تذكير اليوم");
+        device.DueSlots(at.AddDays(1)).Should().ContainSingle("اليوم التالي تذكير جديد");
+    }
+
+    [Fact]
+    public void Slot_is_not_sent_before_its_time_or_after_the_window()
+    {
+        var device = Device("Asia/Riyadh", morning: new TimeOnly(6, 30));
+        device.DueSlots(new DateTimeOffset(2026, 9, 30, 3, 29, 0, TimeSpan.Zero)).Should().BeEmpty();
+        device.DueSlots(new DateTimeOffset(2026, 9, 30, 4, 0, 0, TimeSpan.Zero)).Should().BeEmpty("تجاوز نصف ساعة: لا يصل تذكير الصباح متأخراً");
+    }
+
+    [Fact]
+    public void Late_night_slot_window_crosses_midnight_and_belongs_to_the_previous_day()
+    {
+        var device = Device("UTC", sleep: new TimeOnly(23, 50));
+        var due = device.DueSlots(new DateTimeOffset(2026, 10, 1, 0, 5, 0, TimeSpan.Zero));
+        due.Should().ContainSingle().Which.Should().Be((ReminderSlot.Sleep, new DateOnly(2026, 9, 30)));
+    }
+
+    [Fact]
+    public void Unknown_time_zone_and_malformed_keys_are_rejected()
+    {
+        var act = () => Device("Mars/Olympus");
+        act.Should().Throw<DomainException>();
+        var bad = () => ReminderDevice.Register(Guid.NewGuid(), "https://fcm.googleapis.com/x", "not valid!", "a", Now);
+        bad.Should().Throw<DomainException>();
+    }
+}

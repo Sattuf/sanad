@@ -46,6 +46,7 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     public DbSet<AudioTrack> AudioTracks => Set<AudioTrack>();
     public DbSet<UserFavoriteTrack> UserFavoriteTracks => Set<UserFavoriteTrack>();
     public DbSet<DailyWirdProgress> DailyWirdProgress => Set<DailyWirdProgress>();
+    public DbSet<ReminderDevice> ReminderDevices => Set<ReminderDevice>();
     public DbSet<WrittenDua> WrittenDuas => Set<WrittenDua>();
     public DbSet<SharedContentLink> SharedContentLinks => Set<SharedContentLink>();
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();

@@ -29,6 +29,7 @@ public interface IApplicationDbContext
     DbSet<UserFavoriteTrack> UserFavoriteTracks { get; }
     DbSet<DailyWirdProgress> DailyWirdProgress { get; }
     DbSet<WrittenDua> WrittenDuas { get; }
+    DbSet<ReminderDevice> ReminderDevices { get; }
     DbSet<SharedContentLink> SharedContentLinks { get; }
     DbSet<ConsentRecord> ConsentRecords { get; }
     DbSet<Report> Reports { get; }

@@ -643,6 +643,69 @@ namespace Sanad.Infrastructure.Persistence.Migrations
                     b.ToTable("DailyWirdProgress", (string)null);
                 });
 
+            modelBuilder.Entity("Sanad.Domain.Ruqyah.ReminderDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Auth")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<TimeOnly?>("EveningAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateOnly?>("LastEveningOn")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("LastMorningOn")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("LastSleepOn")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("MorningAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<string>("P256dh")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<TimeOnly?>("SleepAt")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Endpoint")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReminderDevices", (string)null);
+                });
+
             modelBuilder.Entity("Sanad.Domain.Ruqyah.WrittenDua", b =>
                 {
                     b.Property<Guid>("Id")
