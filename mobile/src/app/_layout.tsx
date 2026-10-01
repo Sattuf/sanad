@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
+import { UpdateGate } from "@/components/UpdateGate";
 import { useSession } from "@/stores/session";
 import { fonts, useColors } from "@/theme";
 
@@ -43,18 +44,25 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <View style={{ flex: 1, backgroundColor: c.bg }}>
           <EmergencyBanner />
-          <Stack
-            screenOptions={{
-              headerTitleStyle: { fontFamily: fonts.bold },
-              headerStyle: { backgroundColor: c.surface },
-              headerTintColor: c.primary,
-              contentStyle: { backgroundColor: c.bg },
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "سند" }} />
-            <Stack.Screen name="ruqyah/[id]" options={{ title: "" }} />
-            <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
-          </Stack>
+          <UpdateGate>
+            <Stack
+              screenOptions={{
+                headerTitleStyle: { fontFamily: fonts.bold },
+                headerStyle: { backgroundColor: c.surface },
+                headerTintColor: c.primary,
+                contentStyle: { backgroundColor: c.bg },
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "سند" }} />
+              <Stack.Screen name="ruqyah/[id]" options={{ title: "" }} />
+              <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
+              <Stack.Screen name="auth/login" options={{ title: "الدخول" }} />
+              <Stack.Screen name="auth/email" options={{ title: "البريد الإلكتروني" }} />
+              <Stack.Screen name="auth/phone" options={{ title: "رقم الهاتف" }} />
+              <Stack.Screen name="auth/two-factor" options={{ title: "التحقق الثنائي" }} />
+              <Stack.Screen name="auth/consent" options={{ title: "الموافقات", headerBackVisible: false, gestureEnabled: false }} />
+            </Stack>
+          </UpdateGate>
         </View>
         <StatusBar style="auto" />
       </QueryClientProvider>

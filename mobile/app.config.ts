@@ -1,6 +1,8 @@
 import type { ExpoConfig } from "expo/config";
 
 // إعداد تطبيق سند للجوال — ADR-0018. المجلدان ios/ وandroid/ يولّدهما Expo (لا يُعدَّلان يدوياً).
+const googleIosUrlScheme = process.env.GOOGLE_IOS_URL_SCHEME;
+
 const config: ExpoConfig = {
   name: "سند",
   slug: "sanad",
@@ -12,6 +14,7 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: "app.sanad",
     supportsTablet: false,
+    usesAppleSignIn: true,
     config: { usesNonExemptEncryption: false },
   },
   android: {
@@ -26,6 +29,9 @@ const config: ExpoConfig = {
     // سند عربية فقط في هذا الإصدار — الواجهة من اليمين لليسار دائماً، أياً كانت لغة الجهاز
     ["expo-localization", { forcesRTL: true, supportedLocales: { ios: ["ar"], android: ["ar"] } }],
     "expo-secure-store",
+    "expo-apple-authentication",
+    // دخول جوجل الأصلي يحتاج مخطط عنوان iOS من معرّف عميل iOS المعكوس — يُضاف عند توفره فقط (EAS secret)
+    ...(googleIosUrlScheme ? [["@react-native-google-signin/google-signin", { iosUrlScheme: googleIosUrlScheme }] as [string, object]] : []),
     "expo-font",
     ["expo-splash-screen", { image: "./assets/splash-icon.png", imageWidth: 160, backgroundColor: "#f6f3ec", dark: { backgroundColor: "#0d0f14" } }],
   ],

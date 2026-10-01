@@ -9,3 +9,9 @@ jest.mock("expo-secure-store", () => {
     deleteItemAsync: jest.fn(async (key: string) => void store.delete(key)),
   };
 });
+
+// WebView (CAPTCHA) وحدة أصلية — في الاختبارات يكفي عنصر فارغ
+jest.mock("react-native-webview", () => {
+  const { View } = jest.requireActual("react-native");
+  return { WebView: View };
+});

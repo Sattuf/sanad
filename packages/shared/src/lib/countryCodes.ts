@@ -201,3 +201,20 @@ export const DEFAULT_COUNTRY_ISO2 = "SA";
 export function flagEmoji(iso2: string) {
   return String.fromCodePoint(...[...iso2.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }
+
+/** أطول رمز دولة يطابق بداية الرقم (‎+1 و‎+1868 مثلاً). */
+export function findByDialPrefix(value: string): CountryCode | undefined {
+  return COUNTRY_CODES.filter((c) => value.startsWith(c.dialCode)).sort((a, b) => b.dialCode.length - a.dialCode.length)[0];
+}
+
+/**
+ * رمز الدولة + الرقم المحلي ← صيغة E.164. يحذف كل ما ليس رقماً، وصفر البداية المحلي (05… في السعودية)
+ * لأنه لا يُكتب بعد رمز الدولة — إلا في إيطاليا حيث الصفر جزء من الرقم.
+ */
+export function toE164(dialCode: string, national: string): string {
+  let digits = national.replace(/\D/g, "");
+  if (dialCode !== "+39") digits = digits.replace(/^0+/, "");
+  return `${dialCode}${digits}`;
+}
+
+export const isE164 = (value: string) => /^\+[1-9]\d{7,14}$/.test(value);

@@ -35,7 +35,9 @@ export interface AuthResponse {
 
 export interface AuthTokens { accessToken: string; accessTokenExpiresAtUtc: string; refreshToken: string; refreshTokenExpiresAtUtc: string }
 export interface TwoFactorSetupInfo { sharedKey: string; authenticatorUri: string }
-export interface AuthProviders { google: boolean; captchaEnabled: boolean; captchaSiteKey: string | null }
+/** google: مسار الويب (إعادة توجيه). googleNative/apple: دخول الجوال الأصلي برمز هوية (ADR-0019). */
+export interface AuthProviders { google: boolean; captchaEnabled: boolean; captchaSiteKey: string | null; googleNative: boolean; apple: boolean }
+export interface MobileMinVersion { ios: string; android: string; iosStoreUrl: string | null; androidStoreUrl: string | null }
 
 export interface MyProfile {
   id: string;
