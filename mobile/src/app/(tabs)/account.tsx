@@ -61,9 +61,8 @@ function SignedIn() {
       <RowLink title="حجوزاتي" subtitle="طلباتك ومواعيدك مع المختصين" onPress={() => router.push("/bookings")} />
       <RowLink title="توصياتي" subtitle="توجيهات ومقاطع أرسلها مختصك" onPress={() => router.push("/recommendations")} />
       <RowLink title="محادثاتي" subtitle="المحادثات الإدارية لتنسيق مواعيدك" onPress={() => router.push("/conversations")} />
-      <Card>
-        <AppText variant="muted">الخصوصية، وتصدير بياناتك، وحذف الحساب — تصل إلى التطبيق قريباً، وهي متاحة الآن على موقع سند.</AppText>
-      </Card>
+      <RowLink title="الاسم والخصوصية" subtitle="الاسم الظاهر، إخفاء الهوية، ساعات الهدوء" onPress={() => router.push("/settings/profile")} />
+      <RowLink title="الموافقات وبياناتي" subtitle="من اطّلع على بياناتك، التصدير، حذف الحساب" onPress={() => router.push("/settings/data")} />
       <Button label="تسجيل الخروج" variant="secondary" busy={leaving} onPress={() => void logout()} />
     </Screen>
   );

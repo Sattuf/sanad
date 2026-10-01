@@ -93,6 +93,9 @@ export default function RootLayout() {
               <Stack.Screen name="recommendations" options={{ title: "توصياتي" }} />
               <Stack.Screen name="health" options={{ title: "الصحة والطمأنينة" }} />
               <Stack.Screen name="guide/[id]" options={{ title: "" }} />
+              <Stack.Screen name="settings/profile" options={{ title: "بياناتي الأساسية والخصوصية" }} />
+              <Stack.Screen name="settings/data" options={{ title: "الموافقات وبياناتي" }} />
+              <Stack.Screen name="settings/delete" options={{ title: "حذف الحساب" }} />
               <Stack.Screen name="emergency" options={{ title: "طوارئ", presentation: "modal" }} />
               <Stack.Screen name="auth/login" options={{ title: "الدخول" }} />
               <Stack.Screen name="auth/email" options={{ title: "البريد الإلكتروني" }} />
