@@ -15,7 +15,7 @@ namespace Sanad.Infrastructure.Jobs;
 /// الجهاز الذي أبلغت خدمة الدفع بزواله (404/410) يُحذف. لا تعمل إن لم تُعدّ مفاتيح VAPID.
 /// </summary>
 public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPushSender sender, IOptions<WebPushOptions> options,
-    ILogger<AdhkarReminderJob> logger) : BackgroundService
+    IJobLock jobLock, ILogger<AdhkarReminderJob> logger) : BackgroundService
 {
     private static readonly TimeSpan Interval = TimeSpan.FromMinutes(1);
 
@@ -27,8 +27,11 @@ public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPush
         {
             try
             {
-                var sent = await RunOnceAsync(stoppingToken);
-                if (sent > 0) logger.LogInformation("Sent {Count} adhkar reminders", sent);
+                await jobLock.RunExclusiveAsync("adhkar-reminders", async () =>
+                {
+                    var sent = await RunOnceAsync(stoppingToken);
+                    if (sent > 0) logger.LogInformation("Sent {Count} adhkar reminders", sent);
+                }, stoppingToken);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
@@ -37,35 +40,65 @@ public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPush
         } while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 
+    /// <summary>صفحة الأجهزة المستحقة في كل استعلام — تبقي الذاكرة وحجم المعاملة ثابتين مهما كبر عدد الأجهزة.</summary>
+    public const int PageSize = 500;
+
+    /// <summary>إرسالات متوازية لخدمات الدفع في الصفحة الواحدة (ذروة الصباح والمساء).</summary>
+    public const int MaxParallelSends = 16;
+
     public async Task<int> RunOnceAsync(CancellationToken ct)
     {
-        await using var scope = scopes.CreateAsyncScope();
-        var db = scope.ServiceProvider.GetRequiredService<SanadDbContext>();
-        var now = scope.ServiceProvider.GetRequiredService<IDateTime>().UtcNow;
-        var devices = await db.ReminderDevices
-            .Where(d => d.MorningAt != null || d.EveningAt != null || d.SleepAt != null)
-            .ToListAsync(ct);
-
         var sent = 0;
-        foreach (var device in devices)
+        var lastId = Guid.Empty;
+        while (!ct.IsCancellationRequested)
         {
-            foreach (var (slot, day) in device.DueSlots(now))
+            await using var scope = scopes.CreateAsyncScope();
+            var db = scope.ServiceProvider.GetRequiredService<SanadDbContext>();
+            var now = scope.ServiceProvider.GetRequiredService<IDateTime>().UtcNow;
+
+            // المستحقة فقط (فهرس NextDueAtUtc)؛ والأجهزة القديمة قبل إضافة العمود تُحسب مرة واحدة ثم تأخذ قيمتها.
+            // ترقيم بالمعرّف: جهاز فشل إرساله مؤقتاً يبقى مستحقاً، فلا يُعاد في الدورة نفسها بل في الدقيقة التالية.
+            var page = await db.ReminderDevices
+                .Where(d => d.Id.CompareTo(lastId) > 0)
+                .Where(d => d.NextDueAtUtc <= now ||
+                            (d.NextDueAtUtc == null && (d.MorningAt != null || d.EveningAt != null || d.SleepAt != null)))
+                .OrderBy(d => d.Id)
+                .Take(PageSize)
+                .ToListAsync(ct);
+            if (page.Count == 0) break;
+            lastId = page[^1].Id;
+
+            var work = page.SelectMany(d => d.DueSlots(now).Select(due => (Device: d, due.Slot, due.Day))).ToList();
+            using var gate = new SemaphoreSlim(MaxParallelSends);
+            var results = await Task.WhenAll(work.Select(async w =>
             {
-                var result = await sender.SendAsync(device, ReminderMessages.For(slot), ct);
-                if (result == PushDelivery.Gone)
+                await gate.WaitAsync(ct);
+                try
                 {
-                    db.ReminderDevices.Remove(device);
-                    break;
+                    return (w.Device, w.Slot, w.Day, Result: await sender.SendAsync(w.Device, ReminderMessages.For(w.Slot), ct));
                 }
-                // الفشل المؤقت يُعاد في الدقيقة التالية ما دامت نافذة الوقت مفتوحة
-                if (result == PushDelivery.Delivered)
+                finally
                 {
-                    device.MarkSent(slot, day);
+                    gate.Release();
+                }
+            }));
+
+            // تحديث الحالة على خيط واحد (DbContext لا يقبل التوازي)
+            var gone = new HashSet<Guid>();
+            foreach (var r in results)
+            {
+                if (r.Result == PushDelivery.Gone && gone.Add(r.Device.Id)) db.ReminderDevices.Remove(r.Device);
+                else if (r.Result == PushDelivery.Delivered)
+                {
+                    r.Device.MarkSent(r.Slot, r.Day);
                     sent++;
                 }
+                // الفشل المؤقت يُعاد في الدقيقة التالية ما دامت نافذة الوقت مفتوحة
             }
+            foreach (var device in page.Where(d => !gone.Contains(d.Id))) device.RefreshNextDue(now);
+            await db.SaveChangesAsync(ct);
+            if (page.Count < PageSize) break;
         }
-        await db.SaveChangesAsync(ct);
         return sent;
     }
 }

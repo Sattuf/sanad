@@ -110,6 +110,49 @@ public class ReminderDeviceTests
     }
 
     [Fact]
+    public void Next_due_is_the_earliest_unsent_slot_in_utc()
+    {
+        // الرياض UTC+3: الصباح 06:30 = 03:30 UTC، والمساء 17:30 = 14:30 UTC
+        var device = Device("Asia/Riyadh", morning: new TimeOnly(6, 30), evening: new TimeOnly(17, 30));
+        var early = new DateTimeOffset(2026, 9, 30, 2, 0, 0, TimeSpan.Zero);
+        device.RefreshNextDue(early);
+        device.NextDueAtUtc.Should().Be(new DateTimeOffset(2026, 9, 30, 3, 30, 0, TimeSpan.Zero));
+
+        // داخل النافذة ولم يُرسل: مستحق الآن (فشل مؤقت يُعاد في الدقيقة التالية)
+        var inWindow = new DateTimeOffset(2026, 9, 30, 3, 40, 0, TimeSpan.Zero);
+        device.RefreshNextDue(inWindow);
+        device.NextDueAtUtc.Should().BeOnOrBefore(inWindow);
+
+        device.MarkSent(ReminderSlot.Morning, new DateOnly(2026, 9, 30));
+        device.RefreshNextDue(inWindow);
+        device.NextDueAtUtc.Should().Be(new DateTimeOffset(2026, 9, 30, 14, 30, 0, TimeSpan.Zero), "التالي هو المساء");
+
+        device.MarkSent(ReminderSlot.Evening, new DateOnly(2026, 9, 30));
+        device.RefreshNextDue(new DateTimeOffset(2026, 9, 30, 15, 0, 0, TimeSpan.Zero));
+        device.NextDueAtUtc.Should().Be(new DateTimeOffset(2026, 10, 1, 3, 30, 0, TimeSpan.Zero), "صباح الغد");
+    }
+
+    [Fact]
+    public void Missed_window_moves_to_the_next_day_and_no_slots_means_never()
+    {
+        var device = Device("UTC", morning: new TimeOnly(6, 0));
+        device.RefreshNextDue(new DateTimeOffset(2026, 9, 30, 7, 0, 0, TimeSpan.Zero));
+        device.NextDueAtUtc.Should().Be(new DateTimeOffset(2026, 10, 1, 6, 0, 0, TimeSpan.Zero));
+
+        device.Schedule("UTC", null, null, null, Now);
+        device.NextDueAtUtc.Should().BeNull();
+    }
+
+    [Fact]
+    public void Time_in_a_daylight_saving_gap_is_shifted_not_lost()
+    {
+        // نيويورك 2026-03-08: الساعة تقفز من 02:00 إلى 03:00 — 02:30 غير موجودة
+        var device = Device("America/New_York", sleep: new TimeOnly(2, 30));
+        device.RefreshNextDue(new DateTimeOffset(2026, 3, 8, 5, 0, 0, TimeSpan.Zero)); // 00:00 محلياً
+        device.NextDueAtUtc.Should().Be(new DateTimeOffset(2026, 3, 8, 7, 30, 0, TimeSpan.Zero)); // 03:30 EDT
+    }
+
+    [Fact]
     public void Unknown_time_zone_and_malformed_keys_are_rejected()
     {
         var act = () => Device("Mars/Olympus");

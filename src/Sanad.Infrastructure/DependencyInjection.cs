@@ -139,7 +139,9 @@ public static class DependencyInjection
         // ── CAPTCHA ──
         services.AddHttpClient<ICaptchaVerifier, TurnstileCaptchaVerifier>(c => c.Timeout = TimeSpan.FromSeconds(5));
 
-        // ── الخدمات الخلفية ──
+        // ── الخدمات الخلفية: كل مهمة على نسخة واحدة في كل مرة (ADR-0020) ──
+        if (provider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase)) services.AddSingleton<IJobLock, InProcessJobLock>();
+        else services.AddSingleton<IJobLock>(new PostgresAdvisoryJobLock(connectionString));
         services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<DevDataSeeder>(); // Development + DevSeed:Enabled فقط
         services.AddSingleton<OutboxProcessor>();

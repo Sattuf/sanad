@@ -31,6 +31,12 @@ public sealed partial class ReminderDevice : BaseEntity
     public DateOnly? LastEveningOn { get; private set; }
     public DateOnly? LastSleepOn { get; private set; }
 
+    /// <summary>
+    /// أقرب لحظة (UTC) يحين فيها تذكير لم يُرسل بعد — مفهرسة، فتجلب المهمة كل دقيقة الأجهزة المستحقة فقط
+    /// بدل كل الأجهزة (ADR-0020). null = لا أوقات مفعّلة.
+    /// </summary>
+    public DateTimeOffset? NextDueAtUtc { get; private set; }
+
     public static ReminderDevice Register(Guid userId, string endpoint, string p256dh, string auth, DateTimeOffset nowUtc)
     {
         var device = new ReminderDevice { CreatedAtUtc = nowUtc };
@@ -58,6 +64,7 @@ public sealed partial class ReminderDevice : BaseEntity
         EveningAt = eveningAt;
         SleepAt = sleepAt;
         UpdatedAtUtc = nowUtc;
+        RefreshNextDue(nowUtc);
     }
 
     public TimeOnly? TimeOf(ReminderSlot slot) => slot switch
@@ -97,6 +104,40 @@ public sealed partial class ReminderDevice : BaseEntity
             }
         }
         return due;
+    }
+
+    /// <summary>
+    /// يعيد حساب أقرب موعد مستحق: لكل وقت مفعّل، أول يوم محلي لم يُرسل فيه ولم تنقضِ نافذته بعد.
+    /// موعد نافذته مفتوحة الآن يعطي لحظة ≤ الآن (مستحق فوراً) — فالفشل المؤقت يُعاد في الدقيقة التالية.
+    /// </summary>
+    public void RefreshNextDue(DateTimeOffset nowUtc)
+    {
+        var tz = TimeZoneInfo.FindSystemTimeZoneById(TimeZone);
+        var local = TimeZoneInfo.ConvertTime(nowUtc, tz).DateTime;
+        var today = DateOnly.FromDateTime(local);
+        DateTimeOffset? next = null;
+        foreach (var slot in Enum.GetValues<ReminderSlot>())
+        {
+            if (TimeOf(slot) is not { } at) continue;
+            for (var offset = -1; offset <= 2; offset++)
+            {
+                var day = today.AddDays(offset);
+                var scheduled = day.ToDateTime(at);
+                if (LastSentOn(slot) == day || scheduled + SendWindow <= local) continue;
+                var utc = ToUtc(scheduled, tz);
+                if (next is null || utc < next) next = utc;
+                break;
+            }
+        }
+        NextDueAtUtc = next;
+    }
+
+    /// <summary>وقت محلي ← UTC. وقت يقع في فجوة التوقيت الصيفي (غير موجود) يُزاح ساعة.</summary>
+    private static DateTimeOffset ToUtc(DateTime local, TimeZoneInfo tz)
+    {
+        var unspecified = DateTime.SpecifyKind(local, DateTimeKind.Unspecified);
+        if (tz.IsInvalidTime(unspecified)) unspecified = unspecified.AddHours(1);
+        return new DateTimeOffset(TimeZoneInfo.ConvertTimeToUtc(unspecified, tz), TimeSpan.Zero);
     }
 
     public void MarkSent(ReminderSlot slot, DateOnly day)

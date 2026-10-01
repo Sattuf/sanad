@@ -677,6 +677,9 @@ namespace Sanad.Infrastructure.Persistence.Migrations
                     b.Property<TimeOnly?>("MorningAt")
                         .HasColumnType("time without time zone");
 
+                    b.Property<DateTimeOffset?>("NextDueAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("P256dh")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -700,6 +703,8 @@ namespace Sanad.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Endpoint")
                         .IsUnique();
+
+                    b.HasIndex("NextDueAtUtc");
 
                     b.HasIndex("UserId");
 

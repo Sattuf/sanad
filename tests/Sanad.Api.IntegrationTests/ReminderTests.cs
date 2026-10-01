@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sanad.Api.IntegrationTests.Infrastructure;
@@ -149,6 +150,52 @@ public sealed class ReminderTests(ReminderFixture fixture) : IClassFixture<Remin
 
         var devices = (await Ok(await me.GetAsync("/api/v1/me/reminders/devices"))).AsArray();
         devices.Select(d => d!["endpoint"]!.GetValue<string>()).Should().Equal(endpoint);
+    }
+
+    [Fact]
+    public async Task Scheduler_pages_through_many_due_devices_skips_not_due_and_backfills_legacy_rows()
+    {
+        var owner = await _api.RegisterBeneficiaryAsync();
+        var now = DateTimeOffset.UtcNow;
+        var dueAt = TimeOnly.FromDateTime(now.AddMinutes(-1).UtcDateTime);
+        var notDueAt = TimeOnly.FromDateTime(now.AddHours(3).UtcDateTime);
+        var tag = Guid.NewGuid().ToString("N")[..8];
+        var count = AdhkarReminderJob.PageSize + 150; // أكثر من صفحة
+
+        await using (var scope = fixture.Factory.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Sanad.Infrastructure.Persistence.SanadDbContext>();
+            for (var i = 0; i < count; i++)
+            {
+                var d = ReminderDevice.Register(owner.UserId, $"https://fcm.googleapis.com/fcm/send/bulk-{tag}-{i}", P256dh, AuthKey, now);
+                d.Schedule("UTC", dueAt, null, null, now);
+                db.ReminderDevices.Add(d);
+            }
+            var later = ReminderDevice.Register(owner.UserId, $"https://fcm.googleapis.com/fcm/send/later-{tag}", P256dh, AuthKey, now);
+            later.Schedule("UTC", notDueAt, null, null, now);
+            db.ReminderDevices.Add(later);
+            var legacy = ReminderDevice.Register(owner.UserId, $"https://fcm.googleapis.com/fcm/send/legacy-{tag}", P256dh, AuthKey, now);
+            legacy.Schedule("UTC", dueAt, null, null, now);
+            db.ReminderDevices.Add(legacy);
+            await db.SaveChangesAsync();
+            // صف قديم من قبل إضافة العمود
+            await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE ReminderDevices SET NextDueAtUtc = NULL WHERE Id = {legacy.Id}");
+        }
+
+        var job = fixture.Factory.Services.GetRequiredService<AdhkarReminderJob>();
+        await job.RunOnceAsync(CancellationToken.None);
+        await job.RunOnceAsync(CancellationToken.None);
+
+        var sent = fixture.Sender.Sent.Select(s => s.Endpoint).Where(e => e.Contains(tag, StringComparison.Ordinal)).ToList();
+        sent.Count(e => e.Contains("/bulk-", StringComparison.Ordinal)).Should().Be(count, "كل جهاز مستحق مرة واحدة عبر الصفحات");
+        sent.Should().OnlyHaveUniqueItems();
+        sent.Should().Contain(e => e.Contains("/legacy-", StringComparison.Ordinal), "الصفوف القديمة تُحسب مرة ثم تأخذ قيمتها");
+        sent.Should().NotContain(e => e.Contains("/later-", StringComparison.Ordinal));
+
+        await using var check = fixture.Factory.Services.CreateAsyncScope();
+        var after = check.ServiceProvider.GetRequiredService<Sanad.Infrastructure.Persistence.SanadDbContext>();
+        var remaining = await after.ReminderDevices.Where(d => d.Endpoint.Contains(tag)).ToListAsync();
+        remaining.Should().OnlyContain(d => d.NextDueAtUtc > now, "بعد الإرسال يصبح الموعد التالي في المستقبل");
     }
 
     [Fact]

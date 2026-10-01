@@ -249,6 +249,7 @@ public sealed class ReminderDeviceConfiguration : IEntityTypeConfiguration<Remin
         b.Property(x => x.TimeZone).HasMaxLength(64).IsRequired();
         b.HasIndex(x => x.Endpoint).IsUnique();
         b.HasIndex(x => x.UserId);
+        b.HasIndex(x => x.NextDueAtUtc);
     }
 }
 
