@@ -15,6 +15,8 @@ src/
   Sanad.Api             Minimal APIs، Policies، Middleware أمني، OpenAPI
 tests/                  Domain / Application / Api.IntegrationTests
 frontend/               React 18 + TypeScript + Vite + Tailwind، عربي RTL، Framer Motion
+mobile/                 تطبيق الجوال: Expo (React Native) — راجع mobile/README.md
+packages/shared/        منطق ومحتوى مشترك بين الويب والجوال (أنواع، عميل الـ API، الطوارئ، القرآن والأدعية)
 docs/adr/               سجل قرارات المعمارية (15 قراراً)
 references/             الحزمة المرجعية الأصلية
 ```
@@ -32,6 +34,9 @@ $env:ASPNETCORE_ENVIRONMENT="Development"; dotnet run --project src/Sanad.Api --
 
 # 3) الواجهة على http://localhost:5173
 cd frontend; npm install; npm run dev
+
+# 4) تطبيق الجوال (اختياري) — امسح رمز QR بتطبيق Expo Go
+cd mobile; npm install; npm start
 ```
 
 **حسابات تجريبية** (تُنشأ تلقائياً في Development، كلمة المرور `Demo-Pass-123`):
@@ -46,6 +51,8 @@ cd frontend; npm install; npm run dev
 ```powershell
 dotnet test                                  # Domain + Application + تكامل (23 سيناريو إلزامي على الـ API الحقيقي)
 cd frontend; npm test; npm run lint; npm run build
+cd packages/shared; npm test; npm run check:pure    # نص القرآن مطابق، ولا اعتمادات خارجية
+cd mobile; npm run typecheck; npm run lint; npm test
 npx playwright test                          # E2E — يتطلب تشغيل الـ API والواجهة أولاً
 ```
 

@@ -45,30 +45,36 @@
 
 ```
 sanad/
-├── package.json                 npm workspaces: frontend, mobile, packages/*
 ├── packages/shared/             ← يُستخرج من frontend/src (لا كود جديد)
-│   ├── api/                     types.ts، client-core.ts (fetch + تجديد الرمز + ApiError + التقاط الطوارئ)
+│   ├── api/                     types.ts، core.ts (createApiClient: تجديد الرمز + ApiError + التقاط الطوارئ)
 │   ├── safety/                  كشف ترويسة/حقل الطوارئ، نصوص الإحالة
-│   ├── schemas/                 مخططات Zod
 │   ├── content/                 ruqyah، health، quran (نص مطابق — ADR-0016)
-│   └── i18n/ar.ts
+│   ├── i18n/ar.ts
+│   └── lib/                     التنسيق، رموز الدول، ألوان الحالة
 ├── frontend/                    الويب — يستورد من @sanad/shared
 ├── mobile/
-│   ├── app/                     Expo Router: (auth)/ (tabs)/ ruqyah/ library/ directory/ booking/ chat/ account/
-│   ├── src/components/          نظام التصميم الأصلي
-│   ├── src/platform/            secure-store، notifications، audio، auth
+│   ├── src/app/                 Expo Router: (tabs)/ ruqyah/ emergency … (auth)/ booking/ chat/ لاحقاً
+│   ├── src/components/          نظام التصميم الأصلي وشريط الطوارئ
+│   ├── src/stores/ src/lib/     الجلسة الآمنة، ربط عميل الـ API
 │   ├── app.config.ts            المعرّف app.sanad، الأذونات، الروابط
 │   └── .maestro/                سيناريوهات E2E
 └── src/                         الخادم (.NET)
 ```
 **قاعدة:** أي منطق لا يخص العرض يعيش في `packages/shared` ويُختبر مرة واحدة. ممنوع نسخ نص قرآني أو دعاء داخل `mobile/`.
 
+**لماذا بلا npm workspaces؟** الويب على React 18 والجوال على React 19 (Expo SDK 57)؛ رفعهما لـ `node_modules` واحد يسبب نسختين من React.
+لذا الحزمة المشتركة بلا أي اعتماد وقت تشغيل، وكل تطبيق يقرؤها من المصدر عبر الاسم المستعار `@sanad/shared/*`
+(Vite + tsconfig في الويب، Metro + tsconfig في الجوال)، ولكل مشروع `package-lock.json` خاص.
+
 ## 4. المراحل ومعايير القبول
 
 ### الأسبوع 1 — التأسيس
-- [ ] حسابا Apple Developer وGoogle Play (حساب **منظمة** بـ D-U-N-S لتجنب شرط 12 مختبِراً × 14 يوماً للحساب الشخصي).
-- [ ] إنشاء `packages/shared` بنقل الملفات من `frontend/src` وتحديث الاستيرادات؛ **الويب يمر بكل اختباراته دون تغيير**.
-- [ ] مشروع Expo، EAS، بيئات (dev/staging/prod)، Sentry، CI على كل PR (typecheck، lint، jest).
+- [ ] حسابا Apple Developer وGoogle Play (حساب **منظمة** بـ D-U-N-S لتجنب شرط 12 مختبِراً × 14 يوماً للحساب الشخصي). ← **على صاحب المشروع**
+- [x] إنشاء `packages/shared` بنقل الملفات من `frontend/src` وتحديث الاستيرادات؛ الويب يمر بكل اختباراته دون تغيير.
+      نواة عميل الـ API صارت `createApiClient` بجلسة وطوارئ محقونتين، وفحص آلي يمنع أي اعتماد خارجي في الحزمة.
+- [x] مشروع Expo SDK 57 (`mobile/`): Expo Router، RTL مفروض، خطوط الهوية، جلسة في Keychain/Keystore، شريط الطوارئ،
+      التبويبات الخمس، قارئ الأوراد من المحتوى المشترك، صفحة الطوارئ. CI: `shared` و`mobile` (typecheck، lint، jest، حزم Metro للمنصتين).
+- [ ] EAS (يحتاج حساب Expo)، بيئات dev/staging/prod، Sentry.
 - [ ] المصمم: تحويل الهوية الحالية إلى شاشات أصلية (تبويبات، رؤوس، أوراق سفلية) في Figma.
 
 **القبول:** `npm test` للويب والحزمة المشتركة أخضر · بناء تطوير يعمل على جهازين حقيقيين بالعربية RTL.

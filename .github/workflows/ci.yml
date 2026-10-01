@@ -54,3 +54,35 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm audit --audit-level=high
+
+  # المنطق والمحتوى المشترك بين الويب والجوال (ADR-0018): بلا اعتمادات خارجية، ونص القرآن مطابق حرفياً
+  shared:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: packages/shared }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: packages/shared/package-lock.json }
+      - run: npm ci
+      - run: npm run check:pure
+      - run: npm run typecheck
+      - run: npm test
+
+  mobile:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: mobile }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: mobile/package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test -- --ci
+      # يثبت أن Metro يحزم التطبيق مع packages/shared للمنصتين (لا يحتاج حساب Expo)
+      - run: npm run bundle:check
+        env: { CI: "1" }
