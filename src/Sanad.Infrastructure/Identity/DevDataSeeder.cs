@@ -34,6 +34,7 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
         var sp = scope.ServiceProvider;
         var users = sp.GetRequiredService<UserManager<ApplicationUser>>();
         await EnsureContentManagerAsync(users, sp.GetRequiredService<SanadDbContext>(), cancellationToken);
+        await DevCompanionSeed.SeedAsync(sp.GetRequiredService<SanadDbContext>(), sp.GetRequiredService<IContentPolicyChecker>(), cancellationToken);
         if (await users.FindByEmailAsync("beneficiary@sanad.local") is not null) return;
 
         var db = sp.GetRequiredService<SanadDbContext>();

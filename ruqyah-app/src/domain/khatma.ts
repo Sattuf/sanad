@@ -21,6 +21,12 @@ export interface Khatma {
   targetDate?: string;
   completedAt?: string;
   inviteCode?: string;
+  /** الختمة الفردية المزامَنة في الحساب (إن دخل المستخدم). */
+  remoteId?: string;
+  /** أجزاء أُلغيت قراءتها على هذا الجهاز ولم يُبلَّغ الخادم بعد. */
+  pendingUndo?: number[];
+  /** بدأ ختمة جديدة على هذا الجهاز بعد إتمام السابقة، ولم يُبلَّغ الخادم بعد. */
+  pendingNewRound?: boolean;
 }
 
 export const ME = "me";

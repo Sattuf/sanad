@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const server = vi.hoisted(() => ({
   enrollment: null as null | Record<string, unknown>,
   calls: [] as string[],
+  khatma: null as null | { id: string; done: Set<number> },
   plan: {
     id: "p1", title: "خطة منشورة", summary: "ملخص", contents: "محتوى", durationDays: 7 as const, minutesPerDay: 5, version: 1,
     publishedAtUtc: null, safetyCheckedAtUtc: null, isCurrent: true,
@@ -23,6 +24,11 @@ vi.mock("../../api/client", () => ({
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), del: vi.fn() },
 }));
 
+const view = () => ({
+  id: server.khatma!.id, mode: "Solo", isOwner: true, doneCount: server.khatma!.done.size,
+  juz: Array.from({ length: 30 }, (_, i) => ({ index: i + 1, memberKey: "me", isMine: true, done: server.khatma!.done.has(i + 1) })),
+});
+
 vi.mock("../../api/companion", () => ({
   companionApi: {
     plans: async () => [server.plan],
@@ -38,6 +44,19 @@ vi.mock("../../api/companion", () => ({
       const merged = [...new Set([...(server.enrollment!.completedDays as number[]), ...completedDays])].sort((a, b) => a - b);
       server.enrollment = { ...server.enrollment!, completedDays: merged };
       return server.enrollment;
+    },
+    khatmas: async () => (server.khatma ? [view()] : []),
+    createKhatma: async () => {
+      server.calls.push("createKhatma");
+      server.khatma = { id: "k1", done: new Set() };
+      return view();
+    },
+    act: async (_id: string, action: string, juz?: number[]) => {
+      server.calls.push(`${action}:${(juz ?? []).join(",")}`);
+      if (action === "MarkDone") juz!.forEach((i) => server.khatma!.done.add(i));
+      if (action === "MarkUndone") juz!.forEach((i) => server.khatma!.done.delete(i));
+      if (action === "NewRound") server.khatma!.done.clear();
+      return view();
     },
     stop: async () => {
       server.calls.push("stop");
@@ -56,6 +75,7 @@ beforeEach(() => {
   localStorage.clear();
   resetStore();
   server.enrollment = null;
+  server.khatma = null;
   server.calls = [];
   setRemotePlans([plan]);
 });
@@ -91,10 +111,49 @@ describe("مزامنة الخطة", () => {
     expect(getState().pendingStopId).toBeNull();
   });
 
-  it("الخطة التجريبية المحلية لا تُرسل للخادم", async () => {
+  it("الخطة المضمَّنة في التطبيق لا تُرسل للخادم", async () => {
     setRemotePlans([]);
     actions.startPlan("morning-evening-7");
     await syncEnrollment();
     expect(server.calls).toEqual([]);
+  });
+});
+
+describe("مزامنة الختمة الفردية", () => {
+  const doneOf = () => getState().khatma.juz.filter((j) => j.doneAt).map((j) => j.index);
+
+  it("ختمة الجهاز تُنشأ في الحساب وتُرفع أجزاؤها المقروءة", async () => {
+    actions.toggleJuz(1);
+    actions.toggleJuz(2);
+    await syncEnrollment();
+    expect(server.calls).toContain("createKhatma");
+    expect([...server.khatma!.done].sort()).toEqual([1, 2]);
+    expect(getState().khatma.remoteId).toBe("k1");
+  });
+
+  it("ما قُرئ على جهاز آخر يظهر، والإلغاء يُبلَّغ", async () => {
+    actions.toggleJuz(1);
+    await syncEnrollment();
+    server.khatma!.done.add(5); // جهاز آخر
+    await syncEnrollment();
+    expect(doneOf()).toEqual([1, 5]);
+
+    actions.toggleJuz(1); // إلغاء على هذا الجهاز
+    expect(getState().khatma.pendingUndo).toEqual([1]);
+    await syncEnrollment();
+    expect(server.calls).toContain("MarkUndone:1");
+    expect(doneOf()).toEqual([5]);
+    expect(getState().khatma.pendingUndo).toEqual([]);
+  });
+
+  it("الختمة الجديدة بعد التمام تبدأ دورة جديدة في الحساب", async () => {
+    for (let i = 1; i <= 30; i++) actions.toggleJuz(i);
+    await syncEnrollment();
+    actions.newKhatma();
+    expect(getState().khatma.pendingNewRound).toBe(true);
+    await syncEnrollment();
+    expect(server.calls).toContain("NewRound:");
+    expect(server.khatma!.done.size).toBe(0);
+    expect(doneOf()).toEqual([]);
   });
 });

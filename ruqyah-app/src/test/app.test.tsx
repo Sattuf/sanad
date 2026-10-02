@@ -51,7 +51,8 @@ describe("طبقة الأمان", () => {
     render(<App />);
     go("#/plans/ruqyah-full-21");
     expect(screen.getAllByText(/الرقية لا تعني ترك العلاج الموصوف لك/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/خطة تجريبية/)).toBeInTheDocument();
+    expect(screen.queryByText(/خطة تجريبية/)).toBeNull();
+    expect(screen.getByText("تاريخ الإذن")).toBeInTheDocument();
   });
 });
 

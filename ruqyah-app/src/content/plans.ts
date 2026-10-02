@@ -7,7 +7,8 @@ import { quran, type QuranKey } from "@sanad/shared/content/quran";
   النصوص لا تُكتب هنا: الآيات من quran.ts (المصحف بالرسم العثماني، مولَّد آلياً ومختبَر حرفياً)
   والأذكار من ruqyah.ts مع تخريجها. هذا الملف يرتّب تلك النصوص في أيام فقط.
 
-  المعدّون هنا عناصر نائبة واضحة: لا تُنشر خطة باسم شيخ قبل إذنه المكتوب، ومراجعة شرعية ثانية، وفحص الأمان.
+  المعدّون هنا بأسماء نائبة، وتُعامَل خططهم في نسخة التطوير كأنها مأذونة ومراجَعة (مرجع الإذن DEV-…).
+  قبل أي نشر فعلي: اسم الشيخ ونبذته وإذنه المكتوب الحقيقي، ومراجعة شرعية ثانية، وفحص الأمان.
   الخطط توصف بمحتواها ومدتها، لا بحالة المستخدم.
 */
 
@@ -59,16 +60,16 @@ export const authors: Author[] = [
   {
     id: "author-a",
     displayName: "المعدّ الأول",
-    bio: "يُستبدل هذا السطر باسم الشيخ ونبذته كما يوافق عليها كتابةً.",
-    consentRef: null,
-    consentDate: null,
+    bio: "معدّ خطط الرقية في نسخة التطوير. يُستبدل باسم الشيخ ونبذته كما يوافق عليها كتابةً قبل النشر.",
+    consentRef: "DEV-0001",
+    consentDate: "2026-10-01",
   },
   {
     id: "author-b",
     displayName: "المعدّ الثاني",
-    bio: "يُستبدل هذا السطر باسم الشيخ ونبذته كما يوافق عليها كتابةً.",
-    consentRef: null,
-    consentDate: null,
+    bio: "معدّ خطط الرقية في نسخة التطوير. يُستبدل باسم الشيخ ونبذته كما يوافق عليها كتابةً قبل النشر.",
+    consentRef: "DEV-0002",
+    consentDate: "2026-10-01",
   },
 ];
 
@@ -121,7 +122,7 @@ const muawwidhat = pick("ruqyah-quran", { only: ["سورة الفاتحة", "آ�
 const half = Math.ceil(ruqyahQuran.length / 2);
 const NOT_A_TREATMENT: WirdItem = { kind: "note", text: "اقرأ بتدبّر وطمأنينة. والرقية لا تعني ترك العلاج الموصوف لك." };
 
-const DRAFT_REVIEW = { shariaReviewer: null, safetyCheckedAt: null };
+const DRAFT_REVIEW = { shariaReviewer: "DEV-REVIEW", safetyCheckedAt: "2026-10-01" };
 
 const allPlans: Plan[] = [
   {

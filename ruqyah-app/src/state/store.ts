@@ -137,7 +137,19 @@ export const actions = {
   },
 
   toggleJuz(index: number) {
-    set({ khatma: toggleJuz(state.khatma, index) });
+    const k = state.khatma;
+    const wasDone = Boolean(k.juz.find((j) => j.index === index)?.doneAt);
+    const next = toggleJuz(k, index);
+    // الإلغاء يُحفظ للمزامنة (الدمج اتحاد، فالإلغاء وحده يحتاج إبلاغاً صريحاً)
+    const pending = new Set(k.pendingUndo ?? []);
+    if (wasDone && k.remoteId) pending.add(index);
+    else pending.delete(index);
+    set({ khatma: { ...next, pendingUndo: [...pending] } });
+  },
+
+  /** من المزامنة: ختمة مدموجة مع الحساب. */
+  syncKhatma(khatma: Khatma) {
+    set({ khatma });
   },
 
   setKhatmaTarget(targetDate: string | undefined) {
@@ -145,7 +157,8 @@ export const actions = {
   },
 
   newKhatma() {
-    set({ khatma: newSoloKhatma() });
+    const remoteId = state.khatma.remoteId;
+    set({ khatma: { ...newSoloKhatma(), remoteId, pendingNewRound: Boolean(remoteId) } });
   },
 
   updateSettings(patch: Partial<Settings>) {

@@ -99,6 +99,8 @@ jobs:
         with: { node-version: "22", cache: npm, cache-dependency-path: ruqyah-app/package-lock.json }
       - run: npm ci
       - run: npm run check:guardrails
+      # بذور خطط التطوير في الخادم مولَّدة من الخطط المضمَّنة — يجب أن تطابقها
+      - run: npm run export:dev-plans && git diff --exit-code ../src/Sanad.Infrastructure/Identity/DevSeed/companion-plans.json
       - run: npm run typecheck
       - run: npm test
       - run: npm run build

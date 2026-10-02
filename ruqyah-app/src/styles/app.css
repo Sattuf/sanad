@@ -147,6 +147,10 @@ a.ruled-row:hover .plan-title { color: var(--lazward); }
 .source, .item-note { grid-column: 1 / -1; font-size: .82rem; color: var(--ink-soft); margin: 0; }
 .author-note { grid-column: 1 / -1; }
 .author-note .note { margin-top: 0; }
+.listen { grid-column: 1 / -1; margin: 0; font-size: .9rem; }
+.ayat .now-reciting { background: color-mix(in srgb, var(--leaf) 28%, transparent); border-radius: 2px; }
+.audio-bar { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; justify-content: space-between; font-size: .85rem; margin-top: .75rem; padding: .5rem .75rem; background: var(--paper-2); }
+.audio-bar select { border: 1px solid var(--rule); background: var(--paper); color: var(--ink); border-radius: 2px; padding: .2rem .4rem; }
 .counter { align-self: center; background: none; border: 0; padding: 0; cursor: pointer; width: 64px; text-align: center; }
 .counter svg { display: block; margin: auto; }
 .counter .track { fill: none; stroke: var(--rule); stroke-width: 3; }
