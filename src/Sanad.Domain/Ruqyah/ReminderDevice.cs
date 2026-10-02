@@ -6,6 +6,9 @@ namespace Sanad.Domain.Ruqyah;
 
 public enum ReminderSlot { Morning, Evening, Sleep }
 
+/// <summary>التطبيق الذي سجّل الجهاز: يحدد نص الإشعار ومساره. Web: «الرقية والتحصين»، Companion: تطبيق «سند» للرقية الذاتية.</summary>
+public enum ReminderClient { Web, Companion }
+
 /// <summary>
 /// جهاز مسجَّل لتذكير الأذكار عبر Web Push (معيار المتصفح، بلا مزوّد خارجي). شخصي بالكامل ويُحذف مع الحساب.
 /// الأوقات بتوقيت المستخدم المحلي (منطقة IANA)، ولكل وقت تاريخ آخر إرسال حتى لا يتكرر في اليوم نفسه.
@@ -24,6 +27,7 @@ public sealed partial class ReminderDevice : BaseEntity
     public string P256dh { get; private set; } = null!;
     public string Auth { get; private set; } = null!;
     public string TimeZone { get; private set; } = null!;
+    public ReminderClient Client { get; private set; } = ReminderClient.Web;
     public TimeOnly? MorningAt { get; private set; }
     public TimeOnly? EveningAt { get; private set; }
     public TimeOnly? SleepAt { get; private set; }
@@ -55,6 +59,8 @@ public sealed partial class ReminderDevice : BaseEntity
         Auth = ValidKey(auth, 100);
         UpdatedAtUtc = nowUtc;
     }
+
+    public void SetClient(ReminderClient client) => Client = client;
 
     public void Schedule(string timeZone, TimeOnly? morningAt, TimeOnly? eveningAt, TimeOnly? sleepAt, DateTimeOffset nowUtc)
     {

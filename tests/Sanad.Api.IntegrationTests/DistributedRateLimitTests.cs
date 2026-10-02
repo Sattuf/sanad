@@ -129,6 +129,13 @@ public sealed class DistributedRateLimitTests
         HttpResponseMessage Send(SanadApiFactory node) =>
             new TestApi(node).Client().PostAsync("/api/v1/auth/phone/request-otp", Body(new { phoneNumber = "+966512345678" })).GetAwaiter().GetResult();
 
+        // نوافذ الحد محاذاة لدقائق الساعة: تشغيل العقدتين يستغرق ثوانيَ، فلو وقع حدّ الدقيقة بين الطلبات لبدأ العدّ من جديد.
+        // نشغّل العقدتين أولاً، ثم نرسل الطلبات الأربعة متتالية بعيداً عن آخر الدقيقة.
+        await new TestApi(nodeA).Client().GetAsync("/api/v1/safety/emergency-info");
+        await new TestApi(nodeB).Client().GetAsync("/api/v1/safety/emergency-info");
+        var second = DateTimeOffset.UtcNow.Second;
+        if (second >= 50) await Task.Delay(TimeSpan.FromSeconds(61 - second));
+
         Send(nodeA).StatusCode.Should().Be(HttpStatusCode.Accepted);
         Send(nodeB).StatusCode.Should().Be(HttpStatusCode.Accepted);
         var third = Send(nodeA);

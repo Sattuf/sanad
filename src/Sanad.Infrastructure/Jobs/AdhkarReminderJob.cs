@@ -72,7 +72,7 @@ public sealed class AdhkarReminderJob(IServiceScopeFactory scopes, IReminderPush
                 await gate.WaitAsync(ct);
                 try
                 {
-                    return (w.Device, w.Slot, w.Day, Result: await sender.SendAsync(w.Device, ReminderMessages.For(w.Slot), ct));
+                    return (w.Device, w.Slot, w.Day, Result: await sender.SendAsync(w.Device, ReminderMessages.For(w.Slot, w.Device.Client), ct));
                 }
                 finally
                 {

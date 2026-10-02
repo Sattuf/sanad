@@ -27,6 +27,12 @@ public interface IReminderPushSender
 
 public static class ReminderMessages
 {
+    /// <summary>تطبيق «سند» للرقية الذاتية: تذكير واحد هادئ بالورد، أياً كان الوقت المختار — ولا ذكر للأيام الفائتة أبداً.</summary>
+    public static ReminderPush For(ReminderSlot slot, ReminderClient client) =>
+        client == ReminderClient.Companion ? Companion.CompanionPushMessages.Wird : For(slot);
+
+    public static ReminderPush TestFor(ReminderClient client) => client == ReminderClient.Companion ? Companion.CompanionPushMessages.Test : Test;
+
     public static ReminderPush For(ReminderSlot slot) => slot switch
     {
         ReminderSlot.Morning => new("أذكار الصباح", "حان وقت أذكار الصباح — ابدأ يومك بذكر الله.", "/ruqyah/morning-evening", "sanad-morning"),
@@ -93,8 +99,9 @@ public sealed class GetMyReminderDevicesQueryHandler(IApplicationDbContext db, A
     }
 }
 
+/// <summary>Client: التطبيق الذي يسجّل الجهاز (الافتراضي «الرقية والتحصين» في الويب).</summary>
 public sealed record SaveMyReminderDeviceCommand(string Endpoint, string P256dh, string Auth, string TimeZone,
-    string? Morning, string? Evening, string? Sleep) : ICommand<ReminderDeviceDto>;
+    string? Morning, string? Evening, string? Sleep, ReminderClient? Client = null) : ICommand<ReminderDeviceDto>;
 
 public sealed class SaveMyReminderDeviceCommandValidator : AbstractValidator<SaveMyReminderDeviceCommand>
 {
@@ -108,6 +115,7 @@ public sealed class SaveMyReminderDeviceCommandValidator : AbstractValidator<Sav
         RuleFor(x => x.Morning).Must(ReminderTimes.IsValid).WithMessage("وقت أذكار الصباح غير صالح.");
         RuleFor(x => x.Evening).Must(ReminderTimes.IsValid).WithMessage("وقت أذكار المساء غير صالح.");
         RuleFor(x => x.Sleep).Must(ReminderTimes.IsValid).WithMessage("وقت أذكار النوم غير صالح.");
+        RuleFor(x => x.Client).IsInEnum().When(x => x.Client is not null);
     }
 }
 
@@ -134,6 +142,7 @@ public sealed class SaveMyReminderDeviceCommandHandler(IApplicationDbContext db,
         {
             device.Bind(userId, request.Endpoint, request.P256dh, request.Auth, now);
         }
+        device.SetClient(request.Client ?? ReminderClient.Web);
         device.Schedule(request.TimeZone, ReminderTimes.Parse(request.Morning), ReminderTimes.Parse(request.Evening), ReminderTimes.Parse(request.Sleep), now);
 
         await db.SaveChangesAsync(cancellationToken);
@@ -170,7 +179,7 @@ public sealed class SendTestReminderCommandHandler(IApplicationDbContext db, Acc
         var device = await db.ReminderDevices.FirstOrDefaultAsync(d => d.UserId == userId && d.Endpoint == request.Endpoint, cancellationToken)
             ?? throw new NotFoundException("جهاز التذكير", "الحالي");
 
-        switch (await sender.SendAsync(device, ReminderMessages.Test, cancellationToken))
+        switch (await sender.SendAsync(device, ReminderMessages.TestFor(device.Client), cancellationToken))
         {
             case PushDelivery.Gone:
                 db.ReminderDevices.Remove(device);

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Domain.Audit;
 using Sanad.Domain.Common;
+using Sanad.Domain.Companion;
 using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
@@ -54,6 +55,12 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     public DbSet<EscalationCase> EscalationCases => Set<EscalationCase>();
     public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
     public DbSet<StoredFile> StoredFiles => Set<StoredFile>();
+    public DbSet<PlanAuthor> PlanAuthors => Set<PlanAuthor>();
+    public DbSet<RuqyahPlan> RuqyahPlans => Set<RuqyahPlan>();
+    public DbSet<PlanEnrollment> PlanEnrollments => Set<PlanEnrollment>();
+    public DbSet<Khatma> Khatmas => Set<Khatma>();
+    public DbSet<EmergencyContact> EmergencyContacts => Set<EmergencyContact>();
+    public DbSet<CompanionEventCounter> CompanionEventCounters => Set<CompanionEventCounter>();
 
     // بنية تحتية بحتة
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();

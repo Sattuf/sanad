@@ -34,4 +34,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- خطط تطبيق «سند» لبيئة التطوير فقط — مولَّدة من ruqyah-app (npm run export:dev-plans) -->
+    <EmbeddedResource Include="Identity\DevSeed\companion-plans.json" />
+  </ItemGroup>
 </Project>

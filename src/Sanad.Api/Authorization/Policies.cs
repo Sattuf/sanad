@@ -20,6 +20,7 @@ public static class Policies
     public const string ManageContentLibrary = nameof(ManageContentLibrary);
     public const string AssignSystemRoles = nameof(AssignSystemRoles);
     public const string ReviewSafety = nameof(ReviewSafety);
+    public const string ViewCompanionInsights = nameof(ViewCompanionInsights);
 
     public static void Register(AuthorizationOptions options)
     {
@@ -34,6 +35,7 @@ public static class Policies
              ctx.User.HasClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa))));
         options.AddPolicy(ManageContentLibrary, p => p.RequireRole(SanadRoles.ContentManager).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
         options.AddPolicy(AssignSystemRoles, p => p.RequireRole(SanadRoles.SystemAdmin).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
+        options.AddPolicy(ViewCompanionInsights, p => p.RequireRole(SanadRoles.ContentManager, SanadRoles.Coordinator).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
         options.AddPolicy(ReviewSafety, p => p.RequireRole(SanadRoles.Coordinator, SanadRoles.ClinicalSupervisor).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
 
         // سياسات "المالك فقط": الدور غير كافٍ بذاته — التحقق الفعلي من الملكية داخل الـ Handler

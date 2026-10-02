@@ -54,6 +54,7 @@ public sealed class SanadApiFactory(Action<IServiceCollection>? configureService
             ["RateLimiting:UploadsPerHour"] = "100000",
             ["RateLimiting:MessagesPerMinute"] = "100000",
             ["RateLimiting:PublicPerMinute"] = "100000",
+            ["RateLimiting:KhatmaInvitesPerHour"] = "100000",
             ["Serilog:MinimumLevel:Default"] = "Warning",
         };
         foreach (var (k, v) in extraSettings ?? new Dictionary<string, string>()) settings[k] = v;
