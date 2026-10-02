@@ -10,6 +10,7 @@ import {
   VerificationQueuePage,
 } from "../features/coordinator-portal/StaffPortal";
 import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
+import { CompanionEmergencyAdminPage, CompanionPlansAdminPage, CompanionStatsPage } from "../features/coordinator-portal/CompanionAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
 import { HealthHubPage } from "../features/health/HealthPages";
@@ -101,6 +102,9 @@ export const router = createBrowserRouter([
           { path: "safety-alerts", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><SafetyAlertsPage /></RequireRole> },
           { path: "library", element: <RequireRole roles={["ContentManager", "SystemAdmin"]}><LibraryAdminPage /></RequireRole> },
           { path: "duas", element: <RequireRole roles={["ContentManager"]}><RuqyahDuasAdminPage /></RequireRole> },
+          { path: "companion-plans", element: <RequireRole roles={["ContentManager"]}><CompanionPlansAdminPage /></RequireRole> },
+          { path: "companion-emergency", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><CompanionEmergencyAdminPage /></RequireRole> },
+          { path: "companion-stats", element: <RequireRole roles={["ContentManager", "Coordinator"]}><CompanionStatsPage /></RequireRole> },
           { path: "users", element: <RequireRole roles={["SystemAdmin"]}><UsersAdminPage /></RequireRole> },
         ],
       },

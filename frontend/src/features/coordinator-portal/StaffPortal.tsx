@@ -22,6 +22,9 @@ const tabs: Array<{ to: string; label: string; roles: Role[] }> = [
   { to: "/staff/safety-alerts", label: "تنبيهات السلامة", roles: ["Coordinator", "ClinicalSupervisor"] },
   { to: "/staff/library", label: "المكتبة", roles: ["ContentManager", "SystemAdmin"] },
   { to: "/staff/duas", label: "الأدعية المكتوبة", roles: ["ContentManager"] },
+  { to: "/staff/companion-plans", label: "خطط تطبيق سند", roles: ["ContentManager"] },
+  { to: "/staff/companion-emergency", label: "أرقام الطوارئ", roles: ["Coordinator", "ClinicalSupervisor"] },
+  { to: "/staff/companion-stats", label: "مؤشرات سند", roles: ["ContentManager", "Coordinator"] },
   { to: "/staff/users", label: "الأدوار", roles: ["SystemAdmin"] },
 ];
 
