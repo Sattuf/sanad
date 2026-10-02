@@ -16,9 +16,11 @@ src/
 tests/                  Domain / Application / Api.IntegrationTests
 frontend/               React 18 + TypeScript + Vite + Tailwind، عربي RTL، Framer Motion
 mobile/                 تطبيق الجوال: Expo (React Native) — راجع mobile/README.md
+ruqyah-app/             «سند» للرقية الذاتية: PWA بلا خادم (خطط، ورد يومي، ختمة) — راجع ruqyah-app/README.md
 packages/shared/        منطق ومحتوى مشترك بين الويب والجوال (أنواع، عميل الـ API، الطوارئ، القرآن والأدعية)
 docs/adr/               سجل قرارات المعمارية (15 قراراً)
 references/             الحزمة المرجعية الأصلية
+.claude/skills/         مهارة sanad-ruqyah-app: نطاق التطبيق وضوابطه ونظام تصميم «المخطوطة المُذهَّبة»
 ```
 
 ## التشغيل المحلي (Windows)

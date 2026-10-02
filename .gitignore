@@ -25,6 +25,7 @@ frontend/dist/
 frontend/coverage/
 frontend/playwright-report/
 frontend/test-results/
+ruqyah-app/dist/
 
 # تطبيق الجوال (Expo) — المجلدات الأصلية تُولَّد بـ prebuild/EAS
 mobile/.expo/

@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>سند — المخطوطة المُذهَّبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Amiri+Quran&family=Reem+Kufi:wght@500;700&family=Readex+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECEEF3; --paper-2:#E1E5EE; --ink:#1A1C2E; --ink-soft:#4A4F6A;
+  --lazward:#23339A; --sarlawh-bg:#1E2C86; --gold:#9E7420; --leaf:#D9B45A;
+  --zinjafr:#A3392A; --fayruz:#2C7F7A; --rule:#C3C9DA; --on-lazward:#F3F1E8;
+  --f-kufi:"Reem Kufi","Noto Kufi Arabic",sans-serif;
+  --f-quran:"Amiri Quran","Amiri","Noto Naskh Arabic",serif;
+  --f-naskh:"Amiri","Noto Naskh Arabic",serif;
+  --f-ui:"Readex Pro","Noto Sans Arabic",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0B1130; --paper-2:#121A42; --ink:#E7E3D4; --ink-soft:#A9AEC8;
+    --lazward:#8C9BF0; --sarlawh-bg:#18225E; --gold:#E2BF63; --leaf:#E2BF63;
+    --zinjafr:#E58A72; --fayruz:#62C1B8; --rule:#27316A; --on-lazward:#0B1130;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0B1130; --paper-2:#121A42; --ink:#E7E3D4; --ink-soft:#A9AEC8;
+  --lazward:#8C9BF0; --sarlawh-bg:#18225E; --gold:#E2BF63; --leaf:#E2BF63;
+  --zinjafr:#E58A72; --fayruz:#62C1B8; --rule:#27316A; --on-lazward:#0B1130;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; min-height:100%; background:var(--paper); color:var(--ink);
+  font-family:var(--f-ui); font-size:1rem; line-height:1.7; -webkit-font-smoothing:antialiased}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--gold); outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* layout: text block on the right, hashiya margin on the left */
+.shell{max-width:30rem; margin-inline:auto; padding-bottom:6rem}
+.hashiya-col{display:none}
+@media (min-width:900px){
+  .frame{display:grid; grid-template-columns:30rem 15rem; gap:3rem; justify-content:center}
+  .shell{margin:0}
+  .hashiya-col{display:block; padding-top:7.5rem}
+}
+
+/* ===== sarlawh (headpiece) ===== */
+.sarlawh{position:relative; background:var(--sarlawh-bg); color:#F3E3B0; height:96px;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  box-shadow:0 1px 0 var(--leaf), 0 3px 0 var(--paper), 0 4px 0 var(--lazward)}
+.sarlawh svg.pat{position:absolute; inset:0; width:100%; height:100%; color:#D9B45A; opacity:.32}
+.cartouche{position:relative; padding:.35rem 2.2rem; background:var(--sarlawh-bg);
+  border:1px solid #D9B45A; border-radius:999px; box-shadow:0 0 0 4px var(--sarlawh-bg), 0 0 0 5px rgba(217,180,90,.55)}
+.cartouche h1{margin:0; font-family:var(--f-kufi); font-weight:700; font-size:1.75rem; line-height:1.2; color:#E8C86C; letter-spacing:0}
+.sarlawh .tools{position:absolute; inset-inline-start:.75rem; inset-inline-end:.75rem; top:.5rem;
+  display:flex; justify-content:space-between; pointer-events:none}
+.sarlawh .tools > *{pointer-events:auto}
+.tool{background:none; border:0; color:#E8DDBA; font-size:.8rem; padding:.25rem .5rem; cursor:pointer}
+.sos{background:#7E2418; color:#FBEFE6; border-radius:2px; text-decoration:none; font-size:.8rem; padding:.2rem .6rem}
+
+.date-line{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:.85rem; padding:1.1rem 1.25rem .25rem}
+
+main{padding:0 1.25rem}
+section[hidden]{display:none}
+h2{font-family:var(--f-kufi); font-weight:500; font-size:1.25rem; line-height:1.3; margin:1.5rem 0 .5rem}
+
+/* ===== jadwal ===== */
+.jadwal{border-radius:2px; padding:1.4rem 1.25rem 1.25rem; margin-top:.75rem;
+  box-shadow:inset 0 0 0 1px var(--gold), inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--lazward)}
+.jadwal .plan-name{font-family:var(--f-kufi); font-size:1.15rem; margin:0}
+.jadwal .meta{color:var(--ink-soft); font-size:.9rem; margin:.1rem 0 .5rem}
+
+/* ===== misbaha ===== */
+.misbaha{width:100%; height:auto; display:block; margin:.25rem 0 1rem}
+.misbaha .string{fill:none; stroke:var(--rule); stroke-width:1.2}
+.bead{fill:var(--paper); stroke:var(--rule); stroke-width:1.2; transition:fill .6s ease, stroke .6s ease}
+.bead.done{fill:var(--leaf); stroke:var(--gold)}
+.bead.now{stroke:var(--zinjafr); stroke-width:2}
+.tassel{fill:var(--gold)}
+.glint{fill:none; stroke:var(--leaf); stroke-width:2; opacity:0; transform-box:fill-box; transform-origin:center}
+.glint.go{animation:glint .7s ease-out}
+@keyframes glint{0%{opacity:.9; transform:scale(1)}100%{opacity:0; transform:scale(2.6)}}
+
+/* ===== buttons ===== */
+.btn-wrap{display:inline-block; border-radius:2px}
+.btn{display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 2.2rem;
+  background:var(--lazward); color:var(--on-lazward); border:0; cursor:pointer; font-weight:600;
+  clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%)}
+.btn:focus-visible{outline:none; background:var(--ink); color:var(--paper)}
+.btn[disabled]{opacity:.45; cursor:not-allowed}
+.link{background:none; border:0; padding:0; color:var(--lazward); cursor:pointer;
+  text-decoration:underline double; text-underline-offset:5px; text-decoration-thickness:1px}
+
+.ruled-row{display:flex; justify-content:space-between; align-items:center; gap:1rem;
+  padding:.85rem 0; border-bottom:1px solid var(--rule)}
+.ruled-row:first-of-type{border-top:1px solid var(--rule)}
+.note{display:flex; gap:.5rem; align-items:flex-start; background:var(--paper-2);
+  padding:.6rem .75rem; font-size:.85rem; line-height:1.6; color:var(--ink-soft); margin-top:1.25rem}
+.note svg{flex:none; margin-top:.3rem; color:var(--gold)}
+
+/* ===== reader ===== */
+.reader .jadwal{padding:1.25rem 1rem}
+.surah{display:grid; grid-template-columns:1fr auto; gap:.75rem; padding:1rem 0; border-bottom:1px solid var(--rule)}
+.surah:last-of-type{border-bottom:0}
+.surah-head{grid-column:1 / -1; display:flex; justify-content:center}
+.surah-head span{font-family:var(--f-kufi); font-size:.95rem; color:var(--gold);
+  border:1px solid var(--gold); border-radius:999px; padding:.05rem 1.2rem}
+.ayat{font-family:var(--f-quran); font-size:1.6rem; line-height:2.3; margin:0; text-align:start}
+.ayat .end{color:var(--zinjafr); font-size:1.25rem; white-space:nowrap}
+.basmala{grid-column:1 / -1; text-align:center; font-family:var(--f-quran); font-size:1.35rem; margin:0}
+.counter{align-self:center; background:none; border:0; padding:0; cursor:pointer; width:56px; text-align:center}
+.counter svg{display:block; margin:auto}
+.counter .track{fill:none; stroke:var(--rule); stroke-width:3}
+.counter .fill{fill:none; stroke:var(--zinjafr); stroke-width:3; stroke-linecap:round; transition:stroke-dashoffset .3s ease, stroke .4s}
+.counter.complete .fill{stroke:var(--fayruz)}
+.counter .n{font-size:.78rem; fill:var(--ink)}
+.counter small{display:block; font-size:.72rem; color:var(--ink-soft)}
+.sample-tag{font-size:.75rem; color:var(--ink-soft); text-align:center; margin:.5rem 0 0}
+
+/* ===== plans ===== */
+.chips{display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0 1rem}
+.chip{border:1px solid var(--rule); background:none; border-radius:2px; padding:.2rem .8rem; cursor:pointer; font-size:.9rem}
+.chip[aria-pressed="true"]{border-color:var(--lazward); color:var(--lazward); box-shadow:inset 0 -2px 0 var(--lazward)}
+.plan-title{font-family:var(--f-kufi); font-size:1.05rem; margin:0}
+.plan-sub{font-size:.85rem; color:var(--ink-soft); margin:0}
+.mini-beads{display:flex; gap:3px; flex-wrap:wrap; justify-content:flex-end; max-width:5.5rem}
+.mini-beads i{width:6px; height:6px; border-radius:999px; border:1px solid var(--gold)}
+
+/* ===== khatma ===== */
+.rosette{display:block; width:100%; max-width:22rem; margin:.5rem auto 0; height:auto}
+.petal{fill:transparent; stroke:var(--rule); stroke-width:1; cursor:pointer; transition:fill .6s ease, stroke .6s}
+.petal.mine.done{fill:var(--leaf); stroke:var(--gold)}
+.petal.other{stroke:var(--lazward); stroke-dasharray:3 3; cursor:default}
+.petal.other.done{fill:var(--lazward); fill-opacity:.7; stroke-dasharray:none}
+.petal:focus-visible{outline:none; stroke:var(--zinjafr); stroke-width:2.5}
+.juz-n{font-size:9px; fill:var(--ink-soft); pointer-events:none}
+.petal.done + .juz-n{fill:var(--ink)}
+.star{fill:var(--paper); stroke:var(--gold); stroke-width:1.2}
+.count-main{font-family:var(--f-kufi); font-size:22px; fill:var(--ink)}
+.count-sub{font-size:10px; fill:var(--ink-soft)}
+.mode{display:flex; justify-content:center; gap:1.5rem; margin-top:.5rem}
+.legend{display:flex; gap:1rem; justify-content:center; font-size:.8rem; color:var(--ink-soft); margin:.25rem 0 0}
+.legend i{display:inline-block; width:10px; height:10px; margin-inline-end:.35rem; vertical-align:middle}
+.members .ruled-row{font-size:.92rem}
+
+/* ===== colophon ===== */
+.colophon{text-align:center; font-family:var(--f-naskh); font-size:1.3rem; line-height:2; margin:2rem auto 1rem}
+.colophon span{display:block; margin-inline:auto}
+.colophon .flower{color:var(--gold); font-size:1.4rem}
+
+/* ===== support ===== */
+.support-list{list-style:none; padding:0; margin:0}
+.support-list li{padding:.65rem 0; border-bottom:1px solid var(--rule)}
+
+/* ===== safety dialog ===== */
+dialog{border:0; padding:0; background:var(--paper); color:var(--ink); max-width:28rem; width:calc(100% - 2rem)}
+dialog::backdrop{background:rgba(11,17,48,.55)}
+dialog .jadwal{margin:0; padding:1.5rem 1.4rem}
+dialog h3{font-family:var(--f-kufi); font-weight:500; margin:0 0 .5rem; font-size:1.2rem}
+dialog ul{padding-inline-start:1.1rem; margin:.25rem 0 1rem}
+
+/* ===== tab bar ===== */
+nav.tabs{position:fixed; bottom:0; inset-inline:0; background:var(--paper);
+  border-top:1px solid var(--rule); padding-bottom:env(safe-area-inset-bottom,0px); z-index:5}
+nav.tabs ul{list-style:none; margin:0 auto; padding:0; display:grid; grid-template-columns:repeat(4,1fr); max-width:30rem}
+nav.tabs button{width:100%; background:none; border:0; padding:.55rem 0 .7rem; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:.1rem; font-size:.8rem; color:var(--ink-soft)}
+nav.tabs button svg{width:22px; height:22px}
+nav.tabs button[aria-current="page"]{color:var(--ink)}
+nav.tabs button .mark{width:9px; height:9px; color:transparent}
+nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
+
+/* ===== margin notes (design annotations, wide screens) ===== */
+.hashiya-col h4{font-family:var(--f-kufi); font-weight:500; font-size:.95rem; margin:0 0 .25rem; color:var(--gold)}
+.hashiya-col p{font-size:.82rem; line-height:1.65; color:var(--ink-soft); margin:0 0 1.4rem}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="girih" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" fill="none" stroke="currentColor" stroke-width=".8"/>
+      <circle cx="0" cy="0" r="1.4" fill="currentColor"/><circle cx="24" cy="24" r="1.4" fill="currentColor"/>
+      <circle cx="24" cy="0" r="1.4" fill="currentColor"/><circle cx="0" cy="24" r="1.4" fill="currentColor"/>
+    </pattern>
+    <symbol id="star8" viewBox="0 0 10 10"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8 Z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<div class="frame">
+<div class="shell">
+  <header class="sarlawh">
+    <svg class="pat" aria-hidden="true"><rect width="100%" height="100%" fill="url(#girih)"/></svg>
+    <div class="tools">
+      <button class="tool" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي">الوضع: تلقائي</button>
+      <a class="sos" href="#" id="sosLink">طوارئ</a>
+    </div>
+    <div class="cartouche"><h1 id="screenTitle">ورد اليوم</h1></div>
+  </header>
+
+  <div class="date-line"><span id="hijri"></span><span>سند</span></div>
+
+  <main>
+    <!-- TODAY -->
+    <section id="v-today" aria-labelledby="screenTitle">
+      <div class="jadwal">
+        <p class="plan-name">تحصين الصباح والمساء</p>
+        <p class="meta" id="dayMeta"></p>
+        <svg class="misbaha" id="misbaha" viewBox="0 0 320 96" role="img" aria-label="أيام الخطة"></svg>
+        <div class="btn-wrap"><button class="btn" type="button" id="openWird">افتح ورد اليوم</button></div>
+      </div>
+
+      <div class="ruled-row" style="margin-top:1.5rem">
+        <span id="khatmaLine"></span>
+        <button class="link" type="button" data-go="khatma">الختمة</button>
+      </div>
+
+      <div class="note">
+        <svg width="10" height="10" aria-hidden="true"><use href="#star8"/></svg>
+        <span>الرقية والطب لا يتعارضان. <button class="link" type="button" data-safety>متى تحتاج مع الرقية إلى طبيب؟</button></span>
+      </div>
+    </section>
+
+    <!-- READER -->
+    <section id="v-reader" class="reader" hidden>
+      <div class="jadwal" id="readerBody"></div>
+      <p class="sample-tag">نص تجريبي للمعاينة — يُستبدل في المنتج بنص مدقّق من مصدر مرخّص.</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.25rem">
+        <button class="link" type="button" data-go="today">رجوع</button>
+        <div class="btn-wrap"><button class="btn" type="button" id="finishWird" disabled>أتممت ورد اليوم</button></div>
+      </div>
+    </section>
+
+    <!-- PLANS -->
+    <section id="v-plans" hidden>
+      <h2>اختر خطتك</h2>
+      <div class="chips" role="group" aria-label="المدة" id="chips"></div>
+      <div id="planList"></div>
+      <div class="note">
+        <svg width="10" height="10" aria-hidden="true"><use href="#star8"/></svg>
+        <span>كل خطة تُنشر باسم معدّها وبإذنه المكتوب. الرقية لا تعني ترك العلاج الموصوف لك.</span>
+      </div>
+    </section>
+
+    <!-- KHATMA -->
+    <section id="v-khatma" hidden>
+      <div class="mode" role="group" aria-label="نوع الختمة">
+        <button class="chip" type="button" id="soloBtn" aria-pressed="true">ختمتي</button>
+        <button class="chip" type="button" id="groupBtn" aria-pressed="false">ختمة الأسرة</button>
+      </div>
+      <svg class="rosette" id="rosette" viewBox="0 0 320 320" aria-label="أجزاء الختمة"></svg>
+      <p class="legend" id="legend"></p>
+      <div id="khatmaExtra"></div>
+    </section>
+
+    <!-- SUPPORT -->
+    <section id="v-support" hidden>
+      <h2>سند مجاني، وسيبقى مجانياً</h2>
+      <p>دعمك لا يفتح أي ميزة ولا يغيّر شيئاً في تجربتك. هو يساعد سند على البقاء متاحاً لغيرك.</p>
+      <ul class="support-list">
+        <li>تشغيل الخوادم والمزامنة للختمات الجماعية</li>
+        <li>مراجعة الخطط والنصوص شرعياً قبل نشرها</li>
+        <li>حقوق التلاوات المسجّلة لقرّائها</li>
+      </ul>
+      <div style="margin-top:1.5rem" class="btn-wrap"><button class="btn" type="button" disabled>ادعم سند</button></div>
+      <p class="note"><span>في المعاينة: زر الدعم يُفعَّل بعد اعتماد الجهة المستقبِلة ومراجعة سياسات المتاجر.</span></p>
+    </section>
+  </main>
+</div>
+
+<aside class="hashiya-col" aria-label="حاشية التصميم">
+  <h4>السرلوح</h4><p>رأس كل شاشة مأخوذ من الشريط المذهّب أعلى أول صفحة في المصحف المخطوط. النقش يسكنه وحده.</p>
+  <h4>الجدول</h4><p>الإطار المسطّر المزدوج يحيط بعنصر واحد فقط في كل شاشة: الأهم الآن.</p>
+  <h4>السبحة</h4><p>كل حبة يوم. تتذهّب حين يكتمل الورد، ولا شيء يذكّرك بما فات.</p>
+  <h4>وردة الختمة</h4><p>ثلاثون بتلة لثلاثين جزءاً، تبدأ من الأعلى وتدور مع اتجاه القراءة العربية.</p>
+  <h4>الترقيمة</h4><p>عند الإتمام يُختم المشهد كما يختم النسّاخ مخطوطاتهم: أسطر تتناقص حتى زهرة.</p>
+  <h4>الزنجفر</h4><p>الأحمر المقدّس لعلامات الآيات والعدّاد فقط، ولا يُستعمل للأخطاء.</p>
+</aside>
+</div>
+
+<nav class="tabs" aria-label="التنقل">
+  <ul>
+    <li><button type="button" data-go="today" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 4a8 8 0 1 0 4 12A7 7 0 0 1 16 4Z"/></svg>اليوم
+      <svg class="mark" aria-hidden="true"><use href="#star8"/></svg></button></li>
+    <li><button type="button" data-go="plans">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2Zm0 0v14"/></svg>الخطط
+      <svg class="mark" aria-hidden="true"><use href="#star8"/></svg></button></li>
+    <li><button type="button" data-go="khatma">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l2.6 6.4L21 11l-6.4 2.6L12 20l-2.6-6.4L3 11l6.4-2.6Z"/></svg>الختمة
+      <svg class="mark" aria-hidden="true"><use href="#star8"/></svg></button></li>
+    <li><button type="button" data-go="support">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11Z"/></svg>ادعم
+      <svg class="mark" aria-hidden="true"><use href="#star8"/></svg></button></li>
+  </ul>
+</nav>
+
+<dialog id="safety" aria-labelledby="safetyTitle">
+  <div class="jadwal">
+    <h3 id="safetyTitle">متى تحتاج مع الرقية إلى طبيب؟</h3>
+    <p>الرقية والطب لا يتعارضان، وكثير من الناس يجمعون بينهما.</p>
+    <p><strong>اطلب المساعدة فوراً</strong> إن فكّرت في إيذاء نفسك أو كان أحد حولك في خطر. اتصل برقم الطوارئ في بلدك الآن.</p>
+    <p style="margin-bottom:.25rem"><strong>استشر طبيباً إذا:</strong></p>
+    <ul>
+      <li>استمر الحزن أو الخوف أو الأرق أكثر من أسبوعين وعطّل يومك.</li>
+      <li>صرت تسمع أو ترى ما لا يسمعه أو يراه غيرك.</li>
+      <li>تأتيك نوبات خوف شديد مع خفقان أو ضيق نفس.</li>
+    </ul>
+    <p>إن كنت تتناول دواءً فلا تتركه دون طبيبك، واستمر في وردك معه.</p>
+    <p class="sample-tag" style="text-align:start">يراجع هذا النص مختص قبل النشر، وتُضاف أرقام الطوارئ حسب البلد.</p>
+    <form method="dialog" style="margin-top:1rem"><div class="btn-wrap"><button class="btn" value="close">فهمت</button></div></form>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  const AR = n => Number(n).toLocaleString('ar-EG');
+  const days = n => n===1?'يوم واحد':n===2?'يومان':(n<=10? AR(n)+' أيام' : AR(n)+' يوماً');
+  const juz = n => n===1?'جزء واحد':n===2?'جزءان':(n<=10? AR(n)+' أجزاء' : AR(n)+' جزءاً');
+  const store = {
+    get(k,d){ try{ const v = localStorage.getItem('sanad-preview:'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+    set(k,v){ try{ localStorage.setItem('sanad-preview:'+k, JSON.stringify(v)); }catch(e){} }
+  };
+  const S = store.get('s', null) || {
+    total:7, done:[1,2,3],
+    mine:Array.from({length:30},(_,i)=> i<12),
+    group:false,
+    fam:Array.from({length:30},(_,i)=> (i<7) || (i>=10 && i<14))
+  };
+  const save = () => store.set('s', S);
+  const $ = s => document.querySelector(s);
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs={}, parent) => { const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; };
+
+  /* hijri date */
+  try{ $('#hijri').textContent = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date()); }catch(e){ $('#hijri').textContent=''; }
+
+  /* theme */
+  const themes = ['auto','light','dark'], names = {auto:'تلقائي',light:'نهاري',dark:'ليلي'};
+  let ti = 0;
+  $('#themeBtn').addEventListener('click',()=>{ ti=(ti+1)%3; const t=themes[ti];
+    if(t==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',t);
+    $('#themeBtn').textContent = 'الوضع: '+names[t]; });
+
+  /* navigation */
+  const titles = {today:'ورد اليوم', reader:'الورد', plans:'الخطط', khatma:'الختمة', support:'ادعم سند'};
+  function go(v){
+    ['today','reader','plans','khatma','support'].forEach(k => $('#v-'+k).hidden = (k!==v));
+    $('#screenTitle').textContent = titles[v];
+    document.querySelectorAll('nav.tabs button').forEach(b => b.dataset.go===v ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+    if(v==='reader') buildReader();
+    if(v==='khatma') buildRosette();
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); } });
+  $('#openWird').addEventListener('click',()=>go('reader'));
+
+  /* safety */
+  const dlg = $('#safety');
+  document.addEventListener('click', e => { if(e.target.closest('[data-safety]')){ dlg.showModal ? dlg.showModal() : dlg.setAttribute('open',''); } });
+  $('#sosLink').addEventListener('click', e => { e.preventDefault(); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open',''); });
+
+  /* misbaha */
+  function buildMisbaha(justDone){
+    const svg = $('#misbaha'); svg.innerHTML='';
+    const n = S.total, R=296, L=40, top=22, sag=38, r = n<=7?10:(n<=21?7:5);
+    const pts = Array.from({length:n},(_,i)=>{ const t = n===1?0:i/(n-1); return [R - t*(R-L), top + sag*Math.sin(Math.PI*t)]; });
+    let d = `M ${R+18} ${top-8} Q ${R+6} ${top-2} ${pts[0][0]} ${pts[0][1]}`;
+    for(let i=1;i<n;i++) d += ` L ${pts[i][0]} ${pts[i][1]}`;
+    d += ` L ${L-16} ${top+6}`;
+    el('path',{d, class:'string'},svg);
+    const cur = S.done.length + 1;
+    pts.forEach((p,i)=>{
+      const day=i+1, isDone=S.done.includes(day);
+      const c = el('circle',{cx:p[0],cy:p[1],r, class:'bead'+(isDone?' done':'')+(day===cur?' now':'')},svg);
+      const t = el('title',{},c); t.textContent = 'اليوم '+AR(day)+(isDone?': مكتمل':(day===cur?': اليوم':': لم يبدأ'));
+      if(justDone===day){ const g=el('circle',{cx:p[0],cy:p[1],r, class:'glint'},svg); requestAnimationFrame(()=>g.classList.add('go')); }
+    });
+    // imam bead and tassel
+    el('ellipse',{cx:L-22, cy:top+10, rx:6, ry:9, class:'bead done'},svg);
+    el('path',{d:`M ${L-26} ${top+19} L ${L-30} ${top+44} L ${L-14} ${top+44} L ${L-18} ${top+19} Z`, class:'tassel', opacity:.8},svg);
+    const finished = S.done.length >= S.total;
+    $('#dayMeta').textContent = finished ? 'أتممت الخطة كلها، تقبّل الله.' : 'اليوم '+AR(Math.min(cur,S.total))+' من '+AR(S.total)+'، نحو ثماني دقائق';
+    $('#openWird').disabled = finished;
+  }
+
+  /* reader */
+  const WIRD = [
+    {name:'سورة الإخلاص', rep:3, ayat:['قُلْ هُوَ اللَّهُ أَحَدٌ','اللَّهُ الصَّمَدُ','لَمْ يَلِدْ وَلَمْ يُولَدْ','وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ']},
+    {name:'سورة الفلق', rep:3, ayat:['قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ','مِن شَرِّ مَا خَلَقَ','وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ','وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ','وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ']},
+    {name:'سورة الناس', rep:3, ayat:['قُلْ أَعُوذُ بِرَبِّ النَّاسِ','مَلِكِ النَّاسِ','إِلَٰهِ النَّاسِ','مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ','الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ','مِنَ الْجِنَّةِ وَالنَّاسِ']}
+  ];
+  let counts = [0,0,0];
+  const CIRC = 2*Math.PI*20;
+  function buildReader(){
+    counts = [0,0,0];
+    const body = $('#readerBody'); body.innerHTML='';
+    WIRD.forEach((s,si)=>{
+      const wrap = document.createElement('div'); wrap.className='surah';
+      wrap.innerHTML = `<div class="surah-head"><span>${s.name}</span></div>
+        <p class="basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        <p class="ayat">${s.ayat.map((a,i)=>`${a} <span class="end">﴿${AR(i+1)}﴾</span>`).join(' ')}</p>
+        <button class="counter" type="button" aria-label="عدّاد ${s.name}">
+          <svg width="48" height="48" viewBox="0 0 48 48"><circle class="track" cx="24" cy="24" r="20"/>
+          <circle class="fill" cx="24" cy="24" r="20" transform="rotate(-90 24 24)" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}"/>
+          <text class="n" x="24" y="28" text-anchor="middle">${AR(0)} / ${AR(s.rep)}</text></svg>
+          <small>انقر بعد كل قراءة</small></button>`;
+      const btn = wrap.querySelector('.counter');
+      btn.addEventListener('click',()=>{
+        if(counts[si] >= s.rep) return;
+        counts[si]++;
+        btn.querySelector('.fill').setAttribute('stroke-dashoffset', CIRC*(1-counts[si]/s.rep));
+        btn.querySelector('.n').textContent = counts[si]>=s.rep ? 'تمّ' : AR(counts[si])+' / '+AR(s.rep);
+        if(counts[si]>=s.rep){ btn.classList.add('complete'); btn.querySelector('small').textContent=''; }
+        $('#finishWird').disabled = !counts.every((c,i)=>c>=WIRD[i].rep);
+      });
+      body.appendChild(wrap);
+    });
+    $('#finishWird').disabled = true;
+  }
+  $('#finishWird').addEventListener('click',()=>{
+    const day = S.done.length+1;
+    if(day<=S.total){ S.done.push(day); save(); }
+    go('today'); buildMisbaha(day);
+  });
+
+  /* plans */
+  const PLANS = [
+    {t:'تحصين الصباح والمساء', d:7, s:'المعوذات وآية الكرسي وأذكار اليوم والليلة', m:8},
+    {t:'ورد ما قبل النوم', d:7, s:'خواتيم البقرة والمعوذات وأذكار النوم', m:6},
+    {t:'آيات الرقية مع التدبر', d:14, s:'آيات الرقية المأثورة مع وقفة تدبر قصيرة', m:15},
+    {t:'سورة البقرة على مهل', d:21, s:'قراءة السورة كاملة موزّعة على واحد وعشرين يوماً', m:12},
+    {t:'أربعون يوماً من الطمأنينة', d:40, s:'ورد قرآني يومي متدرّج مع أذكار الصباح والمساء', m:10}
+  ];
+  let filter = 0;
+  function buildPlans(){
+    const chips = $('#chips'); chips.innerHTML='';
+    [0,7,14,21,40].forEach(v=>{
+      const b=document.createElement('button'); b.type='button'; b.className='chip';
+      b.textContent = v===0 ? 'الكل' : days(v); b.setAttribute('aria-pressed', String(filter===v));
+      b.onclick=()=>{ filter=v; buildPlans(); }; chips.appendChild(b);
+    });
+    const list=$('#planList'); list.innerHTML='';
+    PLANS.filter(p=>!filter||p.d===filter).forEach(p=>{
+      const row=document.createElement('div'); row.className='ruled-row';
+      const beads = Array.from({length:Math.min(p.d,21)},()=> '<i></i>').join('');
+      row.innerHTML = `<div><p class="plan-title">${p.t}</p><p class="plan-sub">${p.s}</p>
+        <p class="plan-sub">${days(p.d)}، نحو ${AR(p.m)} ${p.m>10?'دقيقة':'دقائق'} يومياً</p><p class="plan-sub">إعداد: (اسم الشيخ بعد إذنه)</p></div>
+        <div class="mini-beads" aria-hidden="true">${beads}</div>`;
+      list.appendChild(row);
+    });
+  }
+
+  /* rosette */
+  function buildRosette(justIdx){
+    const svg=$('#rosette'); svg.innerHTML='';
+    const cx=160, cy=160, R=150, r1=.44*R, r2=.80*R, r3=.91*R, step=12, gap=.8, rad=Math.PI/180;
+    const P=(r,a)=>[cx+r*Math.cos(a*rad), cy+r*Math.sin(a*rad)].map(v=>v.toFixed(2)).join(' ');
+    el('circle',{cx,cy,r:R-2, fill:'none', stroke:'var(--rule)', 'stroke-width':1},svg);
+    el('circle',{cx,cy,r:R-6, fill:'none', stroke:'var(--gold)', 'stroke-width':.6, opacity:.6},svg);
+    const myRange = S.group ? [20,30] : [0,30];
+    let mineDone=0, totalDone=0;
+    for(let i=0;i<30;i++){
+      const a0=-90 - i*step - gap, a1=-90 - (i+1)*step + gap, am=(a0+a1)/2;
+      const mine = i>=myRange[0] && i<myRange[1];
+      const done = mine ? S.mine[i] : S.fam[i];
+      if(done) totalDone++; if(mine&&done) mineDone++;
+      const d=`M ${P(r1,a0)} A ${r1} ${r1} 0 0 0 ${P(r1,a1)} L ${P(r2,a1)} L ${P(r3,am)} L ${P(r2,a0)} Z`;
+      const p=el('path',{d, class:'petal '+(mine?'mine':'other')+(done?' done':'')},svg);
+      const label='الجزء '+AR(i+1)+(done?': مقروء':': لم يُقرأ')+(mine?'':' (لعضو آخر)');
+      p.setAttribute('aria-label',label);
+      if(mine){
+        p.setAttribute('role','button'); p.setAttribute('tabindex','0');
+        const toggle=()=>{ S.mine[i]=!S.mine[i]; save(); buildRosette(S.mine[i]?i:null); };
+        p.addEventListener('click',toggle);
+        p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+      }
+      const tp=((r1+r2)/2), ta=am*rad;
+      const t=el('text',{x:(cx+tp*Math.cos(ta)).toFixed(2), y:(cy+tp*Math.sin(ta)+3).toFixed(2), 'text-anchor':'middle', class:'juz-n'},svg);
+      t.textContent=AR(i+1);
+      if(justIdx===i){ const g=el('path',{d, class:'glint'},svg); requestAnimationFrame(()=>g.classList.add('go')); }
+    }
+    // central eight-point star
+    const pts=[]; for(let k=0;k<16;k++){ const r = k%2? .27*R : .36*R; const a=(-90 + k*22.5)*rad; pts.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2)); }
+    el('polygon',{points:pts.join(' '), class:'star'},svg);
+    const big=el('text',{x:cx,y:cy+4,'text-anchor':'middle',class:'count-main'},svg); big.textContent=AR(totalDone);
+    const sub=el('text',{x:cx,y:cy+22,'text-anchor':'middle',class:'count-sub'},svg); sub.textContent='من '+AR(30)+' جزءاً';
+
+    $('#legend').innerHTML = S.group
+      ? '<span><i style="background:var(--leaf)"></i>أجزائي</span><span><i style="background:var(--lazward);opacity:.7"></i>قرأها غيري</span>'
+      : '<span>انقر على الجزء حين تقرؤه</span>';
+
+    const extra=$('#khatmaExtra');
+    if(totalDone===30){
+      extra.innerHTML = `<div class="colophon" aria-label="تمّت الختمة">
+        <span style="max-width:100%">تمّت الختمة بحمد الله وتوفيقه</span>
+        <span style="max-width:78%">في ${hijriShort()}</span>
+        <span style="max-width:56%">نسأل الله القبول</span>
+        <span class="flower" aria-hidden="true">❁</span></div>
+        <div style="text-align:center"><button class="link" type="button" id="newK">ابدأ ختمة جديدة</button></div>`;
+      $('#newK').onclick=()=>{ S.mine=S.mine.map(()=>false); if(S.group) S.fam=S.fam.map(()=>false); save(); buildRosette(); };
+    } else if(S.group){
+      extra.innerHTML = `<h2>ختمة على نية شفاء الوالدة</h2>
+        <div class="members">
+          <div class="ruled-row"><span>أم محمد</span><span>الأجزاء ${AR(1)}–${AR(10)}</span></div>
+          <div class="ruled-row"><span>أحمد</span><span>الأجزاء ${AR(11)}–${AR(20)}</span></div>
+          <div class="ruled-row"><span>أنت</span><span>الأجزاء ${AR(21)}–${AR(30)}</span></div>
+        </div>
+        <div style="margin-top:1.25rem" class="btn-wrap"><button class="btn" type="button" id="invite">ادعُ أسرتك للختمة</button></div>
+        <p class="plan-sub" id="inviteMsg" role="status" style="margin-top:.5rem"></p>`;
+      $('#invite').onclick=()=>{ const msg='انضم إلى ختمتنا في سند: https://example.invalid/k/demo';
+        try{ navigator.clipboard.writeText(msg).then(()=>$('#inviteMsg').textContent='نُسخ رابط الدعوة، أرسله عبر واتساب.',()=>$('#inviteMsg').textContent=msg); }catch(e){ $('#inviteMsg').textContent=msg; } };
+    } else {
+      const left = 30-mineDone;
+      extra.innerHTML = `<p style="text-align:center;color:var(--ink-soft);font-size:.9rem;margin-top:.75rem">بقي ${juz(left)}. بجزء ونصف يومياً تختم في نحو ${days(Math.ceil(left/1.5))}.</p>`;
+    }
+  }
+  function hijriShort(){ try{ return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(new Date()); }catch(e){ return 'هذا اليوم'; } }
+  $('#soloBtn').onclick=()=>{ S.group=false; save(); $('#soloBtn').setAttribute('aria-pressed','true'); $('#groupBtn').setAttribute('aria-pressed','false'); buildRosette(); };
+  $('#groupBtn').onclick=()=>{ S.group=true; save(); $('#groupBtn').setAttribute('aria-pressed','true'); $('#soloBtn').setAttribute('aria-pressed','false'); buildRosette(); };
+  if(S.group){ $('#groupBtn').setAttribute('aria-pressed','true'); $('#soloBtn').setAttribute('aria-pressed','false'); }
+
+  function khatmaLine(){ const n=S.mine.filter(Boolean).length; $('#khatmaLine').textContent='ختمتك: '+AR(n)+' من '+AR(30)+' جزءاً'; }
+
+  buildMisbaha(); buildPlans(); khatmaLine();
+  const _go = go; go = function(v){ _go(v); khatmaLine(); };
+})();
+</script>
+</body>
+</html>
