@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { hasApi } from "../api/client";
 import { hijri } from "../lib/arabic";
 import { href, type Route } from "../lib/router";
 import { actions, useStore, type Theme } from "../state/store";
@@ -60,7 +61,7 @@ export function Sarlawh({ title }: { title: string }) {
       </header>
       <div className="date-line">
         <span>{hijri()}</span>
-        <span>سند</span>
+        {hasApi ? <a href={href({ name: "account" })}>حسابي</a> : <span>سند</span>}
       </div>
     </>
   );
@@ -96,11 +97,14 @@ export function Btn({
   onClick,
   disabled,
   to,
+  submit,
 }: {
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   to?: Route;
+  /** زر إرسال نموذج. */
+  submit?: boolean;
 }) {
   return (
     <span className="btn-wrap">
@@ -109,7 +113,7 @@ export function Btn({
           {children}
         </a>
       ) : (
-        <button className="btn" type="button" onClick={onClick} disabled={disabled}>
+        <button className="btn" type={submit ? "submit" : "button"} onClick={onClick} disabled={disabled}>
           {children}
         </button>
       )}

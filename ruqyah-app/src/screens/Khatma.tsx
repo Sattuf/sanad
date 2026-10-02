@@ -1,4 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { hasApi } from "../api/client";
+import { companionApi, type GroupKhatma } from "../api/companion";
+import { track } from "../lib/events";
+import { href, navigate } from "../lib/router";
+import { load, save } from "../lib/storage";
+import { useAccount } from "../state/account";
+import { members, NewGroupKhatma } from "./GroupKhatma";
 import { Colophon, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
 import { Rosette } from "../components/Rosette";
 import { dailyPace, daysAtPace, doneCount, isComplete, JUZ_COUNT } from "../domain/khatma";
@@ -18,6 +25,10 @@ export function Khatma() {
     const wasDone = Boolean(khatma.juz.find((j) => j.index === index)?.doneAt);
     actions.toggleJuz(index);
     setJustDone(wasDone ? null : index);
+    if (!wasDone) {
+      track("khatma_juz_done", "solo");
+      if (done === 29) track("khatma_completed", "solo");
+    }
   };
 
   return (
@@ -60,11 +71,76 @@ export function Khatma() {
           </>
         )}
 
-        <Hashiya>
-          <p>الختمة مع أسرتك أو أصدقائك برابط دعوة تأتي قريباً، لأنها تحتاج اتصالاً وحساباً اختيارياً. ختمتك هذه محفوظة على جهازك.</p>
-        </Hashiya>
+        <GroupSection />
         <SafetyNote />
       </main>
+    </>
+  );
+}
+
+/** الختمات الجماعية: تحتاج حساباً لكل عضو. الختمة الفردية أعلاه تبقى على الجهاز دون حساب. */
+function GroupSection() {
+  const { signedIn } = useAccount();
+  const [list, setList] = useState<GroupKhatma[]>(() => load<GroupKhatma[]>("groups", []));
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    if (!signedIn) return;
+    companionApi.khatmas().then(
+      (all) => {
+        const groups = all.filter((k) => k.mode === "Group");
+        setList(groups);
+        save("groups", groups);
+      },
+      () => {},
+    );
+  }, [signedIn]);
+
+  if (!hasApi) {
+    return (
+      <Hashiya>
+        <p>ختمتك محفوظة على جهازك. الختمة مع أسرتك تحتاج نسخة سند المتصلة بالخادم.</p>
+      </Hashiya>
+    );
+  }
+
+  return (
+    <>
+      <h2>مع أسرتك</h2>
+      {!signedIn ? (
+        <Hashiya>
+          <p>
+            اختموا معاً: كل واحد يقرأ أجزاءه، والوردة تجمعكم.{" "}
+            <a className="link" href={href({ name: "account" })}>
+              ادخل إلى حسابك
+            </a>{" "}
+            لتنشئ ختمة أو تنضم إليها.
+          </p>
+        </Hashiya>
+      ) : (
+        <>
+          {list.map((k, i) => (
+            <a key={k.id} href={href({ name: "group", id: k.id })} className={`ruled-row${i === 0 ? " first" : ""}`}>
+              <span>
+                <span className="plan-title" style={{ display: "block" }}>{k.title}</span>
+                <span className="plan-sub">{members(k.members.length)}</span>
+              </span>
+              <span className="plan-sub">
+                {ar(k.doneCount)} / {ar(30)}
+              </span>
+            </a>
+          ))}
+          {creating ? (
+            <NewGroupKhatma onCreated={(k) => navigate({ name: "group", id: k.id })} />
+          ) : (
+            <p style={{ marginTop: "1rem" }}>
+              <button type="button" className="link" onClick={() => setCreating(true)}>
+                {list.length ? "ختمة جديدة مع أسرتك" : "أنشئ ختمة مع أسرتك"}
+              </button>
+            </p>
+          )}
+        </>
+      )}
     </>
   );
 }

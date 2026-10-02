@@ -33,6 +33,12 @@ export interface State {
   /** تذكير الدعم يظهر مرة واحدة لطيفة بعد إتمام أول خطة كاملة، ولا يتكرر. */
   supportNoteSeen: boolean;
   plansCompleted: number;
+  /** تسجيل في الحساب أُوقف على هذا الجهاز ولم يُبلَّغ الخادم بعد (دون اتصال). */
+  pendingStopId: string | null;
+  /** بلد أرقام الطوارئ (ISO)، أو null ليُستنتج من لغة الجهاز. */
+  country: string | null;
+  /** مشاركة عدّادات مجهولة تماماً (بلا أي معرّف). */
+  anonymousStats: boolean;
 }
 
 const initial = (): State => ({
@@ -42,6 +48,9 @@ const initial = (): State => ({
   reader: load<ReaderProgress | null>("reader", null),
   supportNoteSeen: load("supportNoteSeen", false),
   plansCompleted: load("plansCompleted", 0),
+  pendingStopId: load<string | null>("pendingStopId", null),
+  country: load<string | null>("country", null),
+  anonymousStats: load("anonymousStats", true),
 });
 
 let state = initial();
@@ -54,6 +63,11 @@ function set(patch: Partial<State>) {
 }
 
 export const getState = () => state;
+
+export const subscribe = (l: () => void) => {
+  listeners.add(l);
+  return () => listeners.delete(l);
+};
 
 /** للاختبارات: إعادة قراءة الحالة من التخزين. */
 export function resetStore() {
@@ -79,7 +93,25 @@ export const actions = {
   },
 
   stopPlan() {
-    set({ enrollment: null, reader: null });
+    const remoteId = state.enrollment?.remoteId ?? null;
+    set({ enrollment: null, reader: null, pendingStopId: remoteId ?? state.pendingStopId });
+  },
+
+  /** من المزامنة: تسجيل معدَّل (دمج أيام، معرّف الحساب) أو متبنّى من جهاز آخر. */
+  syncEnrollment(enrollment: Enrollment | null) {
+    set({ enrollment });
+  },
+
+  clearPendingStop() {
+    set({ pendingStopId: null });
+  },
+
+  setCountry(country: string | null) {
+    set({ country });
+  },
+
+  setAnonymousStats(anonymousStats: boolean) {
+    set({ anonymousStats });
   },
 
   setReminder(reminder: Reminder | undefined) {

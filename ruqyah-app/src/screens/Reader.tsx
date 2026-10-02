@@ -8,6 +8,7 @@ import { ar } from "../lib/arabic";
 import { href, navigate } from "../lib/router";
 import { actions, readerCounts, useStore } from "../state/store";
 import { flash } from "./Today";
+import { track } from "../lib/events";
 
 const BASMALA = "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ";
 const itemKey = (i: number) => `i${i}`;
@@ -56,6 +57,8 @@ export function Reader() {
 
   const finish = () => {
     const finishedPlan = actions.completeWird();
+    track("wird_completed", String(plan.durationDays));
+    if (finishedPlan) track("plan_completed", String(plan.durationDays));
     flash.day = day;
     navigate(finishedPlan ? { name: "planDone" } : { name: "today" });
   };

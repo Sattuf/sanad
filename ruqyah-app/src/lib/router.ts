@@ -9,7 +9,10 @@ export type Route =
   | { name: "khatma" }
   | { name: "support" }
   | { name: "safety" }
-  | { name: "planDone" };
+  | { name: "planDone" }
+  | { name: "account" }
+  | { name: "group"; id: string }
+  | { name: "join"; code: string };
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
@@ -19,7 +22,11 @@ export function parse(hash: string): Route {
     case "reader":
       return { name: "reader" };
     case "khatma":
-      return { name: "khatma" };
+      return parts[1] ? { name: "group", id: decodeURIComponent(parts[1]) } : { name: "khatma" };
+    case "account":
+      return { name: "account" };
+    case "join":
+      return parts[1] ? { name: "join", code: decodeURIComponent(parts[1]) } : { name: "khatma" };
     case "support":
       return { name: "support" };
     case "safety":
@@ -37,6 +44,10 @@ export function href(r: Route): string {
       return `#/plans/${encodeURIComponent(r.id)}`;
     case "planDone":
       return "#/done";
+    case "group":
+      return `#/khatma/${encodeURIComponent(r.id)}`;
+    case "join":
+      return `#/join/${encodeURIComponent(r.code)}`;
     case "today":
       return "#/";
     default:

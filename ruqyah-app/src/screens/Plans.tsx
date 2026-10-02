@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Btn, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
 import { MiniBeads } from "../components/Misbaha";
-import { authors, DURATIONS, findAuthor, findPlan, isDraft, plans, type Duration, type Plan } from "../content/plans";
+import { useCatalog } from "../content/catalog";
+import { track } from "../lib/events";
+import { DURATIONS, findPlan, isDraft, planAuthor, type Duration, type Plan } from "../content/plans";
 import { safety } from "../content/safety";
 import { reminderLabels, type Reminder } from "../domain/enrollment";
 import { ar, days, minutes } from "../lib/arabic";
@@ -13,6 +15,8 @@ export function Plans() {
   const [duration, setDuration] = useState<Duration | 0>(0);
   const [authorId, setAuthorId] = useState<string>("");
   const activeId = useStore((s) => s.enrollment?.planId);
+  const plans = useCatalog();
+  const authors = [...new Map(plans.map((p) => planAuthor(p)).filter((a) => a !== undefined).map((a) => [a.id, a])).values()];
   const shown = plans.filter((p) => (!duration || p.durationDays === duration) && (!authorId || p.authorId === authorId));
 
   return (
@@ -46,7 +50,7 @@ export function Plans() {
                 <p className="plan-sub">
                   {days(p.durationDays)}، نحو {minutes(p.minutesPerDay)} يومياً
                 </p>
-                <p className="plan-sub">إعداد: {findAuthor(p.authorId)?.displayName}</p>
+                <p className="plan-sub">إعداد: {planAuthor(p)?.displayName}</p>
               </span>
               <MiniBeads n={p.durationDays} />
             </a>
@@ -85,12 +89,13 @@ export function PlanDetail({ id }: { id: string }) {
     );
   }
 
-  const author = findAuthor(plan.authorId);
+  const author = planAuthor(plan);
   const isActive = enrollment?.planId === plan.id;
   const start = () => {
     if (enrollment && !isActive && !window.confirm(`ستتوقف خطتك الحالية وتبدأ «${plan.title}». هل تريد المتابعة؟`)) return;
     actions.startPlan(plan.id, reminder || undefined);
     actions.updateSettings({ onboarded: true });
+    track("plan_started", String(plan.durationDays));
     navigate({ name: "reader" });
   };
 

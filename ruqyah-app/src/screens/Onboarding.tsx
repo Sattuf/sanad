@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Btn, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
 import { MiniBeads } from "../components/Misbaha";
-import { DURATIONS, findAuthor, plans, type Duration } from "../content/plans";
+import { useCatalog } from "../content/catalog";
+import { track } from "../lib/events";
+import { DURATIONS, planAuthor, type Duration } from "../content/plans";
 import { reminderLabels, type Reminder } from "../domain/enrollment";
 import { days, minutes } from "../lib/arabic";
 import { navigate } from "../lib/router";
@@ -17,9 +19,13 @@ export function Onboarding() {
   const [step, setStep] = useState<Step>("welcome");
   const [duration, setDuration] = useState<Duration | null>(null);
   const [planId, setPlanId] = useState<string | null>(null);
+  const plans = useCatalog();
 
   const finish = (reminder?: Reminder) => {
-    if (planId) actions.startPlan(planId, reminder);
+    if (planId) {
+      actions.startPlan(planId, reminder);
+      track("plan_started", String(duration ?? 7));
+    }
     actions.updateSettings({ onboarded: true });
     navigate({ name: planId ? "reader" : "today" });
   };
@@ -46,6 +52,7 @@ export function Onboarding() {
                   type="button"
                   className="chip"
                   aria-pressed={duration === d}
+                  disabled={!plans.some((p) => p.durationDays === d)}
                   onClick={() => {
                     setDuration(d);
                     setStep("plan");
@@ -76,7 +83,7 @@ export function Onboarding() {
                         <span className="plan-sub" style={{ display: "block" }}>
                           {p.summary}، نحو {minutes(p.minutesPerDay)} يومياً
                         </span>
-                        <span className="plan-sub" style={{ display: "block" }}>إعداد: {findAuthor(p.authorId)?.displayName}</span>
+                        <span className="plan-sub" style={{ display: "block" }}>إعداد: {planAuthor(p)?.displayName}</span>
                       </span>
                     </span>
                     <MiniBeads n={p.durationDays} />

@@ -51,6 +51,8 @@ export interface Plan {
   review: { shariaReviewer: string | null; safetyCheckedAt: string | null };
   version: number;
   publishedAt: string | null;
+  /** خطة منشورة من الخادم: معدّها مضمَّن (إذنه مسجَّل)، ونُشرت بعد مراجعة ثانية وفحص أمان. */
+  remote?: { author: Author; isCurrent: boolean };
 }
 
 export const authors: Author[] = [
@@ -194,10 +196,61 @@ const allPlans: Plan[] = [
 ];
 
 /** الترتيب بالمدة ثم أبجدياً — لا «الأفضل» ولا عدد المستخدمين (content-guardrails.md §2). */
-export const plans: Plan[] = [...allPlans].sort(
-  (a, b) => a.durationDays - b.durationDays || a.title.localeCompare(b.title, "ar"),
-);
+const byDurationThenTitle = (a: Plan, b: Plan) => a.durationDays - b.durationDays || a.title.localeCompare(b.title, "ar");
 
-export const findPlan = (id: string | null | undefined) => plans.find((p) => p.id === id);
+/** الخطط التجريبية المضمَّنة — تُعرض حين لا تتوفر خطط منشورة من الخادم (دون إنترنت أو دون خادم). */
+export const bundledPlans: Plan[] = [...allPlans].sort(byDurationThenTitle);
+
+// الخطط المنشورة من الخادم (تُحدَّث من catalog.ts وتُحفظ للعمل دون إنترنت)
+let remotePlans: Plan[] = [];
+export const setRemotePlans = (list: Plan[]) => {
+  remotePlans = [...list].sort(byDurationThenTitle);
+};
+
+/** ما يُعرض للاختيار: المنشور إن وُجد، وإلا التجريبي. والمستبدل لا يُبدأ فيه (يكمله من سجّل فيه فقط). */
+export const listPlans = (): Plan[] => {
+  const current = remotePlans.filter((p) => p.remote?.isCurrent !== false);
+  return current.length > 0 ? current : bundledPlans;
+};
+
+/** @deprecated للاختبارات القديمة: الخطط المضمَّنة. */
+export const plans = bundledPlans;
+
+export const findPlan = (id: string | null | undefined) => remotePlans.find((p) => p.id === id) ?? bundledPlans.find((p) => p.id === id);
 export const findAuthor = (id: string) => authors.find((a) => a.id === id);
-export const isDraft = (p: Plan) => !findAuthor(p.authorId)?.consentRef || !p.review.shariaReviewer;
+export const planAuthor = (p: Plan): Author | undefined => p.remote?.author ?? findAuthor(p.authorId);
+export const isDraft = (p: Plan) => !p.remote && (!findAuthor(p.authorId)?.consentRef || !p.review.shariaReviewer);
+
+/** تحويل خطة الخادم إلى نموذج التطبيق: الآيات تُقرأ من المصحف المدقّق بمفتاحها، ومفتاح غير معروف يُسقط الخطة كلها. */
+export function fromServerPlan(s: {
+  id: string; title: string; summary: string; contents: string; durationDays: Duration; minutesPerDay: number; version: number;
+  publishedAtUtc: string | null; safetyCheckedAtUtc: string | null; isCurrent: boolean;
+  author: { id: string; displayName: string; bio: string; consentDate: string | null };
+  days: { day: number; items: ({ kind: string; quranKey?: string; title?: string; text?: string; source?: string; note?: string | null; repeat: number })[] }[];
+}): Plan | null {
+  const days: PlanDay[] = [];
+  for (const d of s.days) {
+    const items: WirdItem[] = [];
+    for (const i of d.items) {
+      if (i.kind === "Quran") {
+        const p = i.quranKey ? quran[i.quranKey as QuranKey] : undefined;
+        if (!p) return null;
+        items.push({ kind: "quran", key: i.quranKey as QuranKey, ref: { surah: p.surah, fromAyah: p.from, toAyah: p.to }, title: i.title ?? p.surahName, note: i.note ?? undefined, repeat: i.repeat });
+      } else if (i.kind === "Dhikr" && i.text && i.source) {
+        items.push({ kind: "dhikr", title: i.title ?? "", text: i.text, source: i.source, note: i.note ?? undefined, repeat: i.repeat });
+      } else if (i.kind === "Note" && i.text) {
+        items.push({ kind: "note", text: i.text });
+      } else {
+        return null;
+      }
+    }
+    days.push({ day: d.day, items });
+  }
+  if (days.length !== s.durationDays) return null;
+  const author: Author = { id: s.author.id, displayName: s.author.displayName, bio: s.author.bio, consentRef: "server", consentDate: s.author.consentDate };
+  return {
+    id: s.id, title: s.title, authorId: author.id, durationDays: s.durationDays, minutesPerDay: s.minutesPerDay, summary: s.summary,
+    contents: s.contents, days, review: { shariaReviewer: "server", safetyCheckedAt: s.safetyCheckedAtUtc }, version: s.version,
+    publishedAt: s.publishedAtUtc, remote: { author, isCurrent: s.isCurrent },
+  };
+}

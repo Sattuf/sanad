@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { SvgDefs } from "./components/ornaments";
 import { TabBar } from "./components/TabBar";
 import { href, useRoute } from "./lib/router";
+import { Account } from "./screens/Account";
+import { GroupKhatmaScreen, JoinKhatma } from "./screens/GroupKhatma";
 import { Khatma } from "./screens/Khatma";
 import { PlanDone } from "./screens/PlanDone";
 import { PlanDetail, Plans } from "./screens/Plans";
@@ -34,6 +36,9 @@ export function App() {
           {route.name === "support" && <Support />}
           {route.name === "safety" && <Safety />}
           {route.name === "planDone" && <PlanDone />}
+          {route.name === "account" && <Account />}
+          {route.name === "group" && <GroupKhatmaScreen key={route.id} id={route.id} />}
+          {route.name === "join" && <JoinKhatma key={route.code} code={route.code} />}
         </div>
         <aside className="hashiya-col" aria-label="الحاشية">
           <h4>سند</h4>
@@ -43,7 +48,7 @@ export function App() {
             لا يتعارضان. <a className="link" href={href({ name: "safety" })}>متى تحتاج مع الرقية إلى طبيب؟</a>
           </p>
           <h4>بياناتك</h4>
-          <p>تقدّمك محفوظ على جهازك وحده. لا حساب ولا تحليلات.</p>
+          <p>تقدّمك محفوظ على جهازك. الحساب اختياري للمزامنة والختمة مع أسرتك، ولا تتبّع ولا إعلانات.</p>
         </aside>
       </div>
       <TabBar current={route.name} />

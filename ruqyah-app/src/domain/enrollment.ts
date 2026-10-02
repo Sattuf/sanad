@@ -14,6 +14,8 @@ export interface Enrollment {
   /** آخر يوم تقويمي (YYYY-MM-DD محلياً) أُتمّ فيه ورد. */
   lastCompletedOn?: string;
   reminder?: Reminder;
+  /** معرّف التسجيل في الحساب حين تُزامَن الخطة (خطط الخادم المنشورة فقط). */
+  remoteId?: string;
 }
 
 export const reminderLabels: Record<Reminder, string> = {
@@ -50,6 +52,13 @@ export function isResuming(e: Enrollment, now = new Date()) {
   const last = e.lastCompletedOn ? new Date(`${e.lastCompletedOn}T12:00:00`) : new Date(e.startedAt);
   const gap = (new Date(`${localDay(now)}T12:00:00`).getTime() - new Date(`${localDay(last)}T12:00:00`).getTime()) / 86_400_000;
   return e.completedDays.length > 0 ? gap > 1 : gap >= 1;
+}
+
+/** دمج أيام من جهاز آخر (اتحاد) — لا يضيع يوم ولا يُحذف. */
+export function mergeDays(e: Enrollment, days: number[], lastCompletedOn?: string | null): Enrollment {
+  const merged = [...new Set([...e.completedDays, ...days])].sort((a, b) => a - b);
+  const last = [e.lastCompletedOn, lastCompletedOn ?? undefined].filter(Boolean).sort().pop();
+  return { ...e, completedDays: merged, lastCompletedOn: last };
 }
 
 export function completeDay(e: Enrollment, plan: Plan, now = new Date()): Enrollment {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Btn, Hashiya, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
 import { Misbaha } from "../components/Misbaha";
-import { findAuthor, findPlan } from "../content/plans";
+import { findPlan, planAuthor } from "../content/plans";
 import { currentDay, doneToday, isFinished, isResuming } from "../domain/enrollment";
 import { doneCount, JUZ_COUNT } from "../domain/khatma";
 import { ar, minutes } from "../lib/arabic";
@@ -78,7 +78,7 @@ export function Today() {
         {plan && (
           <Hashiya>
             <p>
-              إعداد: {findAuthor(plan.authorId)?.displayName}.{" "}
+              إعداد: {planAuthor(plan)?.displayName}.{" "}
               <a className="link" href={href({ name: "plan", id: plan.id })}>
                 عن الخطة
               </a>
