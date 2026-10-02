@@ -4,7 +4,6 @@ import { IBMPlexSansArabic_400Regular } from "@expo-google-fonts/ibm-plex-sans-a
 import { IBMPlexSansArabic_700Bold } from "@expo-google-fonts/ibm-plex-sans-arabic/700Bold";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import * as Notifications from "expo-notifications";
 import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -14,6 +13,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
 import { RealtimeBridge } from "@/components/Realtime";
 import { UpdateGate } from "@/components/UpdateGate";
+import type { Notification } from "expo-notifications";
+import { Notifications } from "@/lib/notifications";
 import { safeNotificationPath } from "@/lib/reminders";
 import { pruneOldWird } from "@/lib/wird";
 import { useSession } from "@/stores/session";
@@ -22,15 +23,15 @@ import { fonts, useColors } from "@/theme";
 void SplashScreen.preventAutoHideAsync();
 
 // تذكير يصل والتطبيق مفتوح يظهر أيضاً، بلا صوت مزعج
-Notifications.setNotificationHandler({
+Notifications?.setNotificationHandler({
   handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
 });
 
 /** النقر على تذكير يفتح ورده — مساراً داخلياً فقط. */
 function useNotificationRouting(ready: boolean) {
   useEffect(() => {
-    if (!ready) return;
-    const open = (n: Notifications.Notification) => router.push(safeNotificationPath(n.request.content.data?.url) as never);
+    if (!ready || !Notifications) return;
+    const open = (n: Notification) => router.push(safeNotificationPath(n.request.content.data?.url) as never);
     const last = Notifications.getLastNotificationResponse();
     if (last?.notification) {
       open(last.notification);

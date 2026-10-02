@@ -3,6 +3,7 @@ import { parseTime, slots, type SlotId } from "@sanad/shared/content/wird";
 import { useEffect, useState } from "react";
 import { Linking, Platform, Pressable, Switch, View } from "react-native";
 import { AppText, Banner, Button, Card, Screen } from "@/components/ui";
+import { notificationsSupported } from "@/lib/notifications";
 import { applyReminders, DISABLED, ensureNotificationPermission, loadReminders, type ReminderTimes } from "@/lib/reminders";
 import { space, useColors } from "@/theme";
 
@@ -46,10 +47,13 @@ export default function RemindersScreen() {
   return (
     <Screen>
       <AppText variant="muted">نذكّرك بوردك في وقته، حتى والتطبيق مغلق ودون إنترنت. التذكير على جهازك فقط ولا يحمل أي بيانات شخصية.</AppText>
-      {denied ? (
+      {!notificationsSupported ? (
+        <Banner tone="info">التذكير لا يعمل داخل Expo Go على Android. يعمل في نسخة التطبيق الكاملة (بناء تطوير أو المتجر).</Banner>
+      ) : null}
+      {denied && notificationsSupported ? (
         <Banner tone="danger">الإشعارات غير مسموحة لسند. فعّلها من إعدادات الجهاز ثم عد هنا.</Banner>
       ) : null}
-      {denied ? <Button label="فتح الإعدادات" variant="secondary" onPress={() => void Linking.openSettings()} /> : null}
+      {denied && notificationsSupported ? <Button label="فتح الإعدادات" variant="secondary" onPress={() => void Linking.openSettings()} /> : null}
       {slots.map((slot) => {
         const time = times[slot.id];
         return (

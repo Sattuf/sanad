@@ -34,3 +34,18 @@ it("الإشعار لا يفتح إلا مساراً داخلياً", () => {
   expect(safeNotificationPath("/ruqyah/sleep")).toBe("/ruqyah/sleep");
   for (const bad of ["https://evil.test", "//evil.test", "javascript:alert(1)", 42, undefined]) expect(safeNotificationPath(bad)).toBe("/ruqyah");
 });
+
+it("في Expo Go على Android لا تُحمَّل وحدة الإشعارات أصلاً، والحفظ يعمل بلا جدولة", async () => {
+  await jest.isolateModulesAsync(async () => {
+    jest.doMock("expo", () => ({ isRunningInExpoGo: () => true }));
+    jest.doMock("react-native", () => ({ Platform: { OS: "android" } }));
+    jest.doMock("expo-notifications", () => {
+      throw new Error("removed from Expo Go");
+    });
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- تحميل الوحدة داخل سجل وحدات معزول
+    const reminders = require("@/lib/reminders") as typeof import("@/lib/reminders");
+    await expect(reminders.ensureNotificationPermission()).resolves.toBe(false);
+    await reminders.applyReminders({ morning: "06:30", evening: null, sleep: null });
+    await expect(reminders.loadReminders()).resolves.toMatchObject({ morning: "06:30" });
+  });
+});

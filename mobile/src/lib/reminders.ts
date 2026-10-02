@@ -1,6 +1,6 @@
 import { parseTime, slots, type SlotId } from "@sanad/shared/content/wird";
-import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import { Notifications } from "@/lib/notifications";
 import { readJson, writeJson } from "@/lib/storage";
 
 /*
@@ -19,6 +19,7 @@ const identifier = (slot: SlotId) => `sanad-adhkar-${slot}`;
 
 /** الإذن يُطلب عند التفعيل فقط، لا عند فتح التطبيق. */
 export async function ensureNotificationPermission(): Promise<boolean> {
+  if (!Notifications) return false;
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync(CHANNEL, { name: "تذكير الأذكار", importance: Notifications.AndroidImportance.DEFAULT });
   }
@@ -31,6 +32,7 @@ export async function ensureNotificationPermission(): Promise<boolean> {
 /** يحفظ الأوقات ويعيد جدولة الإشعارات الثلاثة من الصفر (لا تكرار ولا بقايا لأوقات قديمة). */
 export async function applyReminders(times: ReminderTimes): Promise<void> {
   await writeJson(KEY, times);
+  if (!Notifications) return;
   for (const slot of slots) {
     await Notifications.cancelScheduledNotificationAsync(identifier(slot.id)).catch(() => undefined);
     const time = times[slot.id] ? parseTime(times[slot.id]!) : null;
