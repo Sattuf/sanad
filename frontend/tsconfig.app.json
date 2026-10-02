@@ -21,7 +21,11 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* الحزمة المشتركة مع الجوال — ADR-0018 */
+    "paths": { "@sanad/shared/*": ["../packages/shared/src/*"] }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["../packages/shared/src/**/__tests__"]
 }

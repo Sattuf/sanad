@@ -83,6 +83,17 @@ public sealed class CompleteGoogleLoginCommandHandler(IIdentityService identity)
         AuthResponse.From(await identity.CompleteGoogleLoginAsync(request.ExternalProviderKey, request.VerifiedEmail, request.DisplayName, cancellationToken));
 }
 
+// ── أبل (من الجوال): يُستدعى بعد التحقق من رمز الهوية وnonce في الـ Endpoint ───────────
+[AllowAnonymousRequest]
+public sealed record CompleteAppleLoginCommand(string ExternalProviderKey, string? VerifiedEmail, string? DisplayName) : ICommand<AuthResponse>;
+
+public sealed class CompleteAppleLoginCommandHandler(IIdentityService identity) : IRequestHandler<CompleteAppleLoginCommand, AuthResponse>
+{
+    public async Task<AuthResponse> Handle(CompleteAppleLoginCommand request, CancellationToken cancellationToken) =>
+        AuthResponse.From(await identity.CompleteExternalLoginAsync(ExternalLoginProvider.Apple, request.ExternalProviderKey, request.VerifiedEmail,
+            request.DisplayName, cancellationToken));
+}
+
 // ── الهاتف OTP (خلف CAPTCHA وحد معدل صارم في الـ Endpoint) ──────────────────────
 [AllowAnonymousRequest]
 public sealed record RequestPhoneOtpCommand(string PhoneNumber) : ICommand<Unit>;

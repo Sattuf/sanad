@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../../api/client";
 import { useMe } from "../../api/hooks";
-import type { DirectoryItem, OrganizationPublic, Paged, ProviderPublic } from "../../api/types";
+import type { DirectoryItem, OrganizationPublic, Paged, ProviderPublic } from "@sanad/shared/api/types";
 import { VerificationBadge } from "../../components/safety";
 import { Badge, Button, Card, EmptyState, ErrorState, Input, Loading, PageHeader, Select } from "../../components/ui";
 

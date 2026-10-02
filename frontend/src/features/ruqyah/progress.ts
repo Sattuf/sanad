@@ -2,31 +2,29 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api/client";
 import { useMe } from "../../api/hooks";
-import { collections, type Item } from "./content";
+import { collections, type Item } from "@sanad/shared/content/ruqyah";
 
-/*
-  الورد اليومي: يُحفظ فوراً في الجهاز، ويُزامَن مع الحساب لمن سجّل دخوله ليتابع من أي جهاز.
-  مفتاح كل عنصر ثابت: رقمه في المجموعة للنصوص الأساسية، و"d:<id>" للأدعية المضافة بعد المراجعة.
-*/
+import {
+  buildEntries,
+  countCompleted,
+  localDay,
+  mergeCounts,
+  wirdApi,
+  wirdPayload,
+  type Entry,
+  type MyWird,
+} from "@sanad/shared/content/wird";
 
-export interface WirdCollectionProgress { collectionId: string; counts: Record<string, number>; completedItems: number; totalItems: number }
-export interface MyWird { day: string; collections: WirdCollectionProgress[]; streak: number; completedDays: string[] }
+// المنطق (المفاتيح، الدمج، العدّ، جسم الحفظ) مشترك مع الجوال في packages/shared/content/wird.ts
+export { localDay, type Entry, type MyWird } from "@sanad/shared/content/wird";
+export type { PublishedDua, WirdCollectionProgress } from "@sanad/shared/content/wird";
 
-export interface PublishedDua { id: string; collectionId: string; title: string; text: string; source: string; note: string | null; repeat: number; sortOrder: number }
-
-/** عنصر معروض في القارئ بمفتاحه الثابت. */
-export interface Entry { key: string; item: Item }
-
-/** تاريخ جهاز المستخدم (لا UTC): الورد يتبع يومه هو. */
-export function localDay(d = new Date()): string {
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
+const wird = wirdApi(api);
 
 export function usePublishedDuas() {
   return useQuery({
     queryKey: ["ruqyah-duas"],
-    queryFn: () => api.get<PublishedDua[]>("/api/v1/public/ruqyah/duas", { auth: false }),
+    queryFn: wird.publishedDuas,
     staleTime: 10 * 60_000,
     retry: false,
   });
@@ -35,23 +33,14 @@ export function usePublishedDuas() {
 /** النصوص الثابتة ثم الأدعية المنشورة بعد المراجعة لهذه المجموعة. */
 export function useCollectionEntries(collectionId: string, items: Item[]): Entry[] {
   const { data } = usePublishedDuas();
-  return useMemo(() => {
-    const extra = (data ?? []).filter((d) => d.collectionId === collectionId).sort((a, b) => a.sortOrder - b.sortOrder);
-    return [
-      ...items.map((item, i) => ({ key: String(i), item })),
-      ...extra.map((d) => ({
-        key: `d:${d.id}`,
-        item: { kind: "dua", title: d.title, text: d.text, source: d.source, note: d.note ?? undefined, repeat: d.repeat } satisfies Item,
-      })),
-    ];
-  }, [data, collectionId, items]);
+  return useMemo(() => buildEntries(collectionId, items, data), [data, collectionId, items]);
 }
 
 export function useMyWird(enabled: boolean) {
   const day = localDay();
   return useQuery({
     queryKey: ["my-wird", day],
-    queryFn: () => api.get<MyWird>(`/api/v1/me/wird?day=${day}`),
+    queryFn: () => wird.mine(day),
     enabled,
     staleTime: 30_000,
     retry: false,
@@ -81,11 +70,7 @@ export function useDailyProgress(collectionId: string, entries: Entry[]) {
   useEffect(() => {
     const server = remote.data?.collections.find((c) => c.collectionId === collectionId)?.counts;
     if (!server) return;
-    setCounts((local) => {
-      const merged = { ...local };
-      for (const [k, v] of Object.entries(server)) merged[k] = Math.max(merged[k] ?? 0, v);
-      return merged;
-    });
+    setCounts((local) => mergeCounts(local, server));
   }, [remote.data, collectionId]);
 
   useEffect(() => {
@@ -96,20 +81,19 @@ export function useDailyProgress(collectionId: string, entries: Entry[]) {
     }
   }, [storageKey, counts]);
 
-  const completed = entries.filter((e) => (counts[e.key] ?? 0) >= (e.item.repeat ?? 1)).length;
+  const completed = countCompleted(entries, counts);
 
   // حفظ مؤجَّل في الحساب بعد آخر نقرة بثانية — لا طلب مع كل ضغطة عدّاد
   useEffect(() => {
     if (!signedIn || !dirty.current || !entries.length) return;
     const t = window.setTimeout(() => {
       dirty.current = false;
-      const known = Object.fromEntries(entries.map((e) => [e.key, Math.min(counts[e.key] ?? 0, 1000)]));
-      api.put("/api/v1/me/wird", { collectionId, day, counts: known, completedItems: completed, totalItems: entries.length })
+      wird.save(wirdPayload(collectionId, day, entries, counts))
         .then(() => qc.invalidateQueries({ queryKey: ["my-wird"] }))
         .catch(() => { dirty.current = true; });
     }, 1000);
     return () => window.clearTimeout(t);
-  }, [signedIn, counts, entries, collectionId, day, completed, qc]);
+  }, [signedIn, counts, entries, collectionId, day, qc]);
 
   const bump = useCallback((key: string, max: number) => {
     dirty.current = true;

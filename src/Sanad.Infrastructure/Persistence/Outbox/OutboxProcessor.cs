@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Sanad.Application.Common.Events;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Domain.Common;
+using Sanad.Infrastructure.Jobs;
 
 namespace Sanad.Infrastructure.Persistence.Outbox;
 
@@ -25,7 +26,8 @@ public sealed class OutboxOptions
 /// <summary>
 /// ينشر رسائل Outbox دورياً بتسليم At-Least-Once. المعالِجات يجب أن تكون متسامحة مع التكرار.
 /// </summary>
-public sealed class OutboxProcessor(IServiceScopeFactory scopes, IOptions<OutboxOptions> options, ILogger<OutboxProcessor> logger) : BackgroundService
+public sealed class OutboxProcessor(IServiceScopeFactory scopes, IOptions<OutboxOptions> options, IJobLock jobLock, ILogger<OutboxProcessor> logger)
+    : BackgroundService
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
     private static readonly ConcurrentDictionary<string, Type?> TypeCache = new();
@@ -37,8 +39,12 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, IOptions<Outbox
         {
             try
             {
-                var processed = await ProcessBatchAsync(stoppingToken);
-                if (processed == 0) await Task.Delay(options.Value.PollIntervalMilliseconds, stoppingToken);
+                // نسخة واحدة تنشر في كل مرة (ADR-0020)؛ تُفرغ المتراكم ثم تحرّر القفل
+                await jobLock.RunExclusiveAsync("outbox", async () =>
+                {
+                    while (!stoppingToken.IsCancellationRequested && await ProcessBatchAsync(stoppingToken) > 0) { }
+                }, stoppingToken);
+                await Task.Delay(options.Value.PollIntervalMilliseconds, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -59,8 +65,12 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, IOptions<Outbox
         var clock = scope.ServiceProvider.GetRequiredService<IDateTime>();
         var max = options.Value.MaxAttempts;
 
-        var batch = (await db.OutboxMessages.Where(m => m.ProcessedAtUtc == null && m.Attempts < max).ToListAsync(ct))
-            .OrderBy(m => m.OccurredAtUtc).Take(options.Value.BatchSize).ToList();
+        // الدفعة تُختار في القاعدة (فهرس جزئي على غير المنشورة) — لا تحميل لكل المتراكم في الذاكرة
+        var batch = await db.OutboxMessages
+            .Where(m => m.ProcessedAtUtc == null && m.Attempts < max)
+            .OrderBy(m => m.OccurredAtUtc)
+            .Take(options.Value.BatchSize)
+            .ToListAsync(ct);
 
         foreach (var message in batch)
         {

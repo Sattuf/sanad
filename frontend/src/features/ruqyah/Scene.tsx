@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { CSSProperties, ReactNode } from "react";
 import { cx } from "../../lib/cx";
-import type { SceneTheme } from "./content";
+import type { SceneTheme } from "@sanad/shared/content/ruqyah";
 
 /*
   خلفيات «الرقية والتحصين»: ثلاث طبقات — صورة المشهد (public/library/<theme>.jpg، مولَّدة بلا أي نص)،

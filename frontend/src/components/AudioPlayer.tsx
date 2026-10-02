@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { mediaUrl } from "../api/client";
 import { useSession } from "../stores/session";
-import { formatDuration } from "../lib/format";
+import { formatDuration } from "@sanad/shared/lib/format";
 
 /**
  * مشغّل خفيف فوق عنصر <audio> الأصلي — بلا مكتبة ثقيلة (references/10-frontend-architecture.md §10.2).

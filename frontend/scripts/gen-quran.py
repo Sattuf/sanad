@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-يولّد frontend/src/features/ruqyah/quran.ts من نص المصحف بالرسم العثماني.
+يولّد packages/shared/src/content/quran.ts من نص المصحف بالرسم العثماني.
 
 المصدر: حزمة npm ‏quran-json@3.1.2 (نص موسوعة القرآن الكريم QuranEnc، رخصة CC BY-SA 4.0).
 الاستخدام:
@@ -9,7 +9,7 @@
 
 يكتب:
   - quran: المقاطع المعروضة في المجموعات (مفتاح ← سورة ونطاق آيات).
-  - citedAyat: النص الكامل لكل آية يُستشهد بجزء منها في content.ts بصيغة ﴿…﴾ [السورة: رقم]،
+  - citedAyat: النص الكامل لكل آية يُستشهد بجزء منها في content/ruqyah.ts بصيغة ﴿…﴾ [السورة: رقم]،
     ليتحقق الاختبار أن كل اقتباس مطابق حرفياً للمصحف.
 """
 import json
@@ -18,8 +18,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "src/features/ruqyah/quran.ts"
-CONTENT = ROOT / "src/features/ruqyah/content.ts"
+OUT = ROOT.parent / "packages/shared/src/content/quran.ts"
+CONTENT = ROOT.parent / "packages/shared/src/content/ruqyah.ts"
 
 # (المفتاح، السورة، من آية، إلى آية)
 PASSAGES = [
@@ -62,7 +62,7 @@ def main(path: str) -> None:
         if name not in by_name:
             sys.exit(f"سورة غير معروفة في الاستشهاد: {name}")
         cited[f"{name}:{ayah}"] = by_name[name]["verses"][ayah - 1]["text"]
-    out.append("/** النص الكامل للآيات المستشهد بها في content.ts — مفتاحها «اسم السورة:رقم الآية». */")
+    out.append("/** النص الكامل للآيات المستشهد بها في content/ruqyah.ts — مفتاحها «اسم السورة:رقم الآية». */")
     out.append("export const citedAyat: Record<string, string> = {")
     for k in sorted(cited):
         out.append(f"  {js(k)}: {js(cited[k])},")

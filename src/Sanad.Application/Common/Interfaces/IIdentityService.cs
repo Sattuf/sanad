@@ -2,6 +2,8 @@ using Sanad.Domain.Identity;
 
 namespace Sanad.Application.Common.Interfaces;
 
+public enum ExternalLoginProvider { Google, Apple }
+
 public enum SignInStage { Succeeded, RequiresPasswordChange, RequiresTwoFactorSetup, RequiresTwoFactorCode }
 
 public sealed record AuthTokens(string AccessToken, DateTimeOffset AccessTokenExpiresAtUtc, string RefreshToken, DateTimeOffset RefreshTokenExpiresAtUtc);
@@ -25,6 +27,7 @@ public interface IIdentityService
     Task<AuthResult> RegisterWithEmailAsync(string email, string password, string displayName, CancellationToken ct);
     Task<AuthResult> LoginWithEmailAsync(string email, string password, CancellationToken ct);
     Task<AuthResult> CompleteGoogleLoginAsync(string externalProviderKey, string verifiedEmail, string? displayName, CancellationToken ct);
+    Task<AuthResult> CompleteExternalLoginAsync(ExternalLoginProvider provider, string externalProviderKey, string? verifiedEmail, string? displayName, CancellationToken ct);
     Task RequestPhoneOtpAsync(string phoneNumberE164, CancellationToken ct);
 
     /// <summary>البريد اختياري — يُرفَق بحساب جديد، أو يُستكمل لحساب هاتف قائم بلا بريد.</summary>

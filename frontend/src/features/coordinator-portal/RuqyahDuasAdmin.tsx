@@ -4,8 +4,8 @@ import { ApiError, api } from "../../api/client";
 import { useMe } from "../../api/hooks";
 import { Badge, Banner, Button, Card, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDateTime } from "../../lib/format";
-import { collections } from "../ruqyah/content";
+import { formatDateTime } from "@sanad/shared/lib/format";
+import { collections } from "@sanad/shared/content/ruqyah";
 
 /*
   الأدعية المكتوبة: يكتب مدير المحتوى الدعاء بتخريجه (مسودة)، ثم يرسله للمراجعة، فيراجعه مدير محتوى آخر

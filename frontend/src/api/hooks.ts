@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useSession } from "../stores/session";
 import { api } from "./client";
-import type { AuthResponse, MyProfile, Role } from "./types";
+import type { AuthResponse, MyProfile, Role } from "@sanad/shared/api/types";
 
 export const queryKeys = {
   me: ["me"] as const,

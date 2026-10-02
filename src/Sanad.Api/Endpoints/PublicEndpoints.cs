@@ -14,6 +14,9 @@ namespace Sanad.Api.Endpoints;
 /// <summary>الدليل العام، صفحة المشاركة، الوسائط العامة، ومعلومات الطوارئ — بلا مصادقة، بحد معدل.</summary>
 public static class PublicEndpoints
 {
+    /// <summary>صلاحية رابط الصوت الموقّع حين لا يوجد CDN — تكفي لسورة طويلة مع الإيقاف والاستئناف.</summary>
+    private static readonly TimeSpan MediaLinkTtl = TimeSpan.FromHours(6);
+
     public static IEndpointRouteBuilder MapPublicEndpoints(this IEndpointRouteBuilder app)
     {
         var dir = app.MapGroup("/api/v1").WithTags("Directory");
@@ -52,6 +55,8 @@ public static class PublicEndpoints
         app.MapGet("/api/v1/media/tracks/{id:guid}", async (Guid id, bool? preview, HttpContext http, ISender s, IFileStorage storage) =>
             {
                 var media = await s.Send(new GetTrackMediaQuery(id, preview == true));
+                // المنشور يُخدم من CDN/التخزين مباشرة؛ المعاينة غير المنشورة تُبث عبر الـ API دائماً
+                if (preview != true && storage.DirectReadUrl(media.StorageKey, MediaLinkTtl) is { } direct) return Results.Redirect(direct);
                 var stream = await storage.OpenReadAsync(media.StorageKey, http.RequestAborted);
                 if (stream is null) return Results.NotFound();
                 http.Response.Headers.CacheControl = preview == true ? "no-store" : "public, max-age=3600";
@@ -65,6 +70,7 @@ public static class PublicEndpoints
         app.MapGet("/api/v1/public/recitation/{reciter}/{surah:int}/{ayah:int}", async (string reciter, int surah, int ayah, HttpContext http, ISender s, IFileStorage storage) =>
             {
                 var media = await s.Send(new GetAyahAudioQuery(reciter, surah, ayah));
+                if (storage.DirectReadUrl(media.StorageKey, MediaLinkTtl) is { } direct) return Results.Redirect(direct);
                 var stream = await storage.OpenReadAsync(media.StorageKey, http.RequestAborted);
                 if (stream is null) return Results.NotFound();
                 http.Response.Headers.CacheControl = "public, max-age=604800, immutable";
@@ -80,10 +86,17 @@ public static class PublicEndpoints
         app.MapGet("/api/v1/public/reminders/push-config", async (ISender s) => Results.Ok(await s.Send(new GetPushConfigQuery())))
             .WithTags("Ruqyah").AllowAnonymous().RequireRateLimiting("public");
 
+        // ── أدنى إصدار مدعوم من تطبيق الجوال: أقدم منه يُطلب منه التحديث (لا كسر لـ /api/v1 دون ذلك) ──
+        app.MapGet("/api/v1/public/app/min-version", (IConfiguration config) => Results.Ok(new MobileMinVersionDto(
+                config["MobileApp:MinVersion:Ios"] ?? "0.0.0", config["MobileApp:MinVersion:Android"] ?? "0.0.0",
+                config["MobileApp:StoreUrl:Ios"], config["MobileApp:StoreUrl:Android"])))
+            .WithTags("Mobile").AllowAnonymous().RequireRateLimiting("public");
+
         // ── روابط المستندات الخاصة الموقّعة قصيرة الأجل ──
-        app.MapGet("/api/v1/files/signed", async (string key, long exp, string sig, HttpContext http, LocalFileStorage storage) =>
+        // روابط التخزين المحلي الموقّعة فقط؛ مع S3 تصدر الروابط الموقّعة من خدمة التخزين نفسها
+        app.MapGet("/api/v1/files/signed", async (string key, long exp, string sig, HttpContext http, IFileStorage files) =>
             {
-                if (!storage.ValidateSignature(key, exp, sig)) return Results.NotFound();
+                if (files is not LocalFileStorage storage || !storage.ValidateSignature(key, exp, sig)) return Results.NotFound();
                 var stream = await storage.OpenReadAsync(key, http.RequestAborted);
                 if (stream is null) return Results.NotFound();
                 var ext = Path.GetExtension(key).ToLowerInvariant();
@@ -99,3 +112,5 @@ public static class PublicEndpoints
         return app;
     }
 }
+
+public sealed record MobileMinVersionDto(string Ios, string Android, string? IosStoreUrl, string? AndroidStoreUrl);

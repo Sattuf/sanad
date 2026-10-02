@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { mediaUrl } from "../../api/client";
-import { quran, type QuranKey } from "./quran";
+import { quran, type QuranKey } from "@sanad/shared/content/quran";
 
 /*
   تلاوة الآيات آية بآية بمشغّل واحد مشترك: لا تتداخل تلاوتان، والآية الجارية تُظلَّل في النص.

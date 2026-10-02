@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ApiError, api, downloadJson, newIdempotencyKey } from "../../api/client";
 import { queryKeys, useMe, useSignOut } from "../../api/hooks";
-import type { AccessLogEntry, AppNotification, BookingSummary, ConsentHistoryItem, ConsentStatus, ConsentType, Recommendation, ReportCategory, ReportSeverity } from "../../api/types";
+import { ACCESS_LOG_ACTION_LABELS, ACCESS_LOG_ROLE_LABELS, DELETE_CONFIRMATION } from "@sanad/shared/api/account";
+import type { AccessLogEntry, AppNotification, BookingSummary, ConsentHistoryItem, ConsentStatus, ConsentType, Recommendation, ReportCategory, ReportSeverity } from "@sanad/shared/api/types";
 import { Badge, Banner, Button, Card, Checkbox, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
-import { formatDate, formatDateTime } from "../../lib/format";
+import { formatDate, formatDateTime } from "@sanad/shared/lib/format";
 import { captchaHeader } from "../../lib/captcha";
-import { statusTone } from "../../lib/status";
+import { statusTone } from "@sanad/shared/lib/status";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -105,16 +106,6 @@ export function ConsentOnboardingPage() {
 }
 
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
-
-const ACCESS_LOG_ACTION_LABELS: Record<string, string> = {
-  "Scheduling.BeneficiaryNoteRead": "اطّلع على ملاحظتك للمختص المرفقة بحجز",
-  "PatientCare.CaseNoteSupervisoryRead": "مراجعة إشرافية لملف حجزك",
-};
-const ACCESS_LOG_ROLE_LABELS: Record<string, string> = {
-  AssignedProvider: "المختص المعالج",
-  CoordinatorEscalation: "منسق (تصعيد موثّق)",
-  ClinicalSupervisor: "مشرف سريري",
-};
 
 export function AccountPage() {
   const { t } = useTranslation();
@@ -324,7 +315,7 @@ export function AccountPage() {
           <Input id="del" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </Field>
         {remove.error && <div className="mt-2"><Banner tone="danger">{remove.error instanceof ApiError ? remove.error.friendly : "تعذّر الحذف"}</Banner></div>}
-        <Button className="mt-3" variant="danger" disabled={confirm !== "احذف حسابي"} busy={remove.isPending} onClick={() => remove.mutate()}>حذف حسابي نهائياً</Button>
+        <Button className="mt-3" variant="danger" disabled={confirm !== DELETE_CONFIRMATION} busy={remove.isPending} onClick={() => remove.mutate()}>حذف حسابي نهائياً</Button>
       </Card>
     </div>
   );

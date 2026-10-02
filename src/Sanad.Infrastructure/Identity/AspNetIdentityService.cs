@@ -51,13 +51,28 @@ public sealed class AspNetIdentityService(
     }
 
     // ── جوجل ──────────────────────────────────────────────────────────────────
-    public async Task<AuthResult> CompleteGoogleLoginAsync(string externalProviderKey, string verifiedEmail, string? displayName, CancellationToken ct)
+    public Task<AuthResult> CompleteGoogleLoginAsync(string externalProviderKey, string verifiedEmail, string? displayName, CancellationToken ct) =>
+        CompleteExternalLoginAsync(ExternalLoginProvider.Google, externalProviderKey, verifiedEmail, displayName, ct);
+
+    /// <summary>
+    /// دخول بمزود خارجي (جوجل/أبل) بعد التحقق من رمزه: حساب مربوط بهذا المعرّف ← نفسه؛ وإلا بريد موثّق ← ربط بالحساب القائم
+    /// بنفس البريد أو إنشاء حساب مستفيد جديد. أبل قد لا ترسل البريد بعد أول دخول — يكفي المعرّف حينها إن كان مربوطاً.
+    /// </summary>
+    public async Task<AuthResult> CompleteExternalLoginAsync(ExternalLoginProvider provider, string externalProviderKey, string? verifiedEmail,
+        string? displayName, CancellationToken ct)
     {
+        var (name, method) = provider switch
+        {
+            ExternalLoginProvider.Google => ("Google", SanadClaims.MethodGoogle),
+            ExternalLoginProvider.Apple => ("Apple", SanadClaims.MethodApple),
+            _ => throw new ArgumentOutOfRangeException(nameof(provider)),
+        };
         var isNew = false;
-        var user = await userManager.FindByLoginAsync("Google", externalProviderKey);
+        var user = await userManager.FindByLoginAsync(name, externalProviderKey);
         if (user is null)
         {
-            // بريد موثّق من جوجل: ربط بحساب قائم بنفس البريد أو إنشاء حساب جديد
+            if (string.IsNullOrWhiteSpace(verifiedEmail))
+                throw new AuthenticationFailedException("تعذّر الحصول على بريد موثّق من مزود الدخول. حاول بطريقة أخرى.");
             user = await userManager.FindByEmailAsync(verifiedEmail);
             if (user is null)
             {
@@ -75,11 +90,11 @@ public sealed class AspNetIdentityService(
                 await userManager.AddToRoleAsync(user, SanadRoles.Beneficiary);
             }
             if (user.DeletedAtUtc is not null) throw new AuthenticationFailedException();
-            var linked = await userManager.AddLoginAsync(user, new UserLoginInfo("Google", externalProviderKey, "Google"));
-            if (!linked.Succeeded) throw ToValidation(linked, "google");
+            var linked = await userManager.AddLoginAsync(user, new UserLoginInfo(name, externalProviderKey, name));
+            if (!linked.Succeeded) throw ToValidation(linked, name.ToLowerInvariant());
         }
         if (user.DeletedAtUtc is not null) throw new AuthenticationFailedException();
-        return await ContinueSignInAsync(user, SanadClaims.MethodGoogle, isNew, ct);
+        return await ContinueSignInAsync(user, method, isNew, ct);
     }
 
     // ── الهاتف OTP ─────────────────────────────────────────────────────────────

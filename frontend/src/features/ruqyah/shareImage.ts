@@ -1,4 +1,4 @@
-import type { SceneTheme } from "./content";
+import type { SceneTheme } from "@sanad/shared/content/ruqyah";
 
 /*
   بطاقة مشاركة للآية أو الدعاء (1080×1350، مقاس منشورات الجوال): تُرسم في المتصفح على Canvas

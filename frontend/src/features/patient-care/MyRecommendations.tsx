@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/client";
-import type { Recommendation } from "../../api/types";
+import type { Recommendation } from "@sanad/shared/api/types";
 import { TrackMedia } from "../../components/TrackMedia";
 import { Badge, Button, Card, EmptyState, ErrorState, Loading, PageHeader } from "../../components/ui";
-import { formatDateTime } from "../../lib/format";
+import { formatDateTime } from "@sanad/shared/lib/format";
 
 /**
  * توصياتي (بوابة المستفيد) — قائمة زمنية لما أرسله المختص: نص التوجيه + مشغّل لأي مقطع مقترح.

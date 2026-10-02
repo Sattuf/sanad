@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { AudioTrack } from "../api/types";
+import type { AudioTrack } from "@sanad/shared/api/types";
 import { AudioPlayer } from "./AudioPlayer";
 
 /** المشغّل المناسب لنوع المقطع: ملف يخدمه سند نفسه، أو فيديو YouTube من قناة معتمدة. */

@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
-import type { ChatMessage, Conversation, PostedMessage, ReportCategory } from "../../api/types";
+import type { ChatMessage, Conversation, PostedMessage, ReportCategory } from "@sanad/shared/api/types";
 import { UnmonitoredChatWarning } from "../../components/safety";
 import { Banner, Button, Card, ErrorState, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatTime } from "../../lib/format";
+import { formatTime } from "@sanad/shared/lib/format";
 
 /** المحادثة الإدارية: نص فقط (لا مرفقات — 12 §12.5)، وكل رسالة تمر على كاشف الخطر في الخادم. */
 export function ConversationPage() {

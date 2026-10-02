@@ -1,5 +1,8 @@
 import { create } from "zustand";
-import type { EmergencyReferral } from "../api/types";
+import type { EmergencyReferral } from "@sanad/shared/api/types";
+import { FALLBACK_REFERRAL } from "@sanad/shared/safety/emergency";
+
+export { FALLBACK_REFERRAL };
 
 /*
   مسار الإحالة العاجلة على العميل: أي استجابة تحمل الترويسة X-Sanad-Emergency-Referral أو الحقل emergencyReferral
@@ -10,13 +13,6 @@ interface EmergencyState {
   raise: (referral: EmergencyReferral | null) => void;
   dismiss: () => void;
 }
-
-export const FALLBACK_REFERRAL: EmergencyReferral = {
-  required: true,
-  message: "إن كنت أنت أو أي شخص في خطر مباشر الآن، اتصل بالطوارئ فوراً. سند ليست خدمة طوارئ ولا تتابع الرسائل لحظياً.",
-  contacts: [{ label: "رقم الطوارئ الدولي من الجوال", phoneNumber: "112" }],
-  emergencyPagePath: "/emergency",
-};
 
 export const useEmergency = create<EmergencyState>((set) => ({
   referral: null,

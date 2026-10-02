@@ -2,10 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ApiError, api, newIdempotencyKey } from "../../api/client";
-import type { BookingCreated, ProviderPublic, Slot } from "../../api/types";
+import type { BookingCreated, ProviderPublic, Slot } from "@sanad/shared/api/types";
 import { Banner, Button, Card, Checkbox, EmptyState, ErrorState, Field, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDay, formatTime } from "../../lib/format";
+import { formatDay, formatTime } from "@sanad/shared/lib/format";
 
 const MAX_NOTE = 2000;
 

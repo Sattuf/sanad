@@ -24,6 +24,12 @@ public sealed class WebPushOptions
     /// <summary>تشغيل مهمة الإرسال الدورية (تُعطَّل في الاختبارات وتُشغَّل يدوياً).</summary>
     public bool SchedulerEnabled { get; set; } = true;
 
+    /// <summary>
+    /// إرسالات متوازية لخدمات الدفع في ذروة الأوقات. الإرسال محكوم بزمن الشبكة (~100ms لكل إشعار):
+    /// 32 تعني ~300 إشعار/ث، فتُرسل 20 ألف تذكير في نحو دقيقة (ADR-0020).
+    /// </summary>
+    public int MaxParallelSends { get; set; } = 32;
+
     public bool IsConfigured => Enabled && !string.IsNullOrWhiteSpace(PublicKey) && !string.IsNullOrWhiteSpace(PrivateKey);
 }
 

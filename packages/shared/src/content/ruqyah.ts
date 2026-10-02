@@ -1,4 +1,4 @@
-import { healthGuides } from "../health/content";
+import { healthGuides } from "./health";
 import type { QuranKey } from "./quran";
 
 /*

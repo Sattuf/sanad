@@ -71,6 +71,9 @@ public sealed class LocalFileStorage : IFileStorage
         return $"/api/v1/files/signed?key={Uri.EscapeDataString(objectKey)}&exp={exp}&sig={sig}";
     }
 
+    /// <summary>التخزين المحلي يُبث عبر الـ API (نسخة واحدة فقط — ممنوع في الإنتاج الموسّع، راجع StartupGuards).</summary>
+    public string? DirectReadUrl(string objectKey, TimeSpan ttl) => null;
+
     public bool ValidateSignature(string objectKey, long exp, string sig)
     {
         if (DateTimeOffset.UtcNow.ToUnixTimeSeconds() > exp) return false;
@@ -100,6 +103,10 @@ public sealed class ObjectStorageHealthCheck(IFileStorage storage) : IHealthChec
     {
         if (storage is LocalFileStorage local)
             return Task.FromResult(Directory.Exists(local.RootPath) ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy("storage root missing"));
+        if (storage is S3FileStorage s3)
+            return s3.CanReachBucketAsync(cancellationToken).ContinueWith(
+                t => t.IsCompletedSuccessfully && t.Result ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy("object storage unreachable"),
+                cancellationToken, TaskContinuationOptions.None, TaskScheduler.Default);
         return Task.FromResult(HealthCheckResult.Healthy());
     }
 }
