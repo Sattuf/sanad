@@ -34,7 +34,7 @@ dotnet run --project src/Sanad.Api --urls http://0.0.0.0:5080
 ```powershell
 cd mobile
 npm install
-"EXPO_PUBLIC_API_BASE_URL=http://192.168.1.20:5080" | Out-File -Encoding utf8 .env.local   # عنوانك أنت
+Set-Content -Encoding ascii .env.local "EXPO_PUBLIC_API_BASE_URL=http://192.168.1.20:5080"   # عنوانك أنت
 npx expo start
 ```
 ثبّت **Expo Go** من المتجر على جوالك، وامسح رمز QR (iPhone: بالكاميرا، Android: من داخل Expo Go).
