@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sanad.Domain.Audit;
 using Sanad.Domain.Common;
+using Sanad.Domain.Companion;
 using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
@@ -36,6 +37,12 @@ public interface IApplicationDbContext
     DbSet<EscalationCase> EscalationCases { get; }
     DbSet<AuditLogEntry> AuditLogEntries { get; }
     DbSet<StoredFile> StoredFiles { get; }
+    DbSet<PlanAuthor> PlanAuthors { get; }
+    DbSet<RuqyahPlan> RuqyahPlans { get; }
+    DbSet<PlanEnrollment> PlanEnrollments { get; }
+    DbSet<Khatma> Khatmas { get; }
+    DbSet<EmergencyContact> EmergencyContacts { get; }
+    DbSet<CompanionEventCounter> CompanionEventCounters { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
