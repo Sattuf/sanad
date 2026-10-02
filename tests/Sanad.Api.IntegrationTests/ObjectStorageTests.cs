@@ -5,21 +5,22 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Sanad.Api.IntegrationTests.Infrastructure;
 using Sanad.Infrastructure.Storage;
-using Testcontainers.Minio;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using static Sanad.Api.IntegrationTests.Infrastructure.TestApi;
 
 namespace Sanad.Api.IntegrationTests;
 
 /// <summary>
-/// خادم S3 حقيقي للاختبار: خادم قائم عبر SANAD_TEST_S3_ENDPOINT (مثل محاكي محلي)، أو MinIO عبر Testcontainers
-/// حيث يتوفر Docker (SANAD_TEST_POSTGRES=1 في CI).
+/// خادم S3 للاختبار: خادم قائم عبر SANAD_TEST_S3_ENDPOINT، أو محاكي moto (واجهة S3 كاملة) عبر Testcontainers
+/// حيث يتوفر Docker (SANAD_TEST_POSTGRES=1 في CI). صورة minio/minio لم تعد متاحة على Docker Hub.
 /// </summary>
 public sealed class S3FactAttribute : FactAttribute
 {
     public S3FactAttribute()
     {
         if (S3TestServer.ExistingEndpoint is null && Environment.GetEnvironmentVariable("SANAD_TEST_POSTGRES") != "1")
-            Skip = "S3 غير مفعّل (SANAD_TEST_S3_ENDPOINT، أو SANAD_TEST_POSTGRES=1 مع Docker لـ MinIO).";
+            Skip = "S3 غير مفعّل (SANAD_TEST_S3_ENDPOINT، أو SANAD_TEST_POSTGRES=1 مع Docker).";
     }
 }
 
@@ -27,9 +28,12 @@ public sealed class S3TestServer : IAsyncDisposable
 {
     public static string? ExistingEndpoint => Environment.GetEnvironmentVariable("SANAD_TEST_S3_ENDPOINT") is { Length: > 0 } e ? e : null;
 
-    private readonly MinioContainer? _container;
+    private const string MotoImage = "motoserver/moto:5.2.3";
+    private const int MotoPort = 5000;
 
-    private S3TestServer(S3StorageOptions options, MinioContainer? container)
+    private readonly IContainer? _container;
+
+    private S3TestServer(S3StorageOptions options, IContainer? container)
     {
         Options = options;
         _container = container;
@@ -39,16 +43,19 @@ public sealed class S3TestServer : IAsyncDisposable
 
     public static async Task<S3TestServer> StartAsync(string? publicBaseUrl = null)
     {
-        MinioContainer? container = null;
-        string endpoint, access = "test", secret = "test";
+        IContainer? container = null;
+        string endpoint;
+        const string access = "test", secret = "test"; // moto يقبل أي مفاتيح
         if (ExistingEndpoint is { } existing) endpoint = existing;
         else
         {
-            container = new MinioBuilder().Build();
+            container = new ContainerBuilder()
+                .WithImage(MotoImage)
+                .WithPortBinding(MotoPort, true)
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(MotoPort).ForPath("/")))
+                .Build();
             await container.StartAsync();
-            endpoint = container.GetConnectionString();
-            access = container.GetAccessKey();
-            secret = container.GetSecretKey();
+            endpoint = $"http://{container.Hostname}:{container.GetMappedPublicPort(MotoPort)}";
         }
 
         var bucket = $"sanad-test-{Guid.NewGuid():N}"[..30];

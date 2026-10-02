@@ -57,7 +57,7 @@ WebPush:MaxParallelSends=32
 
 ## الاختبار
 القفل بين نسختين، وكل مسار المهام على PostgreSQL الحقيقي (Testcontainers في CI، أو `SANAD_TEST_PG_CONNECTION`).
-ذهاب وإياب S3 مع رفع ← نشر ← توجيه ← معاينة عبر الـ API (MinIO في CI، أو `SANAD_TEST_S3_ENDPOINT`).
+ذهاب وإياب S3 مع رفع ← نشر ← توجيه ← معاينة عبر الـ API (محاكي moto في CI عبر Testcontainers، أو `SANAD_TEST_S3_ENDPOINT`).
 حدود المعدل على Redis حقيقي (Testcontainers في CI، أو `SANAD_TEST_REDIS`): نسختان تتقاسمان العدّاد، وتجدّد النافذة،
 وحد OTP عبر نسختين من الـ API، والرجوع لحد محلي عند سقوط Redis.
 وحراسات الإقلاع.
