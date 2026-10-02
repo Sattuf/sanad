@@ -16,9 +16,9 @@ src/
 tests/                  Domain / Application / Api.IntegrationTests
 frontend/               React 18 + TypeScript + Vite + Tailwind، عربي RTL، Framer Motion
 mobile/                 تطبيق الجوال: Expo (React Native) — راجع mobile/README.md
-ruqyah-app/             «سند» للرقية الذاتية: PWA بلا خادم (خطط، ورد يومي، ختمة) — راجع ruqyah-app/README.md
+ruqyah-app/             «سند» للرقية الذاتية: PWA محلية أولاً، وحساب اختياري للمزامنة والختمة الجماعية — ADR-0021
 packages/shared/        منطق ومحتوى مشترك بين الويب والجوال (أنواع، عميل الـ API، الطوارئ، القرآن والأدعية)
-docs/adr/               سجل قرارات المعمارية (15 قراراً)
+docs/adr/               سجل قرارات المعمارية (21 قراراً)
 references/             الحزمة المرجعية الأصلية
 .claude/skills/         مهارة sanad-ruqyah-app: نطاق التطبيق وضوابطه ونظام تصميم «المخطوطة المُذهَّبة»
 ```
@@ -37,7 +37,10 @@ $env:ASPNETCORE_ENVIRONMENT="Development"; dotnet run --project src/Sanad.Api --
 # 3) الواجهة على http://localhost:5173
 cd frontend; npm install; npm run dev
 
-# 4) تطبيق الجوال (اختياري) — امسح رمز QR بتطبيق Expo Go
+# 4) تطبيق «سند» للرقية الذاتية (اختياري) على http://localhost:5174
+cd ruqyah-app; copy .env.example .env.local; npm install; npm run dev
+
+# 5) تطبيق الجوال (اختياري) — امسح رمز QR بتطبيق Expo Go
 cd mobile; npm install; npm start
 ```
 
@@ -55,6 +58,7 @@ dotnet test                                  # Domain + Application + تكامل
 cd frontend; npm test; npm run lint; npm run build
 cd packages/shared; npm test; npm run check:pure    # نص القرآن مطابق، ولا اعتمادات خارجية
 cd mobile; npm run typecheck; npm run lint; npm test
+cd ruqyah-app; npm run check:guardrails; npm run typecheck; npm test; npm run build
 npx playwright test                          # E2E — يتطلب تشغيل الـ API والواجهة أولاً
 ```
 
