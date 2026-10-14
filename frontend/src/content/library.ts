@@ -1,11 +1,13 @@
-import quran from "./quran.generated.json";
+import { quran, type QuranKey } from "@sanad/shared/content/quran";
+import { mediaUrl } from "../api/client";
+import { ayahAudioPath } from "../features/ruqyah/recitation";
 
 /*
   المحتوى الثابت لرفيق السكينة — أذكار وأدعية مأثورة ونصوص قرآنية فقط، كلٌّ بمصدره.
-  قواعد صارمة (references/SKILL.md البنود 1–4):
-  - النص القرآني لا يُكتب يدوياً: يُولَّد من مصدر موثوق (scripts/fetch-quran.mjs).
+  قواعد صارمة (references/SKILL.md البنود 1–4 و.claude/skills/sanad-ruqyah-app/references/content-guardrails.md):
+  - النص القرآني من المصحف المدقّق المشترك فقط (packages/shared/src/content/quran.ts) — لا يُكتب يدوياً.
   - لا "خطوات علاج" ولا وعد بنتيجة ولا تصنيف لحالة المستخدم؛ هذه عبادات وعادات يومية يختارها هو.
-  - أي إضافة هنا تحتاج مراجعة مختص شرعي قبل الإطلاق (docs/adr/0016).
+  - أي إضافة هنا تحتاج مراجعة مختص شرعي قبل الإطلاق (docs/adr/0022).
 */
 
 export interface Ayah {
@@ -15,34 +17,19 @@ export interface Ayah {
   text: string;
 }
 
-const AYAT = quran as Record<string, Ayah>;
-
-export const SURAH_NAMES: Record<number, string> = {
-  1: "الفاتحة", 2: "البقرة", 9: "التوبة", 10: "يونس", 13: "الرعد", 17: "الإسراء", 21: "الأنبياء",
-  48: "الفتح", 68: "القلم", 94: "الشرح", 112: "الإخلاص", 113: "الفلق", 114: "الناس",
-};
-
-/** "2:255" أو "112:1-4" → قائمة آيات. يرمي خطأً إن لم تُولَّد الآية — حتى لا يظهر نص ناقص بصمت. */
-export function expandRef(ref: string): Ayah[] {
-  const [s, range] = ref.split(":");
-  const [from, to = from] = range.split("-").map(Number);
-  const out: Ayah[] = [];
-  for (let a = from; a <= to; a++) {
-    const ayah = AYAT[`${Number(s)}:${a}`];
-    if (!ayah) throw new Error(`الآية ${s}:${a} غير موجودة في quran.generated.json`);
-    out.push({ ...ayah, surahName: SURAH_NAMES[ayah.surah] ?? ayah.surahName });
-  }
-  return out;
+export function expandRef(key: QuranKey): Ayah[] {
+  const p = quran[key];
+  return p.ayat.map((text, i) => ({ surah: p.surah, ayah: p.from + i, surahName: p.surahName, text }));
 }
 
-/** تلاوة الآية من everyayah.com (مشاري العفاسي) — مصدر معتمد أصلاً في ADR-0015. */
+/** تلاوة الآية عبر خادم سند (يجلبها من everyayah مرة واحدة) — نفس مسار القارئ في /ruqyah. */
 export function ayahAudioUrl(a: Pick<Ayah, "surah" | "ayah">) {
-  return `https://everyayah.com/data/Alafasy_128kbps/${String(a.surah).padStart(3, "0")}${String(a.ayah).padStart(3, "0")}.mp3`;
+  return mediaUrl(ayahAudioPath("Alafasy_128kbps", a.surah, a.ayah));
 }
 
-export function refLabel(ref: string) {
-  const [s, range] = ref.split(":");
-  return `${SURAH_NAMES[Number(s)] ?? s} ${range.replace("-", "–")}`;
+export function refLabel(key: QuranKey) {
+  const p = quran[key];
+  return p.from === p.to ? `${p.surahName} ${p.from}` : `${p.surahName} ${p.from}–${p.to}`;
 }
 
 export type ItemKind = "verses" | "dhikr" | "practice";
@@ -52,7 +39,7 @@ export interface LibraryItem {
   kind: ItemKind;
   title: string;
   /** آيات (kind=verses) */
-  refs?: string[];
+  refs?: QuranKey[];
   /** نص الذكر أو وصف العادة */
   text?: string;
   /** عدد التكرار الوارد فقط — لا نخترع أعداداً لم ترد */
@@ -66,30 +53,30 @@ export interface LibraryItem {
 const items: LibraryItem[] = [
   // ——— قرآن ———
   {
-    id: "fatiha", kind: "verses", title: "سورة الفاتحة", refs: ["1:1-7"], minutes: 1,
+    id: "fatiha", kind: "verses", title: "سورة الفاتحة", refs: ["fatiha"], minutes: 1,
     note: "قال النبي ﷺ لمن رقى بها: «وما يدريك أنها رقية».", source: "صحيح البخاري (5736)",
   },
   {
-    id: "kursi", kind: "verses", title: "آية الكرسي", refs: ["2:255"], minutes: 1,
+    id: "kursi", kind: "verses", title: "آية الكرسي", refs: ["kursi"], minutes: 1,
     note: "من قرأها إذا أوى إلى فراشه «لم يزل عليه من الله حافظ».", source: "صحيح البخاري (2311)",
   },
   {
-    id: "baqarah-end", kind: "verses", title: "خاتمة سورة البقرة", refs: ["2:285-286"], minutes: 2,
+    id: "baqarah-end", kind: "verses", title: "خاتمة سورة البقرة", refs: ["baqarah-285-286"], minutes: 2,
     note: "«من قرأ بالآيتين من آخر سورة البقرة في ليلة كفتاه».", source: "صحيح البخاري (5009) وصحيح مسلم (808)",
   },
   {
-    id: "muawwidhat", kind: "verses", title: "المعوّذات", refs: ["112:1-4", "113:1-5", "114:1-6"], repeat: 3, minutes: 2,
+    id: "muawwidhat", kind: "verses", title: "المعوّذات", refs: ["ikhlas", "falaq", "nas"], repeat: 3, minutes: 2,
     note: "«قل هو الله أحد والمعوّذتين حين تمسي وحين تصبح ثلاث مرات تكفيك من كل شيء».", source: "سنن أبي داود (5082) وسنن الترمذي (3575)",
   },
   {
-    id: "sakina-verses", kind: "verses", title: "آيات السكينة", refs: ["2:248", "9:26", "9:40", "48:4", "48:18", "48:26"], minutes: 3,
+    id: "sakina-verses", kind: "verses", title: "آيات السكينة", refs: ["baqarah-248", "tawbah-26", "tawbah-40", "fath-4", "fath-18", "fath-26"], minutes: 3,
     note: "ذكر ابن القيم أن شيخه ابن تيمية كان يقرؤها إذا اشتدّت عليه الأمور.", source: "مدارج السالكين — منزلة السكينة",
   },
   {
-    id: "tumaninah", kind: "verses", title: "آيات الطمأنينة", refs: ["13:28", "10:57", "17:82"], minutes: 1,
+    id: "tumaninah", kind: "verses", title: "آيات الطمأنينة", refs: ["raad-28", "yunus-57", "isra-82"], minutes: 1,
   },
-  { id: "sharh", kind: "verses", title: "سورة الشرح", refs: ["94:1-8"], minutes: 1 },
-  { id: "qalam-end", kind: "verses", title: "خاتمة سورة القلم", refs: ["68:51-52"], minutes: 1, note: "مما يقرؤه الرقاة في الرقية من العين." },
+  { id: "sharh", kind: "verses", title: "سورة الشرح", refs: ["sharh"], minutes: 1 },
+  { id: "qalam-end", kind: "verses", title: "خاتمة سورة القلم", refs: ["qalam-51-52"], minutes: 1, note: "مما يقرؤه الرقاة في الرقية من العين." },
 
   // ——— أذكار وأدعية ———
   {

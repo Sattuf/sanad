@@ -7,12 +7,12 @@ import { useMe } from "../../api/hooks";
 import type {
   AudioCategory, AudioTrackAdmin, EscalationCase, OrganizationAdmin, OrganizationTrack, ProviderAdmin, ReportDetail, ReportItem, Role,
   SafetyAlert, UserPage, VerificationQueueItem,
-} from "../../api/types";
+} from "@sanad/shared/api/types";
 import { TrackMedia } from "../../components/TrackMedia";
 import { LibraryAddPanel } from "./LibraryAddPanel";
 import { Badge, Banner, Button, Card, Checkbox, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDateTime } from "../../lib/format";
+import { formatDateTime } from "@sanad/shared/lib/format";
 
 const tabs: Array<{ to: string; label: string; roles: Role[] }> = [
   { to: "/staff/verifications", label: "التوثيق", roles: ["Coordinator"] },
@@ -21,6 +21,10 @@ const tabs: Array<{ to: string; label: string; roles: Role[] }> = [
   { to: "/staff/reports", label: "البلاغات والتصعيد", roles: ["Coordinator"] },
   { to: "/staff/safety-alerts", label: "تنبيهات السلامة", roles: ["Coordinator", "ClinicalSupervisor"] },
   { to: "/staff/library", label: "المكتبة", roles: ["ContentManager", "SystemAdmin"] },
+  { to: "/staff/duas", label: "الأدعية المكتوبة", roles: ["ContentManager"] },
+  { to: "/staff/companion-plans", label: "خطط تطبيق سند", roles: ["ContentManager"] },
+  { to: "/staff/companion-emergency", label: "أرقام الطوارئ", roles: ["Coordinator", "ClinicalSupervisor"] },
+  { to: "/staff/companion-stats", label: "مؤشرات سند", roles: ["ContentManager", "Coordinator"] },
   { to: "/staff/users", label: "الأدوار", roles: ["SystemAdmin"] },
 ];
 

@@ -43,6 +43,7 @@ public static class SanadClaims
     public const string MethodPassword = "pwd";
     public const string MethodOtp = "otp";
     public const string MethodGoogle = "google";
+    public const string MethodApple = "apple";
     public const string MethodMfa = "mfa";
 }
 

@@ -95,6 +95,15 @@ public sealed class TrustedLibraryCatalog(IHttpClientFactory httpFactory, IOptio
         }
     }
 
+    public async Task<CatalogAudio> FetchAyahAsync(string reciterFolder, int surah, int ayah, CancellationToken ct)
+    {
+        if (!RecitationReciters.IsKnown(reciterFolder) || surah is < 1 or > 114 || ayah < 1 || ayah > QuranAyahCounts.Of(surah))
+            throw new RequestValidationException("ayah", "الآية أو القارئ غير متاح.");
+        var url = AyahUrl(reciterFolder, surah, ayah);
+        var file = await TrustedSources.DownloadToTempAsync(Http(), url, MaxAyahFileBytes, ct);
+        return Measure(file, $"{surah}:{ayah}", reciterFolder, url.ToString());
+    }
+
     public async Task<CatalogAudio> FetchAdhkarAsync(int adhkarId, CancellationToken ct)
     {
         var s = await SnapshotAsync(ct);

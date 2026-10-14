@@ -51,20 +51,38 @@ public sealed class AspNetIdentityService(
     }
 
     // ── جوجل ──────────────────────────────────────────────────────────────────
-    public async Task<AuthResult> CompleteGoogleLoginAsync(string externalProviderKey, string verifiedEmail, string? displayName, CancellationToken ct)
+    public Task<AuthResult> CompleteGoogleLoginAsync(string externalProviderKey, string verifiedEmail, string? displayName, CancellationToken ct) =>
+        CompleteExternalLoginAsync(ExternalLoginProvider.Google, externalProviderKey, verifiedEmail, displayName, ct);
+
+    /// <summary>
+    /// دخول بمزود خارجي (جوجل/أبل) بعد التحقق من رمزه: حساب مربوط بهذا المعرّف ← نفسه؛ وإلا بريد موثّق ← ربط بالحساب القائم
+    /// بنفس البريد أو إنشاء حساب مستفيد جديد. أبل قد لا ترسل البريد بعد أول دخول — يكفي المعرّف حينها إن كان مربوطاً.
+    /// </summary>
+    public async Task<AuthResult> CompleteExternalLoginAsync(ExternalLoginProvider provider, string externalProviderKey, string? verifiedEmail,
+        string? displayName, CancellationToken ct)
     {
+        var (name, method) = provider switch
+        {
+            ExternalLoginProvider.Google => ("Google", SanadClaims.MethodGoogle),
+            ExternalLoginProvider.Apple => ("Apple", SanadClaims.MethodApple),
+            _ => throw new ArgumentOutOfRangeException(nameof(provider)),
+        };
         var isNew = false;
-        var user = await userManager.FindByLoginAsync("Google", externalProviderKey);
+        var user = await userManager.FindByLoginAsync(name, externalProviderKey);
         if (user is null)
         {
-            // بريد موثّق من جوجل: ربط بحساب قائم بنفس البريد أو إنشاء حساب جديد
+            if (string.IsNullOrWhiteSpace(verifiedEmail))
+                throw new AuthenticationFailedException("تعذّر الحصول على بريد موثّق من مزود الدخول. حاول بطريقة أخرى.");
             user = await userManager.FindByEmailAsync(verifiedEmail);
             if (user is null)
             {
                 isNew = true;
                 user = new ApplicationUser
                 {
-                    Email = verifiedEmail, UserName = verifiedEmail, EmailConfirmed = true, CreatedAtUtc = clock.UtcNow,
+                    Email = verifiedEmail,
+                    UserName = verifiedEmail,
+                    EmailConfirmed = true,
+                    CreatedAtUtc = clock.UtcNow,
                     DisplayName = string.IsNullOrWhiteSpace(displayName) ? "مستخدم سند" : displayName.Trim()[..Math.Min(100, displayName.Trim().Length)],
                 };
                 var created = await userManager.CreateAsync(user);
@@ -72,11 +90,11 @@ public sealed class AspNetIdentityService(
                 await userManager.AddToRoleAsync(user, SanadRoles.Beneficiary);
             }
             if (user.DeletedAtUtc is not null) throw new AuthenticationFailedException();
-            var linked = await userManager.AddLoginAsync(user, new UserLoginInfo("Google", externalProviderKey, "Google"));
-            if (!linked.Succeeded) throw ToValidation(linked, "google");
+            var linked = await userManager.AddLoginAsync(user, new UserLoginInfo(name, externalProviderKey, name));
+            if (!linked.Succeeded) throw ToValidation(linked, name.ToLowerInvariant());
         }
         if (user.DeletedAtUtc is not null) throw new AuthenticationFailedException();
-        return await ContinueSignInAsync(user, SanadClaims.MethodGoogle, isNew, ct);
+        return await ContinueSignInAsync(user, method, isNew, ct);
     }
 
     // ── الهاتف OTP ─────────────────────────────────────────────────────────────
@@ -94,8 +112,11 @@ public sealed class AspNetIdentityService(
             isNew = true;
             user = new ApplicationUser
             {
-                UserName = $"phone_{phoneNumberE164.TrimStart('+')}", PhoneNumber = phoneNumberE164, PhoneNumberConfirmed = true,
-                DisplayName = "مستخدم سند", CreatedAtUtc = clock.UtcNow,
+                UserName = $"phone_{phoneNumberE164.TrimStart('+')}",
+                PhoneNumber = phoneNumberE164,
+                PhoneNumberConfirmed = true,
+                DisplayName = "مستخدم سند",
+                CreatedAtUtc = clock.UtcNow,
             };
             if (!string.IsNullOrWhiteSpace(email))
             {
@@ -239,8 +260,10 @@ public sealed class AspNetIdentityService(
         var users = (await query.ToListAsync(ct)).OrderBy(u => u.DisplayName, StringComparer.Ordinal)
             .Skip((page - 1) * pageSize).Take(pageSize).ToList();
         var ids = users.Select(u => u.Id).ToList();
-        var roleRows = await (from ur in db.UserRoles join r in db.Roles on ur.RoleId equals r.Id
-                              where ids.Contains(ur.UserId) select new { ur.UserId, r.Name }).ToListAsync(ct);
+        var roleRows = await (from ur in db.UserRoles
+                              join r in db.Roles on ur.RoleId equals r.Id
+                              where ids.Contains(ur.UserId)
+                              select new { ur.UserId, r.Name }).ToListAsync(ct);
         return new UserPage(users.Select(u => ToSummary(u, roleRows.Where(x => x.UserId == u.Id).Select(x => x.Name!).ToList())).ToList(), total);
     }
 
@@ -359,7 +382,11 @@ public sealed class AspNetIdentityService(
         var refreshExp = now.AddDays(jwtOptions.Value.RefreshTokenDays);
         db.RefreshTokens.Add(new RefreshToken
         {
-            UserId = user.Id, TokenHash = JwtTokenService.Hash(refresh), AuthMethod = authMethod, CreatedAtUtc = now, ExpiresAtUtc = refreshExp,
+            UserId = user.Id,
+            TokenHash = JwtTokenService.Hash(refresh),
+            AuthMethod = authMethod,
+            CreatedAtUtc = now,
+            ExpiresAtUtc = refreshExp,
         });
         await db.SaveChangesAsync(ct);
         return new AuthTokens(access, accessExp, refresh, refreshExp);

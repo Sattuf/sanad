@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { COUNTRY_CODES, DEFAULT_COUNTRY_ISO2, flagEmoji } from "../../lib/countryCodes";
+import { COUNTRY_CODES, DEFAULT_COUNTRY_ISO2, flagEmoji } from "@sanad/shared/lib/countryCodes";
 import { Input, Select } from "../../components/ui";
 
 const SORTED = [...COUNTRY_CODES].sort((a, b) => a.name.localeCompare(b.name, "ar"));

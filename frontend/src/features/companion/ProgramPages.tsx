@@ -392,7 +392,7 @@ function Header({ title, sub }: { title: string; sub: string }) {
 function QuickActions() {
   const actions = [
     { to: "/journal", title: "كيف حالك اليوم؟", sub: "سجّل حالتك في دقيقة", bg: "var(--sky)" },
-    { to: "/ruqyah", title: "ارقِ نفسك", sub: "مرشد خطوة بخطوة", bg: "var(--sage)" },
+    { to: "/self-ruqyah", title: "ارقِ نفسك", sub: "مرشد خطوة بخطوة", bg: "var(--sage)" },
     { to: "/awareness", title: "هل هذا صحيح؟", sub: "ميزان الوعي", bg: "var(--sand)" },
   ];
   return (

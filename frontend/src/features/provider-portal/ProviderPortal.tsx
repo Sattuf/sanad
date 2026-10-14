@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
-import type { BookingNote, BookingSummary, Conversation, DeliveryMode, MyProviderProfile, ServiceOffering, Slot } from "../../api/types";
+import type { BookingNote, BookingSummary, Conversation, DeliveryMode, MyProviderProfile, ServiceOffering, Slot } from "@sanad/shared/api/types";
 import { VerificationBadge } from "../../components/safety";
 import { Badge, Banner, Button, Card, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDateTime, formatDay, formatTime, localInputToIso } from "../../lib/format";
-import { statusTone } from "../../lib/status";
+import { formatDateTime, formatDay, formatTime, localInputToIso } from "@sanad/shared/lib/format";
+import { statusTone } from "@sanad/shared/lib/status";
 
 const useProfile = () => useQuery({ queryKey: ["my-provider-profile"], queryFn: () => api.get<MyProviderProfile>("/api/v1/me/provider-profile") });
 

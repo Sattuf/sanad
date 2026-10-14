@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { api } from "../../api/client";
-import type { Transparency } from "../../api/types";
+import type { Transparency } from "@sanad/shared/api/types";
 import { ProgressRing } from "../../components/companion";
 import { Card } from "../../components/ui";
 import { expandRef } from "../../content/library";
@@ -25,7 +25,7 @@ const tracks = [
 
 const pillars = [
   { to: "/programs", title: "برامج التزام واضحة", text: "٧ أو ١٠ أو ١٤ أو ٢١ يوماً بمهام يومية صغيرة: ماذا تقرأ ومتى وكم مرة — مع مصدر كل ذكر.", bg: "var(--bg-deep)", icon: "M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z" },
-  { to: "/ruqyah", title: "ارقِ نفسك بلا وسيط", text: "مرشد خطوة بخطوة: النية، وضع اليد، آيات بخط واضح وتلاوة تصحّح بها قراءتك، وتكرار تلقائي.", bg: "var(--sage)", icon: "M8 13c-2-1-3-3-3-5a7 7 0 0 1 14 0c0 2-1 4-3 5M9 17h6M10 21h4" },
+  { to: "/self-ruqyah", title: "ارقِ نفسك بلا وسيط", text: "مرشد خطوة بخطوة: النية، وضع اليد، آيات بخط واضح وتلاوة تصحّح بها قراءتك، وتكرار تلقائي.", bg: "var(--sage)", icon: "M8 13c-2-1-3-3-3-5a7 7 0 0 1 14 0c0 2-1 4-3 5M9 17h6M10 21h4" },
   { to: "/awareness", title: "ميزان الوعي", text: "اكتب أي ممارسة سمعت عنها — ملح الهملايا، الشاكرات، الخرزة — لترى حكمها بدليله وتفسيرها العلمي وبديلها.", bg: "var(--sand)", icon: "M12 3v18M5 7h14M7 7l-3 7a3 3 0 0 0 6 0L7 7Zm10 0-3 7a3 3 0 0 0 6 0l-3-7Z" },
   { to: "/journal", title: "مذكّرة خاصة مشفّرة", text: "سجّل هدوءك ونومك ونشاطك في دقيقة. بعد أسبوعين ترى رسماً لأيامك مع التزامك — على جهازك فقط.", bg: "var(--sky)", icon: "M4 19V5M4 19h16M8 15l3-4 3 2 5-6" },
 ];
@@ -66,7 +66,7 @@ function TodayMock() {
         ))}
       </ul>
       <div className="mt-3 rounded-2xl bg-sky px-3 py-2.5 text-center">
-        <p className="quran text-lg leading-[2]">{expandRef("13:28")[0].text.split("ۗ").pop()!.trim()}</p>
+        <p className="quran text-lg leading-[2]">{expandRef("raad-28")[0].text.split("ۗ").pop()!.trim()}</p>
       </div>
     </motion.div>
   );
@@ -139,6 +139,13 @@ export function HomePage() {
             </Link>
           ))}
         </div>
+        <Link to="/ruqyah" className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4">
+          <span>
+            <span className="block font-bold">الرقية والتحصين مكتوبةً</span>
+            <span className="text-sm text-muted">أذكار الصباح والمساء والنوم وآيات الرقية كاملة بمصادرها، مع التلاوة.</span>
+          </span>
+          <span className="shrink-0 text-sm font-semibold text-primary">افتح ←</span>
+        </Link>
       </section>
 
       <section aria-labelledby="myths-title" className="rounded-3xl border border-border bg-surface p-6 md:p-10">

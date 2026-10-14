@@ -95,7 +95,7 @@ function MythCard({ myth, defaultOpen }: { myth: Myth; defaultOpen?: boolean }) 
   const meta = VERDICT_META[myth.verdict];
   const reduce = useReducedMotion();
   const alt = myth.alternativeItemId ? item(myth.alternativeItemId) : null;
-  const altLink = alt?.id === "self-ruqyah" ? "/ruqyah" : alt ? `/programs` : null;
+  const altLink = alt?.id === "self-ruqyah" ? "/self-ruqyah" : alt ? `/programs` : null;
   return (
     <Card as="article" className="overflow-hidden p-0">
       <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex w-full items-center gap-3 p-4 text-start">

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ApiError, api } from "../../api/client";
-import type { AudioCategory, AudioTrackAdmin, LibraryCatalog, UploadedFile } from "../../api/types";
+import type { AudioCategory, AudioTrackAdmin, LibraryCatalog, UploadedFile } from "@sanad/shared/api/types";
 import { Banner, Button, Card, Checkbox, ErrorState, Field, Input, Loading, Select, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
 

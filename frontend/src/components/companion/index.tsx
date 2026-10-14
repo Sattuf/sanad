@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState, type ReactNode } from "react";
+import type { QuranKey } from "@sanad/shared/content/quran";
 import { ayahAudioUrl, expandRef, refLabel, type LibraryItem } from "../../content/library";
 import { arNum } from "../../lib/dates";
 import { cx } from "../../lib/cx";
@@ -71,7 +72,7 @@ export function ShareButton({ content, className }: { content: CardContent; clas
 }
 
 /** آيات بخط عثماني كبير، مع تلاوة متتابعة وتظليل الآية الجارية وتكرار اختياري. */
-export function VerseBlock({ refs, repeat = 1, large, showControls = true }: { refs: string[]; repeat?: number; large?: boolean; showControls?: boolean }) {
+export function VerseBlock({ refs, repeat = 1, large, showControls = true }: { refs: QuranKey[]; repeat?: number; large?: boolean; showControls?: boolean }) {
   const ayat = refs.flatMap(expandRef);
   let n = 0;
   const groups = refs.map((ref) => ({ ref, ayat: expandRef(ref).map((a) => ({ a, i: n++ })) }));

@@ -59,7 +59,12 @@ public sealed class AdminBootstrapSeeder(UserManager<ApplicationUser> userManage
 
         var admin = new ApplicationUser
         {
-            Email = email, UserName = email, EmailConfirmed = true, DisplayName = "مدير النظام", MustChangePassword = true, CreatedAtUtc = clock.UtcNow,
+            Email = email,
+            UserName = email,
+            EmailConfirmed = true,
+            DisplayName = "مدير النظام",
+            MustChangePassword = true,
+            CreatedAtUtc = clock.UtcNow,
         };
         var result = await userManager.CreateAsync(admin, tempPassword);
         if (!result.Succeeded)

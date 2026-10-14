@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { STAFF_ROLES, useMe, useSignOut } from "../../api/hooks";
-import type { AppNotification } from "../../api/types";
+import type { AppNotification } from "@sanad/shared/api/types";
 import { AdministrativeDisclaimerFooter, EmergencyReferralBanner } from "../../components/safety";
 import { cx } from "../../lib/cx";
 import { useRealtime } from "../../features/realtime/useRealtime";
@@ -86,10 +86,12 @@ function SiteHeader() {
   const links: Array<{ to: string; label: string; show: boolean; primary?: boolean }> = [
     { to: "/today", label: "يومي", show: true, primary: true },
     { to: "/programs", label: "البرامج", show: true, primary: true },
-    { to: "/ruqyah", label: label("ارقِ نفسك", "جلسة"), show: true, primary: true },
+    { to: "/ruqyah", label: label(t("nav.ruqyah"), "الأذكار"), show: true, primary: true },
+    { to: "/self-ruqyah", label: label("ارقِ نفسك", "جلسة"), show: true, primary: true },
     { to: "/journal", label: "مذكّرتي", show: true, primary: true },
     { to: "/awareness", label: "ميزان الوعي", show: true, primary: true },
     { to: "/directory", label: t("nav.directory"), show: true },
+    { to: "/health", label: t("nav.health"), show: true },
     { to: "/library", label: label(t("nav.library"), "الاستماع"), show: Boolean(me) },
     { to: "/bookings", label: t("nav.bookings"), show: Boolean(me) },
     { to: "/recommendations", label: t("nav.recommendations"), show: Boolean(me) },

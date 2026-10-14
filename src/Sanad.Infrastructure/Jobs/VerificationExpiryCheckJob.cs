@@ -12,7 +12,7 @@ namespace Sanad.Infrastructure.Jobs;
 /// مهمة دورية: كل توثيق تجاوز تاريخ انتهائه يصبح Expired، وحدث VerificationExpiredEvent يعلّق النشر عبر Outbox.
 /// (الدليل يرفض العرض بلا توثيق ساري حتى قبل مرور المهمة — هذا حزام أمان إضافي لا الضمانة الوحيدة.)
 /// </summary>
-public sealed class VerificationExpiryCheckJob(IServiceScopeFactory scopes, ILogger<VerificationExpiryCheckJob> logger) : BackgroundService
+public sealed class VerificationExpiryCheckJob(IServiceScopeFactory scopes, IJobLock jobLock, ILogger<VerificationExpiryCheckJob> logger) : BackgroundService
 {
     private static readonly TimeSpan Interval = TimeSpan.FromHours(1);
 
@@ -23,8 +23,11 @@ public sealed class VerificationExpiryCheckJob(IServiceScopeFactory scopes, ILog
         {
             try
             {
-                var expired = await RunOnceAsync(stoppingToken);
-                if (expired > 0) logger.LogInformation("Expired {Count} verification records", expired);
+                await jobLock.RunExclusiveAsync("verification-expiry", async () =>
+                {
+                    var expired = await RunOnceAsync(stoppingToken);
+                    if (expired > 0) logger.LogInformation("Expired {Count} verification records", expired);
+                }, stoppingToken);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {

@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { cachedCount, precacheAudio, usePlaylist } from "../../components/companion/audio";
+import type { QuranKey } from "@sanad/shared/content/quran";
 import { ayahAudioUrl, expandRef, item } from "../../content/library";
 import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
@@ -14,10 +15,10 @@ import { arNum } from "../../lib/dates";
 */
 type Need = "distress" | "night" | "sleep";
 
-const NEEDS: Record<Need, { label: string; items: string[]; verses: string[] }> = {
-  distress: { label: "ضيق مفاجئ", items: ["dua-karb", "dhunnun", "ya-hayy"], verses: ["2:248", "9:26", "9:40", "48:4", "48:18", "48:26", "13:28"] },
-  night: { label: "استيقظت فزعاً", items: ["faza", "bad-dream"], verses: ["2:255", "113:1-5", "114:1-6"] },
-  sleep: { label: "لا أستطيع النوم", items: ["bismika", "sleep-nafth"], verses: ["2:255", "2:285-286", "112:1-4", "113:1-5", "114:1-6"] },
+const NEEDS: Record<Need, { label: string; items: string[]; verses: QuranKey[] }> = {
+  distress: { label: "ضيق مفاجئ", items: ["dua-karb", "dhunnun", "ya-hayy"], verses: ["baqarah-248", "tawbah-26", "tawbah-40", "fath-4", "fath-18", "fath-26", "raad-28"] as QuranKey[] },
+  night: { label: "استيقظت فزعاً", items: ["faza", "bad-dream"], verses: ["kursi", "falaq", "nas"] as QuranKey[] },
+  sleep: { label: "لا أستطيع النوم", items: ["bismika", "sleep-nafth"], verses: ["kursi", "baqarah-285-286", "ikhlas", "falaq", "nas"] as QuranKey[] },
 };
 
 const ALL_AUDIO = [...new Set(Object.values(NEEDS).flatMap((n) => n.verses.flatMap(expandRef).map(ayahAudioUrl)))];

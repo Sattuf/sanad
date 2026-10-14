@@ -20,8 +20,23 @@ appsettings.*.local.json
 .env.*
 
 # الواجهة الأمامية
-frontend/node_modules/
+node_modules/
 frontend/dist/
 frontend/coverage/
 frontend/playwright-report/
 frontend/test-results/
+ruqyah-app/dist/
+
+# تطبيق الجوال (Expo) — المجلدات الأصلية تُولَّد بـ prebuild/EAS
+mobile/.expo/
+mobile/dist/
+mobile/ios/
+mobile/android/
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.mobileprovision
+mobile/google-services.json
+mobile/GoogleService-Info.plist
+
+!.env.example

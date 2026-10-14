@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Safety;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Domain.Common;
 using Sanad.Infrastructure.Caching;
@@ -15,6 +16,7 @@ using Sanad.Infrastructure.Captcha;
 using Sanad.Infrastructure.Encryption;
 using Sanad.Infrastructure.Identity;
 using Sanad.Infrastructure.Jobs;
+using StackExchange.Redis;
 using Sanad.Infrastructure.Library;
 using Sanad.Infrastructure.Notifications;
 using Sanad.Infrastructure.Persistence;
@@ -74,6 +76,9 @@ public static class DependencyInjection
         services.AddScoped<SignInTicketStore>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IIdentityService, AspNetIdentityService>();
+        // دخول جوجل وأبل الأصلي من الجوال (ADR-0019) — مفاتيح المزودين مخزّنة مؤقتاً على مستوى التطبيق
+        services.AddSingleton<IExternalSigningKeys, OidcSigningKeys>();
+        services.AddSingleton<IExternalIdTokenValidator, ExternalIdTokenValidator>();
         services.AddScoped<AdminBootstrapSeeder>();
         if (env.IsDevelopment() && config.GetValue("Otp:DevelopmentLogCodes", false))
             services.TryAddSingleton<ISmsSender, DevelopmentLogSmsSender>();
@@ -96,14 +101,35 @@ public static class DependencyInjection
         // ── Cache: Redis إن وُجد، وإلا ذاكرة محلية ──
         var redis = config.GetConnectionString("Redis");
         if (!string.IsNullOrWhiteSpace(redis))
+        {
             services.AddStackExchangeRedisCache(o => { o.Configuration = redis; o.InstanceName = "sanad:"; });
+            // اتصال مشترك لحدود المعدل الموزّعة (ADR-0020) — لا يُسقط الإقلاع إن تأخر Redis، والحد يعود محلياً حتى يتصل
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+            {
+                var options = ConfigurationOptions.Parse(redis);
+                options.AbortOnConnectFail = false;
+                options.ConnectTimeout = Math.Min(options.ConnectTimeout, 3000);
+                options.SyncTimeout = Math.Min(options.SyncTimeout, 1000);
+                options.AsyncTimeout = Math.Min(options.AsyncTimeout, 1000);
+                return ConnectionMultiplexer.Connect(options);
+            });
+        }
         else
             services.AddDistributedMemoryCache();
         services.AddSingleton<IDirectorySearchCache, DistributedDirectorySearchCache>();
 
         // ── التخزين ──
-        services.AddSingleton<LocalFileStorage>();
-        services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+        // تخزين الملفات: محلي للتطوير، وكائنات متوافقة مع S3 مع CDN للإنتاج الموسّع (ADR-0020)
+        if (string.Equals(config["Storage:Provider"], "S3", StringComparison.OrdinalIgnoreCase))
+        {
+            services.Configure<S3StorageOptions>(config.GetSection(S3StorageOptions.Section));
+            services.AddSingleton<IFileStorage, S3FileStorage>();
+        }
+        else
+        {
+            services.AddSingleton<LocalFileStorage>();
+            services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+        }
         services.AddSingleton<IFileSignatureInspector, FileSignatureInspector>();
 
         // ── مصادر المكتبة المعتمدة (ADR-0015): بلا تحويل تلقائي — كل Redirect يُتحقق منه ضد قائمة السماح ──
@@ -126,16 +152,26 @@ public static class DependencyInjection
         services.AddScoped<IExternalNotificationChannel, FcmNotificationChannel>();
         services.AddScoped<IExternalNotificationChannel, WhatsAppNotificationChannel>();
 
+        // ── تذكير الأذكار عبر Web Push (VAPID) ──
+        services.Configure<WebPushOptions>(config.GetSection(WebPushOptions.Section));
+        services.AddHttpClient(WebPushReminderSender.HttpClientName, c => c.Timeout = TimeSpan.FromSeconds(15))
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { AllowAutoRedirect = false, ConnectTimeout = TimeSpan.FromSeconds(10) });
+        services.TryAddSingleton<IReminderPushSender, WebPushReminderSender>();
+
         // ── CAPTCHA ──
         services.AddHttpClient<ICaptchaVerifier, TurnstileCaptchaVerifier>(c => c.Timeout = TimeSpan.FromSeconds(5));
 
-        // ── الخدمات الخلفية ──
+        // ── الخدمات الخلفية: كل مهمة على نسخة واحدة في كل مرة (ADR-0020) ──
+        if (provider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase)) services.AddSingleton<IJobLock, InProcessJobLock>();
+        else services.AddSingleton<IJobLock>(new PostgresAdvisoryJobLock(connectionString));
         services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<DevDataSeeder>(); // Development + DevSeed:Enabled فقط
         services.AddSingleton<OutboxProcessor>();
         services.AddHostedService(sp => sp.GetRequiredService<OutboxProcessor>());
         services.AddSingleton<VerificationExpiryCheckJob>();
         services.AddHostedService(sp => sp.GetRequiredService<VerificationExpiryCheckJob>());
+        services.AddSingleton<AdhkarReminderJob>();
+        services.AddHostedService(sp => sp.GetRequiredService<AdhkarReminderJob>());
 
         // ── فحوصات الصحة ──
         var health = services.AddHealthChecks().AddCheck<ObjectStorageHealthCheck>("object-storage", tags: ["ready"]);

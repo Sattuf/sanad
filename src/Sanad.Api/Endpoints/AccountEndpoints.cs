@@ -7,6 +7,7 @@ using Sanad.Application.Modules.Consent;
 using Sanad.Application.Modules.Directory;
 using Sanad.Application.Modules.Messaging;
 using Sanad.Application.Modules.PatientCare;
+using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Application.Modules.Safety;
 using Sanad.Application.Modules.Scheduling;
@@ -73,6 +74,17 @@ public static class AccountEndpoints
         me.MapGet("/favorites", async (ISender s) => Results.Ok(await s.Send(new GetMyFavoritesQuery())));
         me.MapPost("/favorites", async (FavoriteRequest req, ISender s) => { await s.Send(new AddFavoriteTrackCommand(req.AudioTrackId)); return Results.NoContent(); });
         me.MapDelete("/favorites/{trackId:guid}", async (Guid trackId, ISender s) => { await s.Send(new RemoveFavoriteTrackCommand(trackId)); return Results.NoContent(); });
+
+        // ── الورد اليومي (شخصي) ──
+        me.MapGet("/wird", async (DateOnly day, ISender s) => Results.Ok(await s.Send(new GetMyWirdQuery(day))));
+        me.MapPut("/wird", async (SaveMyWirdCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); });
+
+        // ── تذكير الأذكار على هذا الجهاز (Web Push) ──
+        me.MapGet("/reminders/devices", async (ISender s) => Results.Ok(await s.Send(new GetMyReminderDevicesQuery())));
+        me.MapPut("/reminders/device", async (SaveMyReminderDeviceCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
+        me.MapPost("/reminders/device/remove", async (RemoveMyReminderDeviceCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); });
+        me.MapPost("/reminders/device/test", async (SendTestReminderCommand cmd, ISender s) => { await s.Send(cmd); return Results.NoContent(); })
+            .RequireRateLimiting("public");
 
         // ── الإشعارات داخل التطبيق (نص عام فقط) ──
         me.MapGet("/notifications", async (SanadDbContext db, ICurrentUser user) =>

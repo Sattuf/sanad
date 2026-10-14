@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ApiError, api } from "../../api/client";
 import { queryKeys, useMe } from "../../api/hooks";
-import type { PractitionerType, UploadedFile, VerificationSummary } from "../../api/types";
+import type { PractitionerType, UploadedFile, VerificationSummary } from "@sanad/shared/api/types";
 import { Badge, Banner, Button, Card, Field, Input, Loading, PageHeader, Select } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDateTime } from "../../lib/format";
+import { formatDateTime } from "@sanad/shared/lib/format";
 import { captchaHeader } from "../../lib/captcha";
 
 const docsByType: Record<PractitionerType, Array<{ value: string; hint: string }>> = {

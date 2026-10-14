@@ -6,6 +6,7 @@ using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
 using Sanad.Domain.PatientCare;
+using Sanad.Domain.Ruqyah;
 using Sanad.Domain.RuqyahLibrary;
 using Sanad.Domain.Safety;
 using Sanad.Domain.Scheduling;
@@ -211,6 +212,62 @@ public sealed class UserFavoriteTrackConfiguration : IEntityTypeConfiguration<Us
         b.ToTable("UserFavoriteTracks");
         b.HasKey(x => x.Id);
         b.HasIndex(x => new { x.UserId, x.AudioTrackId }).IsUnique();
+    }
+}
+
+public sealed class DailyWirdProgressConfiguration : IEntityTypeConfiguration<DailyWirdProgress>
+{
+    private static readonly System.Text.Json.JsonSerializerOptions Json = new();
+
+    public void Configure(EntityTypeBuilder<DailyWirdProgress> b)
+    {
+        b.ToTable("DailyWirdProgress");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.CollectionId).HasMaxLength(60).IsRequired();
+        b.Property(x => x.Counts).HasMaxLength(8000).HasConversion(
+                v => System.Text.Json.JsonSerializer.Serialize(v, Json),
+                v => System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(v, Json) ?? new Dictionary<string, int>(),
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<Dictionary<string, int>>(
+                    (a, c) => a!.Count == c!.Count && !a.Except(c).Any(),
+                    v => v.Aggregate(0, (h, kv) => HashCode.Combine(h, kv.Key, kv.Value)),
+                    v => new Dictionary<string, int>(v)));
+        b.Ignore(x => x.IsComplete);
+        b.HasIndex(x => new { x.UserId, x.CollectionId, x.Day }).IsUnique();
+        b.HasIndex(x => new { x.UserId, x.Day });
+    }
+}
+
+public sealed class ReminderDeviceConfiguration : IEntityTypeConfiguration<ReminderDevice>
+{
+    public void Configure(EntityTypeBuilder<ReminderDevice> b)
+    {
+        b.ToTable("ReminderDevices");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.Endpoint).HasMaxLength(1000).IsRequired();
+        b.Property(x => x.P256dh).HasMaxLength(200).IsRequired();
+        b.Property(x => x.Auth).HasMaxLength(100).IsRequired();
+        b.Property(x => x.TimeZone).HasMaxLength(64).IsRequired();
+        b.Property(x => x.Client).HasConversion<string>().HasMaxLength(20);
+        b.HasIndex(x => x.Endpoint).IsUnique();
+        b.HasIndex(x => x.UserId);
+        b.HasIndex(x => x.NextDueAtUtc);
+    }
+}
+
+public sealed class WrittenDuaConfiguration : IEntityTypeConfiguration<WrittenDua>
+{
+    public void Configure(EntityTypeBuilder<WrittenDua> b)
+    {
+        b.ToTable("WrittenDuas");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.CollectionId).HasMaxLength(50).IsRequired();
+        b.Property(x => x.Title).HasMaxLength(150).IsRequired();
+        b.Property(x => x.Text).HasMaxLength(3000).IsRequired();
+        b.Property(x => x.Source).HasMaxLength(300).IsRequired();
+        b.Property(x => x.Note).HasMaxLength(1000);
+        b.Property(x => x.ReviewNote).HasMaxLength(500);
+        b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+        b.HasIndex(x => new { x.Status, x.CollectionId, x.SortOrder });
     }
 }
 

@@ -188,7 +188,7 @@ public sealed class DeleteMyAccountCommandValidator : AbstractValidator<DeleteMy
 }
 
 public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIdentityService identity, AccessContext access,
-    IFieldEncryptor encryptor, IDirectorySearchCache cache)
+    IFieldEncryptor encryptor, IDirectorySearchCache cache, IDateTime clock)
     : IRequestHandler<DeleteMyAccountCommand, Unit>
 {
     public async Task<Unit> Handle(DeleteMyAccountCommand request, CancellationToken cancellationToken)
@@ -217,6 +217,12 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
         foreach (var entry in await db.AuditLogEntries.Where(a => a.ActorUserId == userId).ToListAsync(cancellationToken))
             entry.AnonymizeActor();
         db.UserFavoriteTracks.RemoveRange(await db.UserFavoriteTracks.Where(f => f.UserId == userId).ToListAsync(cancellationToken));
+        db.DailyWirdProgress.RemoveRange(await db.DailyWirdProgress.Where(p => p.UserId == userId).ToListAsync(cancellationToken));
+        db.ReminderDevices.RemoveRange(await db.ReminderDevices.Where(d => d.UserId == userId).ToListAsync(cancellationToken));
+        db.PlanEnrollments.RemoveRange(await db.PlanEnrollments.Where(e => e.UserId == userId).ToListAsync(cancellationToken));
+        // الختمات: يغادر المستخدم ما هو عضو فيه، وما يملكه ينتقل لأقدم عضو أو يُحذف إن لم يبق أحد
+        foreach (var k in await db.Khatmas.Where(k => k.Members.Any(m => m.UserId == userId)).ToListAsync(cancellationToken))
+            if (!k.HandOverFrom(userId, clock.UtcNow)) db.Khatmas.Remove(k);
 
         var provider = await db.ProviderProfiles.FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
         if (provider is not null && provider.Status != PublicationStatus.Suspended)
@@ -234,7 +240,8 @@ public sealed class DeleteMyAccountCommandHandler(IApplicationDbContext db, IIde
 // ── تصدير بياناتي ──────────────────────────────────────────────────────────────
 public sealed record MyDataExportDto(object Account, IReadOnlyList<object> Consents, IReadOnlyList<object> Bookings,
     IReadOnlyList<object> RecommendationsReceived, IReadOnlyList<object> MessagesSent, IReadOnlyList<object> Favorites,
-    IReadOnlyList<object> ReportsSubmitted, DateTimeOffset GeneratedAtUtc);
+    IReadOnlyList<object> ReportsSubmitted, IReadOnlyList<object> WirdProgress,
+    IReadOnlyList<object> ReminderDevices, IReadOnlyList<object> PlanEnrollments, IReadOnlyList<object> Khatmas, DateTimeOffset GeneratedAtUtc);
 
 public sealed record ExportMyDataQuery : IQuery<MyDataExportDto>, ISensitiveRequest;
 
@@ -253,6 +260,10 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
         var messages = await db.Messages.AsNoTracking().Where(m => m.SenderUserId == userId).ToListAsync(cancellationToken);
         var favorites = await db.UserFavoriteTracks.AsNoTracking().Where(f => f.UserId == userId).ToListAsync(cancellationToken);
         var reports = await db.Reports.AsNoTracking().Where(r => r.ReporterUserId == userId).ToListAsync(cancellationToken);
+        var wird = await db.DailyWirdProgress.AsNoTracking().Where(p => p.UserId == userId).ToListAsync(cancellationToken);
+        var reminders = await db.ReminderDevices.AsNoTracking().Where(d => d.UserId == userId).ToListAsync(cancellationToken);
+        var enrollments = await db.PlanEnrollments.AsNoTracking().Where(e => e.UserId == userId).ToListAsync(cancellationToken);
+        var khatmas = await db.Khatmas.AsNoTracking().Where(k => k.Members.Any(m => m.UserId == userId)).ToListAsync(cancellationToken);
 
         await audit.LogAsync("Accounts.DataExported", "Account", userId, ct: cancellationToken);
 
@@ -261,7 +272,10 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             consents.Select(c => (object)new { Type = c.Type.ToString(), c.PolicyVersion, c.AcceptedAtUtc, c.RevokedAtUtc }).ToList(),
             bookings.Select(b => (object)new
             {
-                b.Id, Status = b.Status.ToString(), b.ServiceOfferingId, b.CreatedAtUtc,
+                b.Id,
+                Status = b.Status.ToString(),
+                b.ServiceOfferingId,
+                b.CreatedAtUtc,
                 MyNoteToProvider = b.BeneficiaryNoteEncrypted is null ? null : encryptor.Decrypt(b.BeneficiaryNoteEncrypted),
             }).ToList(),
             recs.Select(r => (object)new { r.Id, r.BookingRequestId, GuidanceText = encryptor.Decrypt(r.GuidanceTextEncrypted), r.RecommendedAudioTrackIds, r.RecordedAtUtc }).ToList(),
@@ -269,8 +283,35 @@ public sealed class ExportMyDataQueryHandler(IApplicationDbContext db, IIdentity
             favorites.Select(f => (object)new { f.AudioTrackId, f.AddedAtUtc }).ToList(),
             reports.Select(r => (object)new
             {
-                r.Id, Category = r.Category.ToString(), Status = r.Status.ToString(), r.SubmittedAtUtc,
+                r.Id,
+                Category = r.Category.ToString(),
+                Status = r.Status.ToString(),
+                r.SubmittedAtUtc,
                 Description = r.DescriptionEncrypted is null ? null : encryptor.Decrypt(r.DescriptionEncrypted),
+            }).ToList(),
+            wird.OrderBy(p => p.Day).Select(p => (object)new { p.Day, p.CollectionId, p.Counts, p.CompletedItems, p.TotalItems }).ToList(),
+            reminders.OrderBy(d => d.CreatedAtUtc).Select(d => (object)new { d.Endpoint, d.TimeZone, d.MorningAt, d.EveningAt, d.SleepAt, d.CreatedAtUtc }).ToList(),
+            enrollments.OrderBy(e => e.StartedAtUtc).Select(e => (object)new
+            {
+                e.PlanKey,
+                e.PlanVersion,
+                e.StartedAtUtc,
+                e.CompletedDays,
+                e.LastCompletedOn,
+                Reminder = e.Reminder?.ToString(),
+                e.IsActive,
+                e.EndedAtUtc,
+            }).ToList(),
+            // ما يخص المستخدم من كل ختمة: اسمه فيها وأجزاؤه، والنيّة إن كان منشئها — لا بيانات بقية الأعضاء
+            khatmas.OrderBy(k => k.CreatedAtUtc).Select(k => (object)new
+            {
+                k.Title,
+                Mode = k.Mode.ToString(),
+                IsOwner = k.OwnerUserId == userId,
+                Intention = k.OwnerUserId == userId && k.IntentionEncrypted is not null ? encryptor.Decrypt(k.IntentionEncrypted) : null,
+                MyName = k.Members.First(m => m.UserId == userId).DisplayName,
+                MyJuz = k.Juz.Where(j => j.AssigneeUserId == userId).Select(j => new { j.Index, j.DoneAtUtc }).ToList(),
+                k.CreatedAtUtc,
             }).ToList(),
             clock.UtcNow);
     }

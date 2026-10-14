@@ -2,6 +2,7 @@ import "@fontsource/ibm-plex-sans-arabic/400.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/ibm-plex-sans-arabic/700.css";
 import "@fontsource/amiri/400.css";
+import "@fontsource/amiri/700.css";
 import "@fontsource/amiri-quran/400.css";
 import "./styles/index.css";
 import "./i18n";
@@ -12,8 +13,12 @@ import { RouterProvider } from "react-router-dom";
 import { ApiError } from "./api/client";
 import { initTheme } from "./app/theme";
 import { router } from "./app/router";
+import { registerServiceWorker } from "./features/ruqyah/push";
 
 initTheme();
+
+// تطبيق قابل للتثبيت على الجوال + استقبال تذكير الأذكار (في التطوير يُسجَّل عند تفعيل الإشعارات فقط)
+if (import.meta.env.PROD) window.addEventListener("load", () => void registerServiceWorker()?.catch(() => undefined));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +40,3 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 );
 
-// يفتح التطبيق ووضع السكينة دون إنترنت (public/sw.js) — في الإنتاج فقط حتى لا يربك التطوير
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
-  window.addEventListener("load", () => void navigator.serviceWorker.register("/sw.js").catch(() => undefined));
-}

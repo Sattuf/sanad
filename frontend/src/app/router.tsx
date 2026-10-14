@@ -9,8 +9,12 @@ import {
   LibraryAdminPage, OrganizationsAdminPage, ProvidersAdminPage, ReportsAdminPage, SafetyAlertsPage, StaffIndex, StaffLayout, UsersAdminPage,
   VerificationQueuePage,
 } from "../features/coordinator-portal/StaffPortal";
+import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
+import { CompanionEmergencyAdminPage, CompanionPlansAdminPage, CompanionStatsPage } from "../features/coordinator-portal/CompanionAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
+import { HealthHubPage } from "../features/health/HealthPages";
+import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
 import { MyRecommendationsPage } from "../features/patient-care/MyRecommendations";
 import { CaseNoteEditor, RecommendationComposer } from "../features/patient-care/ProviderEditors";
 import {
@@ -30,7 +34,7 @@ export const router = createBrowserRouter([
   // شاشة الدخول بتخطيط مستقل (المصباح)
   { path: "/login", element: <LoginScreen /> },
 
-  // وضع السكينة: شاشة مستقلة خافتة بلا أي عنصر واجهة آخر — تعمل دون إنترنت (docs/adr/0016)
+  // وضع السكينة: شاشة مستقلة خافتة بلا أي عنصر واجهة آخر — تعمل دون إنترنت (docs/adr/0022)
   { path: "/sakina", element: <SakinaPage /> },
 
   // صفحة المشاركة العامة: خارج أي حارس، بلا عناصر الواجهة المصادَقة (10 §10.7)
@@ -46,13 +50,20 @@ export const router = createBrowserRouter([
       { path: "/providers/:id", element: <ProviderPage /> },
       { path: "/organizations/:id", element: <OrganizationPage /> },
       { path: "/emergency", element: <EmergencyPage /> },
+      // الرقية والتحصين المكتوبة: عامة بلا تسجيل (محتوى ثابت، لا بيانات مستخدم)
+      { path: "/ruqyah", element: <RuqyahHubPage /> },
+      { path: "/ruqyah/guide/:guideId", element: <RuqyahGuidePage /> },
+      { path: "/ruqyah/:collectionId", element: <RuqyahCollectionPage /> },
+      // الصحة والطمأنينة: توعية عامة، عامة بلا تسجيل؛ صفحة الدليل نفسها بمسار القسم
+      { path: "/health", element: <HealthHubPage /> },
+      { path: "/health/:guideId", element: <RuqyahGuidePage /> },
 
-      // رفيق السكينة اليومي — بلا تسجيل دخول، محلي على الجهاز (docs/adr/0016)
+      // رفيق السكينة اليومي — بلا تسجيل دخول، محلي على الجهاز (docs/adr/0022)
       // تُحمَّل عند الطلب؛ السكينة وحدها محمّلة مسبقاً لتعمل فوراً ودون إنترنت
       { path: "/today", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.TodayPage })) },
       { path: "/programs", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramsPage })) },
       { path: "/programs/:id", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramDetailPage })) },
-      { path: "/ruqyah", lazy: () => import("../features/companion/SelfRuqyahPage").then((m) => ({ Component: m.SelfRuqyahPage })) },
+      { path: "/self-ruqyah", lazy: () => import("../features/companion/SelfRuqyahPage").then((m) => ({ Component: m.SelfRuqyahPage })) },
       { path: "/journal", lazy: () => import("../features/companion/JournalPage").then((m) => ({ Component: m.JournalPage })) },
       { path: "/awareness", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.AwarenessPage })) },
       { path: "/awareness/quiz", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.QuizPage })) },
@@ -105,6 +116,10 @@ export const router = createBrowserRouter([
           { path: "reports", element: <RequireRole roles={["Coordinator"]}><ReportsAdminPage /></RequireRole> },
           { path: "safety-alerts", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><SafetyAlertsPage /></RequireRole> },
           { path: "library", element: <RequireRole roles={["ContentManager", "SystemAdmin"]}><LibraryAdminPage /></RequireRole> },
+          { path: "duas", element: <RequireRole roles={["ContentManager"]}><RuqyahDuasAdminPage /></RequireRole> },
+          { path: "companion-plans", element: <RequireRole roles={["ContentManager"]}><CompanionPlansAdminPage /></RequireRole> },
+          { path: "companion-emergency", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><CompanionEmergencyAdminPage /></RequireRole> },
+          { path: "companion-stats", element: <RequireRole roles={["ContentManager", "Coordinator"]}><CompanionStatsPage /></RequireRole> },
           { path: "users", element: <RequireRole roles={["SystemAdmin"]}><UsersAdminPage /></RequireRole> },
         ],
       },

@@ -1,55 +1,101 @@
 /*
-  Service Worker لسند — هدفه الوحيد أن يفتح التطبيق (وخاصة وضع السكينة) دون إنترنت.
-  - التنقّل: الشبكة أولاً، وعند الانقطاع آخر نسخة محفوظة من index.html.
-  - الأصول الثابتة (/assets، الخطوط): من الذاكرة ثم تحديث في الخلفية.
-  - لا يلمس /api ولا أي نطاق خارجي (التلاوات تُدار بـ Cache API داخل الصفحة).
+  عامل خدمة «سند»: يجعل الموقع تطبيقاً قابلاً للتثبيت، ويعرض تذكير الأذكار القادم من الخادم (Web Push).
+  - لا يخزّن أي طلب إلى الـ API (بيانات شخصية) ولا أي طلب من أصل آخر.
+  - التنقّل: الشبكة أولاً، وعند انقطاعها آخر نسخة من الواجهة — فتفتح الأذكار دون اتصال.
+  - ملفات /assets/ مُجزّأة الاسم فتُخدم من التخزين مباشرة.
 */
-const SHELL = "sanad-shell-v1";
+const VERSION = "sanad-v1";
+const SHELL = ["/", "/manifest.webmanifest", "/icons/icon-192.png", "/favicon.svg"];
+
+/** الواجهة + ملفات البناء التي تذكرها صفحتها (أسماؤها مُجزّأة فتتغير مع كل إصدار). */
+async function precache() {
+  const cache = await caches.open(VERSION);
+  await cache.addAll(SHELL);
+  const html = await (await cache.match("/")).text();
+  const assets = [...new Set(html.match(/\/assets\/[^"'\s)]+/g) ?? [])];
+  await cache.addAll(assets);
+}
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/", "/favicon.svg", "/manifest.webmanifest"])).then(() => self.skipWaiting()));
+  event.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("sanad-shell-") && k !== SHELL).map((k) => caches.delete(k))))
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
 
+async function networkFirst(request) {
+  const cache = await caches.open(VERSION);
+  try {
+    const response = await fetch(request);
+    if (response.ok) cache.put("/", response.clone());
+    return response;
+  } catch {
+    return (await cache.match("/", { ignoreVary: true })) ?? Response.error();
+  }
+}
+
+async function cacheFirst(request) {
+  const cache = await caches.open(VERSION);
+  // ignoreVary: طلبات السكربت الوحدوية تحمل Origin، والخادم قد يرسل Vary: Origin فلا تطابق النسخة المحفوظة
+  const hit = await cache.match(request, { ignoreVary: true });
+  if (hit) return hit;
+  const response = await fetch(request);
+  if (response.ok) cache.put(request, response.clone());
+  return response;
+}
+
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin || url.pathname.startsWith("/api") || url.pathname.startsWith("/hubs")) return;
+  const { request } = event;
+  if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin || url.pathname.startsWith("/api/") || url.pathname.startsWith("/hubs/")) return;
 
-  if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(SHELL).then((c) => c.put("/", copy));
-          return res;
-        })
-        .catch(() => caches.match("/").then((r) => r || Response.error())),
-    );
-    return;
+  if (request.mode === "navigate") event.respondWith(networkFirst(request));
+  else if (/^\/(assets|icons|library)\//.test(url.pathname)) event.respondWith(cacheFirst(request));
+  else if (SHELL.includes(url.pathname)) {
+    event.respondWith(fetch(request).catch(async () => (await caches.match(request, { ignoreVary: true })) ?? Response.error()));
   }
+});
 
-  if (url.pathname.startsWith("/assets/") || /\.(woff2?|svg|webmanifest)$/.test(url.pathname)) {
-    event.respondWith(
-      caches.open(SHELL).then(async (c) => {
-        const hit = await c.match(req);
-        const fresh = fetch(req)
-          .then((res) => {
-            if (res.ok) c.put(req, res.clone());
-            return res;
-          })
-          .catch(() => hit);
-        return hit || fresh;
-      }),
-    );
+/** مسار داخلي فقط — لا يفتح الإشعار أي موقع خارجي. */
+function safePath(value) {
+  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : "/ruqyah";
+}
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = {};
   }
+  const title = typeof data.title === "string" ? data.title : "سند";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof data.body === "string" ? data.body : "حان وقت أذكارك.",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      lang: "ar",
+      dir: "rtl",
+      tag: typeof data.tag === "string" ? data.tag : "sanad",
+      data: { url: safePath(data.url) },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(safePath(event.notification.data && event.notification.data.url), self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
+      if (open) return open.focus().then((w) => (w && "navigate" in w ? w.navigate(target) : undefined));
+      return self.clients.openWindow(target);
+    }),
+  );
 });

@@ -17,10 +17,11 @@ describe("سلامة المحتوى", () => {
     }
   });
 
-  it("كل الآيات المشار إليها مولَّدة من المصدر (لا نص قرآني ناقص)", () => {
-    for (const it of Object.values(LIBRARY)) for (const r of it.refs ?? []) expect(() => expandRef(r)).not.toThrow();
-    expect(expandRef("112:1-4")).toHaveLength(4);
-    expect(expandRef("112:1")[0].text.startsWith("قُلْ")).toBe(true); // البسملة مفصولة
+  it("الآيات من المصحف المشترك كاملة بأرقامها", () => {
+    for (const it of Object.values(LIBRARY)) for (const r of it.refs ?? []) expect(expandRef(r).length, r).toBeGreaterThan(0);
+    expect(expandRef("ikhlas").map((a) => a.ayah)).toEqual([1, 2, 3, 4]);
+    expect(expandRef("sharh")).toHaveLength(8);
+    expect(expandRef("kursi")[0].ayah).toBe(255);
   });
 
   it("كل ذكر أو آية له مصدر، أو هو عادة مساندة", () => {

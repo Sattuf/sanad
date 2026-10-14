@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
 import { useMe } from "../../api/hooks";
-import type { BookingNote, BookingSummary, Conversation } from "../../api/types";
+import type { BookingNote, BookingSummary, Conversation } from "@sanad/shared/api/types";
 import { Badge, Banner, Button, Card, EmptyState, ErrorState, Loading, PageHeader } from "../../components/ui";
-import { formatDateTime } from "../../lib/format";
-import { statusTone } from "../../lib/status";
+import { formatDateTime } from "@sanad/shared/lib/format";
+import { statusTone } from "@sanad/shared/lib/status";
 
 export function MyBookingsPage() {
   const { t } = useTranslation();

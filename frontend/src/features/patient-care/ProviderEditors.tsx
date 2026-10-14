@@ -2,10 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
-import type { AudioTrack, CaseNote, Recommendation } from "../../api/types";
+import type { AudioTrack, CaseNote, Recommendation } from "@sanad/shared/api/types";
 import { Banner, Button, Card, Field, Loading, Textarea } from "../../components/ui";
 import { cx } from "../../lib/cx";
-import { formatDateTime } from "../../lib/format";
+import { formatDateTime } from "@sanad/shared/lib/format";
 
 /*
   ════════════════════════════════════════════════════════════════════════════

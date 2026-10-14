@@ -4,7 +4,7 @@ import { daysBetween, localDay } from "../lib/dates";
 import { readJson, writeJson } from "../lib/safeStorage";
 
 /*
-  تقدّم برامج الالتزام — محلي على الجهاز فقط (docs/adr/0016)، بلا حساب ولا خادم.
+  تقدّم برامج الالتزام — محلي على الجهاز فقط (docs/adr/0022)، بلا حساب ولا خادم.
   فلسفة التقدّم: لا «سلسلة» تنكسر ولا لوم. الأيام الفائتة تبقى مفتوحة، ونحتفي بـ«أيام الالتزام» لا بالكمال.
 */
 interface Persisted {

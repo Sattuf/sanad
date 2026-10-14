@@ -51,6 +51,12 @@ public interface IFileStorage
 
     /// <summary>رابط تنزيل موقّع قصير الأجل — للمستندات الخاصة فقط، للمنسق فقط.</summary>
     string GenerateShortLivedDownloadUrl(string objectKey, TimeSpan ttl);
+
+    /// <summary>
+    /// رابط قراءة مباشر لمحتوى عام منشور (CDN أو رابط موقّع) ليُخدم دون المرور بالـ API، أو null إن كان
+    /// التخزين لا يدعمه (المحلي) فيُبث عبر الـ API كما هو (ADR-0020).
+    /// </summary>
+    string? DirectReadUrl(string objectKey, TimeSpan ttl);
 }
 
 /// <summary>LibraryAudioImport: صوت يجلبه الخادم من مصدر قرآني معتمد (حد حجم أكبر لأن السور الطويلة تتجاوز 100 ميجابايت).</summary>

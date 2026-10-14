@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Domain.Audit;
 using Sanad.Domain.Common;
+using Sanad.Domain.Companion;
 using Sanad.Domain.Consent;
 using Sanad.Domain.Directory;
 using Sanad.Domain.Messaging;
 using Sanad.Domain.PatientCare;
+using Sanad.Domain.Ruqyah;
 using Sanad.Domain.RuqyahLibrary;
 using Sanad.Domain.Safety;
 using Sanad.Domain.Scheduling;
@@ -44,12 +46,21 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     public DbSet<ProviderRecommendation> ProviderRecommendations => Set<ProviderRecommendation>();
     public DbSet<AudioTrack> AudioTracks => Set<AudioTrack>();
     public DbSet<UserFavoriteTrack> UserFavoriteTracks => Set<UserFavoriteTrack>();
+    public DbSet<DailyWirdProgress> DailyWirdProgress => Set<DailyWirdProgress>();
+    public DbSet<ReminderDevice> ReminderDevices => Set<ReminderDevice>();
+    public DbSet<WrittenDua> WrittenDuas => Set<WrittenDua>();
     public DbSet<SharedContentLink> SharedContentLinks => Set<SharedContentLink>();
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<EscalationCase> EscalationCases => Set<EscalationCase>();
     public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
     public DbSet<StoredFile> StoredFiles => Set<StoredFile>();
+    public DbSet<PlanAuthor> PlanAuthors => Set<PlanAuthor>();
+    public DbSet<RuqyahPlan> RuqyahPlans => Set<RuqyahPlan>();
+    public DbSet<PlanEnrollment> PlanEnrollments => Set<PlanEnrollment>();
+    public DbSet<Khatma> Khatmas => Set<Khatma>();
+    public DbSet<EmergencyContact> EmergencyContacts => Set<EmergencyContact>();
+    public DbSet<CompanionEventCounter> CompanionEventCounters => Set<CompanionEventCounter>();
 
     // بنية تحتية بحتة
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
