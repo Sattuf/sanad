@@ -1,0 +1,20 @@
+{
+  "name": "سند — رفيق السكينة اليومي",
+  "short_name": "سند",
+  "description": "تحصين ذاتي ووعي وسكينة: برامج التزام يومية، رقية ذاتية مأثورة، ومذكّرة خاصة مشفّرة.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/today",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f6f0",
+  "theme_color": "#2a7a74",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "سكينة", "short_name": "سكينة", "url": "/sakina" },
+    { "name": "يومي", "short_name": "يومي", "url": "/today" }
+  ]
+}

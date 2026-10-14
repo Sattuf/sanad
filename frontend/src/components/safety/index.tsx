@@ -75,7 +75,7 @@ export function AdministrativeDisclaimerFooter() {
     <footer className="mt-16 border-t border-border bg-surface">
       <div className="mx-auto grid max-w-6xl gap-4 px-4 py-8 text-sm text-muted md:grid-cols-3">
         <p className="leading-7 md:col-span-2">
-          سند طبقة توثيق إداري ووساطة وحجز وإحالة، ومكتبة محتوى ديني محايد. <strong className="text-text">لا تشخّص ولا تعالج ولا تعد بنتيجة</strong>،
+          سند رفيق يومي للتحصين والسكينة، ودليل موثّق إدارياً للحجز والإحالة، ومكتبة محتوى ديني محايد. <strong className="text-text">لا تشخّص ولا تعالج ولا تعد بنتيجة</strong>،
           والتوثيق إداري لا حكم مهني. {t("common.free")}
         </p>
         <div className="flex flex-col gap-1 md:items-end">
@@ -84,6 +84,9 @@ export function AdministrativeDisclaimerFooter() {
           </Link>
           <Link to="/about-verification" className="hover:text-text">
             كيف نوثّق مقدّمي الخدمة
+          </Link>
+          <Link to="/privacy-mode" className="hover:text-text">
+            الخصوصية والتمويه
           </Link>
         </div>
       </div>

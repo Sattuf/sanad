@@ -18,6 +18,7 @@ import {
 } from "../features/provider-portal/ProviderPortal";
 import { ProviderUpgradePage } from "../features/provider-upgrade/ProviderUpgradePage";
 import { HomePage } from "../features/public/HomePage";
+import { SakinaPage } from "../features/companion/SakinaPage";
 import { AboutVerificationPage, EmergencyPage, PrivacyPage, TermsPage } from "../features/public/StaticPages";
 import { RequireAuth, RequireRole } from "./guards";
 import { AppLayout, PublicShareLayout } from "./layout/AppLayout";
@@ -28,6 +29,9 @@ const auth = (el: React.ReactNode) => <RequireAuth>{el}</RequireAuth>;
 export const router = createBrowserRouter([
   // شاشة الدخول بتخطيط مستقل (المصباح)
   { path: "/login", element: <LoginScreen /> },
+
+  // وضع السكينة: شاشة مستقلة خافتة بلا أي عنصر واجهة آخر — تعمل دون إنترنت (docs/adr/0016)
+  { path: "/sakina", element: <SakinaPage /> },
 
   // صفحة المشاركة العامة: خارج أي حارس، بلا عناصر الواجهة المصادَقة (10 §10.7)
   { element: <PublicShareLayout />, children: [{ path: "/public/shared/:shortCode", element: <PublicSharePage /> }] },
@@ -42,6 +46,17 @@ export const router = createBrowserRouter([
       { path: "/providers/:id", element: <ProviderPage /> },
       { path: "/organizations/:id", element: <OrganizationPage /> },
       { path: "/emergency", element: <EmergencyPage /> },
+
+      // رفيق السكينة اليومي — بلا تسجيل دخول، محلي على الجهاز (docs/adr/0016)
+      // تُحمَّل عند الطلب؛ السكينة وحدها محمّلة مسبقاً لتعمل فوراً ودون إنترنت
+      { path: "/today", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.TodayPage })) },
+      { path: "/programs", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramsPage })) },
+      { path: "/programs/:id", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramDetailPage })) },
+      { path: "/ruqyah", lazy: () => import("../features/companion/SelfRuqyahPage").then((m) => ({ Component: m.SelfRuqyahPage })) },
+      { path: "/journal", lazy: () => import("../features/companion/JournalPage").then((m) => ({ Component: m.JournalPage })) },
+      { path: "/awareness", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.AwarenessPage })) },
+      { path: "/awareness/quiz", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.QuizPage })) },
+      { path: "/privacy-mode", lazy: () => import("../features/companion/PrivacyModePage").then((m) => ({ Component: m.PrivacyModePage })) },
       { path: "/about-verification", element: <AboutVerificationPage /> },
       { path: "/terms", element: <TermsPage /> },
       { path: "/privacy", element: <PrivacyPage /> },

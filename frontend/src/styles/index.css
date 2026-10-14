@@ -1,24 +1,29 @@
 @import "tailwindcss";
 
 /*
-  رموز التصميم — هادئ نهاري + ليلي دافئ (references/13-visual-motion-design.md §13.3).
+  رموز التصميم — «سكينة الفجر» (docs/adr/0016): باستيل هادئ على طريقة تطبيقات الصحة النفسية، لا «هوية رعب».
+  أخضر مائل للزرقة (primary) + أبيض كريمي (bg) + سماوي (sky) + مريمية (sage). الليلي «غسق أزرق» لا أسود.
   قاعدة: الأحمر (danger) محجوز حصراً للخطر الحقيقي. توهّج المصباح (lamp) لا يُستخدم لأي تنبيه.
 */
 :root {
-  --bg: #f6f3ec;
-  --bg-deep: #efe9dd;
+  --bg: #f8f6f0;
+  --bg-deep: #eaf4f2;
   --surface: #ffffff;
-  --surface-2: #faf8f3;
-  --text: #1d2126;
-  --muted: #5a626d;
-  --border: #e3ddd1;
-  --primary: #0f5c58;
-  --primary-hover: #0b4a47;
+  --surface-2: #f2f7f6;
+  --text: #1e2b31;
+  --muted: #586a72;
+  --border: #dfe8e6;
+  --primary: #2a7a74;
+  --primary-hover: #226660;
   --primary-contrast: #ffffff;
-  --lamp: #b8802a;
-  --lamp-glow: #f2c675;
+  --sky: #dcedf7;
+  --sky-strong: #4f8fb8;
+  --sage: #e3efe6;
+  --sand: #f6eedd;
+  --lamp: #a87523;
+  --lamp-glow: #f2cf86;
   --success: #1f6f47;
-  --success-bg: #e6f4ec;
+  --success-bg: #e4f3ea;
   --warning: #85570a;
   --warning-bg: #fbf1dc;
   --danger: #b42318;
@@ -26,23 +31,28 @@
   --private: #7a1f1f;
   --private-bg: #fbeaea;
   --focus: #2f7ec7;
+  --dawn: linear-gradient(160deg, #eaf4f2 0%, #e4effa 55%, #f8f1e3 100%);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0d0f14;
-    --bg-deep: #090b0f;
-    --surface: #171a21;
-    --surface-2: #1d212a;
-    --text: #ece9e2;
-    --muted: #a4a9b3;
-    --border: #2a2f3a;
-    --primary: #5fb3ad;
-    --primary-hover: #7cc4bf;
-    --primary-contrast: #0b1a19;
-    --lamp: #f2c675;
-    --lamp-glow: #f2c675;
+    --bg: #111a24;
+    --bg-deep: #0d151e;
+    --surface: #18232f;
+    --surface-2: #1f2c3a;
+    --text: #e8eef0;
+    --muted: #a0b2bc;
+    --border: #2a3a49;
+    --primary: #7cc7bf;
+    --primary-hover: #97d6cf;
+    --primary-contrast: #0c1c1b;
+    --sky: #1b2f40;
+    --sky-strong: #8cc0e3;
+    --sage: #1b2d27;
+    --sand: #2a2619;
+    --lamp: #f2cf86;
+    --lamp-glow: #f2cf86;
     --success: #6fcf97;
     --success-bg: #13261c;
     --warning: #f2c675;
@@ -52,23 +62,28 @@
     --private: #ff9a92;
     --private-bg: #2b1414;
     --focus: #7ab8f5;
+    --dawn: linear-gradient(160deg, #142330 0%, #16283a 55%, #1d2a2a 100%);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0d0f14;
-  --bg-deep: #090b0f;
-  --surface: #171a21;
-  --surface-2: #1d212a;
-  --text: #ece9e2;
-  --muted: #a4a9b3;
-  --border: #2a2f3a;
-  --primary: #5fb3ad;
-  --primary-hover: #7cc4bf;
-  --primary-contrast: #0b1a19;
-  --lamp: #f2c675;
-  --lamp-glow: #f2c675;
+  --bg: #111a24;
+  --bg-deep: #0d151e;
+  --surface: #18232f;
+  --surface-2: #1f2c3a;
+  --text: #e8eef0;
+  --muted: #a0b2bc;
+  --border: #2a3a49;
+  --primary: #7cc7bf;
+  --primary-hover: #97d6cf;
+  --primary-contrast: #0c1c1b;
+  --sky: #1b2f40;
+  --sky-strong: #8cc0e3;
+  --sage: #1b2d27;
+  --sand: #2a2619;
+  --lamp: #f2cf86;
+  --lamp-glow: #f2cf86;
   --success: #6fcf97;
   --success-bg: #13261c;
   --warning: #f2c675;
@@ -78,6 +93,7 @@
   --private: #ff9a92;
   --private-bg: #2b1414;
   --focus: #7ab8f5;
+  --dawn: linear-gradient(160deg, #142330 0%, #16283a 55%, #1d2a2a 100%);
   color-scheme: dark;
 }
 
@@ -92,6 +108,10 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-contrast: var(--primary-contrast);
+  --color-sky: var(--sky);
+  --color-sky-strong: var(--sky-strong);
+  --color-sage: var(--sage);
+  --color-sand: var(--sand);
   --color-lamp: var(--lamp);
   --color-lamp-glow: var(--lamp-glow);
   --color-success: var(--success);
@@ -103,6 +123,8 @@
   --color-private: var(--private);
   --color-private-bg: var(--private-bg);
   --font-sans: "IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif;
+  --font-quran: "Amiri Quran", "Amiri", "Traditional Arabic", serif;
+  --font-naskh: "Amiri", "Traditional Arabic", serif;
 }
 
 html,
@@ -141,4 +163,26 @@ body {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* النص القرآني: خط عثماني كبير بتباعد مريح — لا يُقصّ ولا يُضغط */
+.quran {
+  font-family: var(--font-quran);
+  line-height: 2.5;
+  font-feature-settings: "calt", "liga";
+  word-spacing: 0.08em;
+}
+
+.naskh {
+  font-family: var(--font-naskh);
+  line-height: 2.2;
+}
+
+.bg-dawn {
+  background: var(--dawn);
+}
+
+/* أشرطة تقدّم ناعمة */
+.progress-track {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
 }
