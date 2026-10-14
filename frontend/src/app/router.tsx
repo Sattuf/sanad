@@ -1,7 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AccountPage, ConsentOnboardingPage, DashboardPage, NotificationsPage, ReportPage } from "../features/account/AccountPages";
-import { LoginScreen } from "../features/auth/LoginScreen";
-import { GoogleCallbackPage, RegisterPage } from "../features/auth/RegisterPage";
+import { LoginScreen, StaffLoginScreen } from "../features/auth/LoginScreen";
+import { GoogleCallbackPage } from "../features/auth/GoogleCallbackPage";
 import { BookPage } from "../features/booking/BookPage";
 import { BookingDetailPage, MyBookingsPage } from "../features/booking/BookingPages";
 import { ConversationPage } from "../features/chat/ConversationPage";
@@ -33,6 +33,8 @@ const auth = (el: React.ReactNode) => <RequireAuth>{el}</RequireAuth>;
 export const router = createBrowserRouter([
   // شاشة الدخول بتخطيط مستقل (المصباح)
   { path: "/login", element: <LoginScreen /> },
+  // فريق العمل: بريد + تحقق ثنائي (ADR-0010) — غير مربوطة بأي واجهة عامة
+  { path: "/staff/login", element: <StaffLoginScreen /> },
 
   // وضع السكينة: شاشة مستقلة خافتة بلا أي عنصر واجهة آخر — تعمل دون إنترنت (docs/adr/0022)
   { path: "/sakina", element: <SakinaPage /> },
@@ -44,7 +46,8 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: "/", element: <HomePage /> },
-      { path: "/register", element: <RegisterPage /> },
+      // الويب يدخل بجوجل فقط؛ روابط التسجيل القديمة تذهب لشاشة الدخول
+      { path: "/register", element: <Navigate to="/login" replace /> },
       { path: "/auth/callback", element: <GoogleCallbackPage /> },
       { path: "/directory", element: <DirectoryPage /> },
       { path: "/providers/:id", element: <ProviderPage /> },

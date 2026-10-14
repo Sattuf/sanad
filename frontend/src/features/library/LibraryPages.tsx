@@ -180,7 +180,7 @@ export function PublicSharePage() {
       <div className="mt-8 rounded-2xl border border-border bg-surface p-5">
         <p className="font-semibold">المزيد من التلاوات والأدعية في مكتبة سند</p>
         <p className="mt-1 text-sm text-muted">مجانية بالكامل، بلا اشتراكات ولا إعلانات.</p>
-        <Link to="/register" className="mt-3 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">سجّل مجاناً</Link>
+        <Link to="/login" className="mt-3 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">ادخل بجوجل مجاناً</Link>
       </div>
     </div>
   );
