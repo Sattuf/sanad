@@ -9,7 +9,7 @@ import { arNum } from "../../lib/dates";
 
 /*
   وضع السكينة — لمن يشعر بضيق مفاجئ أو فزع ليلي أو أرق.
-  شاشة خافتة جداً، تمرين تنفّس، وآيات وأدعية بصوت هادئ. يعمل بلا إنترنت بعد أول زيارة
+  شاشة خافتة جداً، ذكر بتمهّل، وآيات وأدعية بصوت هادئ. يعمل بلا إنترنت بعد أول زيارة
   (التطبيق عبر Service Worker، والتلاوات عبر Cache API).
 */
 type Need = "distress" | "night" | "sleep";
@@ -22,52 +22,73 @@ const NEEDS: Record<Need, { label: string; items: string[]; verses: QuranKey[] }
 
 const ALL_AUDIO = [...new Set(Object.values(NEEDS).flatMap((n) => n.verses.flatMap(expandRef).map(ayahAudioUrl)))];
 
-const PHASES = [
-  { label: "شهيق", secs: 4, scale: 1 },
-  { label: "احبس", secs: 4, scale: 1 },
-  { label: "زفير بطيء", secs: 6, scale: 0.55 },
+/*
+  ذكر بتمهّل بدل تمارين التنفّس: الدائرة تنبض نبضاً هادئاً يضبط إيقاع الترديد،
+  والعدّ بلمسة كالمسبحة — لا عدّ آلي ولا أي طقس، ذكر مأثور فقط بمصدره.
+*/
+const PACED_DHIKR = [
+  { text: "أستغفر الله", source: "صحيح مسلم (2702)" },
+  { text: "لا إله إلا الله", source: "«أفضل الذكر لا إله إلا الله» — سنن الترمذي (3383)" },
+  { text: "سبحان الله وبحمده", source: "صحيح البخاري (6405) وصحيح مسلم (2691)" },
+  { text: "لا حول ولا قوة إلا بالله", source: "«كنز من كنوز الجنة» — صحيح البخاري (6384)" },
 ] as const;
 
-function Breathing() {
+const PULSE_SECONDS = 5;
+
+function PacedDhikr() {
   const reduce = useReducedMotion();
-  const [{ phase, left, cycles }, setS] = useState({ phase: 0, left: PHASES[0].secs as number, cycles: 0 });
+  const [which, setWhich] = useState(0);
+  const [count, setCount] = useState(0);
+  const d = PACED_DHIKR[which];
 
-  useEffect(() => {
-    const t = setInterval(
-      () =>
-        setS((p) => {
-          if (p.left > 1) return { ...p, left: p.left - 1 };
-          const n = (p.phase + 1) % PHASES.length;
-          return { phase: n, left: PHASES[n].secs, cycles: p.cycles + (n === 0 ? 1 : 0) };
-        }),
-      1000,
-    );
-    return () => clearInterval(t);
-  }, []);
-
-  const cur = PHASES[phase];
   return (
-    <div className="flex flex-col items-center gap-4" aria-live="polite">
-      <div className="relative flex h-64 w-64 items-center justify-center">
-        <motion.div
+    <div className="flex flex-col items-center gap-4">
+      <button
+        type="button"
+        onClick={() => {
+          setCount((c) => c + 1);
+          navigator.vibrate?.(10);
+        }}
+        className="relative flex h-64 w-64 items-center justify-center rounded-full"
+        aria-label={`${d.text} — اضغط مع كل مرة، العدد ${count}`}
+      >
+        <motion.span
+          aria-hidden
           className="absolute inset-0 rounded-full"
           style={{ background: "radial-gradient(circle, rgba(124,199,191,0.35) 0%, rgba(124,199,191,0.08) 60%, transparent 72%)" }}
-          animate={reduce ? undefined : { scale: phase === 2 ? 0.55 : 1 }}
-          initial={{ scale: 0.55 }}
-          transition={{ duration: cur.secs, ease: "easeInOut" }}
+          animate={reduce ? undefined : { scale: [0.6, 1, 0.6] }}
+          transition={{ duration: PULSE_SECONDS, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div
+        <motion.span
+          aria-hidden
           className="absolute rounded-full border border-[rgba(124,199,191,0.5)]"
           style={{ width: "70%", height: "70%" }}
-          animate={reduce ? undefined : { scale: phase === 2 ? 0.6 : 1.1, opacity: phase === 1 ? 1 : 0.7 }}
-          transition={{ duration: cur.secs, ease: "easeInOut" }}
+          animate={reduce ? undefined : { scale: [0.65, 1.1, 0.65], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: PULSE_SECONDS, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div className="relative text-center">
-          <p className="text-2xl font-semibold text-[#e6f1ef]">{cur.label}</p>
-          <p className="num mt-1 text-4xl font-light text-[#9fc9c3]">{arNum(left)}</p>
-        </div>
+        <span className="relative text-center">
+          <span className="naskh block px-6 text-[1.7rem] leading-[1.8] text-[#e6f1ef]">{d.text}</span>
+          <span className="num mt-1 block text-3xl font-light text-[#9fc9c3]">{arNum(count)}</span>
+        </span>
+      </button>
+      <p className="text-sm text-[#8aa3ad]">ردّد بتمهّل مع نبض الدائرة، والمسها مع كل مرة</p>
+      <div className="flex flex-wrap justify-center gap-1.5" role="group" aria-label="اختر الذكر">
+        {PACED_DHIKR.map((x, i) => (
+          <button
+            key={x.text}
+            type="button"
+            aria-pressed={which === i}
+            onClick={() => {
+              setWhich(i);
+              setCount(0);
+            }}
+            className={cx("rounded-full px-3 py-1 text-xs", which === i ? "bg-[rgba(124,199,191,0.18)] text-white" : "text-[#8aa3ad]")}
+          >
+            {x.text}
+          </button>
+        ))}
       </div>
-      <p className="num text-sm text-[#8aa3ad]">{cycles ? `${arNum(cycles)} دورات` : "تنفّس مع الدائرة"}</p>
+      <p className="text-[11px] text-[#6f8994]">{d.source}</p>
     </div>
   );
 }
@@ -125,7 +146,7 @@ export function SakinaPage() {
         </nav>
 
         <main className="flex flex-1 flex-col items-center justify-center gap-8 py-6">
-          <Breathing />
+          <PacedDhikr />
 
           <button
             type="button"

@@ -57,7 +57,7 @@ function SakinaFab() {
     <Link
       to="/sakina"
       className="fixed bottom-5 end-5 z-40 flex items-center gap-2 rounded-full border border-border bg-surface/95 py-2 pe-4 ps-2 text-sm font-semibold shadow-lg backdrop-blur transition-transform hover:-translate-y-0.5"
-      aria-label="وضع السكينة: تنفّس وآيات هادئة عند الضيق"
+      aria-label="وضع السكينة: ذكر وآيات هادئة عند الضيق"
     >
       <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-sky">
         <span className="absolute inset-0 animate-ping rounded-full bg-sky opacity-40 [animation-duration:3s]" aria-hidden />

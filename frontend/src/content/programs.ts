@@ -115,12 +115,12 @@ export const PROGRAMS: Program[] = [
     id: "calm-heart-10",
     title: "قلب مطمئن",
     tagline: "١٠ أيام مع أدعية الهمّ والكرب وعادات تهدّئ الجسد",
-    description: "للأيام المثقلة بالقلق: أدعية نبوية للهمّ والحزن، وتمارين تنفّس ومشي، وتذكير لطيف بالأخذ بالأسباب.",
+    description: "للأيام المثقلة بالقلق: أدعية نبوية للهمّ والحزن، وذكر بتمهّل ومشي، وتذكير لطيف بالأخذ بالأسباب.",
     days: 10,
     minutesPerDay: 15,
     tint: "sage",
     forWhom: "لمن يمرّ بضيق أو قلق أو ضغط",
-    plan: build(10, [t("bismillah-3", "morning"), t("hamm-hazan", "morning"), t("muawwidhat", "evening"), t("breathing", "anytime")], [
+    plan: build(10, [t("bismillah-3", "morning"), t("hamm-hazan", "morning"), t("muawwidhat", "evening"), t("slow-dhikr", "anytime")], [
       ["ألا بذكر الله تطمئن القلوب", [t("tumaninah", "anytime")]],
       ["دعاء الكرب", [t("dua-karb", "anytime")]],
       ["دعاء ذهاب الهمّ", [t("ibn-masud", "anytime")]],
@@ -143,7 +143,7 @@ export const PROGRAMS: Program[] = [
     tint: "sand",
     forWhom: "لمن يعاني الأرق أو الفزع الليلي",
     plan: build(14, [t("screens-off", "night"), t("kursi", "night"), t("sleep-nafth", "night"), t("bismika", "night")], [
-      ["روتين النوم", [t("breathing", "night")]],
+      ["روتين النوم", [t("slow-dhikr", "night")]],
       ["عند الفزع", [t("faza", "night")]],
       ["الرؤيا المكروهة", [t("bad-dream", "night")]],
       ["خاتمة البقرة", [t("baqarah-end", "night")]],

@@ -116,7 +116,7 @@ export function HomePage() {
       <section className="flex flex-col items-center justify-between gap-4 rounded-3xl bg-[#13202c] px-6 py-6 text-[#e6eff1] md:flex-row">
         <div>
           <p className="text-lg font-bold">ضيقٌ مفاجئ؟ فزعٌ في الليل؟ أرق؟</p>
-          <p className="text-sm text-[#a9bec6]">شاشة هادئة بتمرين تنفّس وآيات السكينة بصوت مطمئن — تعمل حتى دون إنترنت.</p>
+          <p className="text-sm text-[#a9bec6]">شاشة هادئة بذكر متمهّل وآيات السكينة بصوت مطمئن — تعمل حتى دون إنترنت.</p>
         </div>
         <Link to="/sakina" className="shrink-0 rounded-full bg-[rgba(124,199,191,0.2)] px-6 py-3 font-semibold text-white ring-1 ring-[rgba(124,199,191,0.5)]">
           افتح السكينة الآن
