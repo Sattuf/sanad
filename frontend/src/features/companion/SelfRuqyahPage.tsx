@@ -74,8 +74,7 @@ export function SelfRuqyahPage() {
           ))}
         </div>
         <p className="mt-8 text-xs leading-6 text-muted">
-          الرقية عبادة ودعاء، والشفاء بيد الله وحده. إن كان الألم شديداً أو مستمراً فراجع طبيباً — الأخذ بالأسباب لا ينافي الرقية. وإن كنت في خطر الآن
-          فاذهب إلى <Link to="/emergency" className="font-semibold text-danger underline">صفحة الطوارئ</Link>.
+          الرقية عبادة ودعاء، والشفاء بيد الله وحده. إن كان الألم شديداً أو مستمراً فراجع طبيباً — الأخذ بالأسباب لا ينافي الرقية.
         </p>
       </div>
     );

@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { cachedCount, precacheAudio, usePlaylist } from "../../components/companion/audio";
 import type { QuranKey } from "@sanad/shared/content/quran";
 import { ayahAudioUrl, expandRef, item } from "../../content/library";
@@ -8,10 +8,9 @@ import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
 
 /*
-  وضع السكينة — زر الطوارئ الهادئ لمن يشعر بضيق مفاجئ أو فزع ليلي أو أرق.
+  وضع السكينة — لمن يشعر بضيق مفاجئ أو فزع ليلي أو أرق.
   شاشة خافتة جداً، تمرين تنفّس، وآيات وأدعية بصوت هادئ. يعمل بلا إنترنت بعد أول زيارة
   (التطبيق عبر Service Worker، والتلاوات عبر Cache API).
-  ليس بديلاً عن الطوارئ: رابط الإحالة ظاهر دائماً (البند 5).
 */
 type Need = "distress" | "night" | "sleep";
 
@@ -104,7 +103,7 @@ export function SakinaPage() {
             → خروج
           </button>
           <p className="text-sm font-semibold text-[#9fc9c3]">سكينة</p>
-          <Link to="/emergency" className="rounded-full px-3 py-2 text-xs text-[#ff9a92]">في خطر؟</Link>
+          <span className="w-16" aria-hidden />
         </header>
 
         <nav className="mt-4 flex justify-center gap-2" aria-label="ما الذي تمرّ به؟">
@@ -171,7 +170,6 @@ export function SakinaPage() {
           ) : (
             <p className="text-[#9fc9c3]">التلاوات محفوظة على جهازك ✓ تعمل دون إنترنت</p>
           )}
-          <p>إن راودتك أفكار بإيذاء نفسك، فاطلب المساعدة الآن: <Link to="/emergency" className="text-[#ff9a92] underline">الطوارئ</Link></p>
         </footer>
       </div>
     </div>

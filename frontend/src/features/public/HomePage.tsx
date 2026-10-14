@@ -108,7 +108,6 @@ export function HomePage() {
                 اختبر وعيك في دقيقتين
               </Link>
             </div>
-            <p className="mt-4 text-sm text-muted">لا تشخيص ولا وعود — عبادات مأثورة بمصادرها، وعادات تهدّئ يومك.</p>
           </div>
           <TodayMock />
         </div>
@@ -186,7 +185,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2">
         <Card>
           <h3 className="font-bold">خاص تماماً</h3>
           <p className="mt-2 text-sm leading-7 text-muted">مذكّرتك مشفّرة على جهازك وتُفتح ببصمتك. لا نراها نحن ولا أحد غيرك.</p>
@@ -195,11 +194,6 @@ export function HomePage() {
         <Card>
           <h3 className="font-bold">متحفّظ على شاشتك</h3>
           <p className="mt-2 text-sm leading-7 text-muted">وضع متحفّظ يُظهر التبويب باسم «ملاحظاتي»، وخروج سريع بضغطتين.</p>
-        </Card>
-        <Card>
-          <h3 className="font-bold">في خطر الآن؟</h3>
-          <p className="mt-2 text-sm leading-7 text-muted">سند ليست خدمة طوارئ. إن كنت أو أحد حولك في خطر مباشر، اتصل بالطوارئ فوراً.</p>
-          <Link to="/emergency" className="mt-3 inline-block text-sm font-bold text-danger">صفحة الطوارئ</Link>
         </Card>
       </section>
 

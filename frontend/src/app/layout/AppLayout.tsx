@@ -49,7 +49,7 @@ function useDiscreetMode() {
   }, [on]);
 }
 
-/** زر السكينة — حاضر في كل الصفحات لمن يشعر بضيق مفاجئ. لا يظهر في صفحة الطوارئ (الوضوح أولاً). */
+/** زر السكينة — حاضر في كل الصفحات لمن يشعر بضيق مفاجئ. لا يظهر في صفحة الإحالة (الوضوح أولاً). */
 function SakinaFab() {
   const { pathname } = useLocation();
   if (pathname === "/emergency") return null;
@@ -124,9 +124,6 @@ function SiteHeader() {
               ✕
             </button>
           )}
-          <NavLink to="/emergency" className="rounded-lg px-3 py-2 text-sm font-bold text-danger">
-            {t("nav.emergency")}
-          </NavLink>
           <button type="button" onClick={cycle} className="rounded-lg px-2.5 py-2 text-muted hover:text-text" aria-label={`المظهر: ${pref === "system" ? "حسب النظام" : pref === "dark" ? "ليلي" : "نهاري"}`}>
             {pref === "dark" ? "☾" : pref === "light" ? "☀" : "◐"}
           </button>

@@ -136,7 +136,6 @@ export function BookPage() {
               />
             </div>
           )}
-          <p className="mt-3 text-xs text-muted">إن كنت في خطر الآن فلا تنتظر الموعد — صفحة الطوارئ متاحة من أعلى كل صفحة.</p>
         </Card>
 
         {error && <Banner tone="danger" role="alert">{error}</Banner>}

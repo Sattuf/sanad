@@ -24,12 +24,6 @@ export function HealthHubPage() {
         </motion.div>
       </Scene>
 
-      {/* الطوارئ: وضوح فوري بلا أي حركة زخرفية (references/13 §13.4) */}
-      <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-danger/40 bg-danger-bg px-5 py-4" aria-label="الطوارئ">
-        <p className="font-semibold text-danger">ألم في الصدر، ضيق نفس شديد، ضعف مفاجئ، أو أفكار بإيذاء النفس؟ اطلب الطوارئ فوراً.</p>
-        <Link to="/emergency" className="rounded-xl bg-danger px-4 py-2 text-sm font-bold text-white">صفحة الطوارئ</Link>
-      </section>
-
       <section aria-labelledby="health-guides">
         <h2 id="health-guides" className="text-2xl font-bold">أدلة التوعية</h2>
         <p className="mt-1 text-muted">مكتوبة للقارئ العادي، بلا تشخيص ولا أدوية ولا جرعات.</p>
