@@ -23,8 +23,10 @@ const src = (p) => new URL(`../src/${p}`, import.meta.url).href;
 const { quran } = await import(src("content/quran.ts"));
 const { LIBRARY } = await import(src("content/companion/library.ts"));
 const { PROGRAMS, SLOT_LABEL } = await import(src("content/companion/programs.ts"));
-const { MYTHS, VERDICT_META } = await import(src("content/companion/myths.ts"));
+const { MYTHS, MYTH_SUGGESTIONS, VERDICT_META } = await import(src("content/companion/myths.ts"));
 const { QUIZ, QUIZ_TIERS, QUIZ_RECOMMENDATIONS } = await import(src("content/companion/quiz.ts"));
+const { GUIDE_MODES, GUIDE_NAFTH_ITEM, HAND_STEP, INTENTION_TIPS, guideSteps } = await import(src("content/companion/guide.ts"));
+const { PACED_DHIKR, PULSE_SECONDS, SAKINA_NEEDS, SAKINA_NEED_ORDER, SAKINA_REPEAT } = await import(src("content/companion/sakina.ts"));
 const { RISK_INDICATORS } = await import(src("safety/riskSignals.ts"));
 
 const GENERATED = "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)";
@@ -37,7 +39,17 @@ const files = {
     slotLabel: SLOT_LABEL,
     myths: MYTHS,
     verdictMeta: VERDICT_META,
+    mythSuggestions: MYTH_SUGGESTIONS,
     quiz: { questions: QUIZ, tiers: QUIZ_TIERS, recommendations: QUIZ_RECOMMENDATIONS },
+    // خطوات المرشد محسوبة لكل وضع، فلا يُعاد منطق العناوين في Dart
+    guide: {
+      modes: GUIDE_MODES,
+      steps: Object.fromEntries(GUIDE_MODES.map((m) => [m.id, guideSteps(m.id)])),
+      nafthItemId: GUIDE_NAFTH_ITEM,
+      intentionTips: INTENTION_TIPS,
+      hand: HAND_STEP,
+    },
+    sakina: { needOrder: SAKINA_NEED_ORDER, needs: SAKINA_NEEDS, repeat: SAKINA_REPEAT, pacedDhikr: PACED_DHIKR, pulseSeconds: PULSE_SECONDS },
   },
   "safety.json": {
     $generated: GENERATED,

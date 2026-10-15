@@ -7,45 +7,9 @@ import { item, type LibraryItem } from "../../content/library";
 import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
 import { useJournal } from "../../stores/journal";
+import { GUIDE_MODES as MODES, GUIDE_NAFTH_ITEM, HAND_STEP, INTENTION_TIPS, guideSteps as stepsFor, type GuideMode } from "@sanad/shared/content/companion/guide";
 
-/*
-  المرشد التفاعلي للرقية الذاتية — يقود المستخدم خطوة بخطوة بما ورد فقط:
-  نية، وضع اليد، آيات بتلاوة مسموعة وتكرار تلقائي، أدعية نبوية، ثم النفث.
-  ليس «خطوات علاج» ولا وعداً بنتيجة (البند 4)؛ هو تعليم لعبادة مشروعة يؤديها المرء بنفسه.
-*/
-type Mode = "self" | "family" | "child";
-
-interface Step {
-  id: string;
-  title: string;
-  hint: string;
-  items?: string[];
-  custom?: "intention" | "hand" | "nafth";
-}
-
-function stepsFor(mode: Mode): Step[] {
-  return [
-    { id: "intention", title: "النية وحضور القلب", hint: "قبل أن تبدأ", custom: "intention" },
-    { id: "hand", title: mode === "self" ? "ضع يدك على موضع الألم" : "ضع يدك على موضع الألم عنده", hint: "من السنّة — صحيح مسلم", custom: "hand" },
-    { id: "fatiha", title: "سورة الفاتحة", hint: "اقرأها بتدبّر، وكرّرها إن شئت", items: ["fatiha"] },
-    { id: "kursi", title: "آية الكرسي", hint: "أعظم آية في كتاب الله", items: ["kursi"] },
-    { id: "baqarah", title: "خاتمة سورة البقرة", hint: "«كفتاه»", items: ["baqarah-end"] },
-    { id: "muawwidhat", title: "المعوّذات", hint: "ثلاث مرات", items: ["muawwidhat"] },
-    {
-      id: "dua",
-      title: mode === "child" ? "تعويذ الطفل" : mode === "family" ? "رقية جبريل والنبي ﷺ" : "رقية النبي ﷺ",
-      hint: "أدعية مأثورة",
-      items: mode === "child" ? ["children", "ruqyah-nabawiyyah"] : mode === "family" ? ["ruqyah-jibril", "ruqyah-nabawiyyah"] : ["ruqyah-nabawiyyah", "dhunnun"],
-    },
-    { id: "nafth", title: "النفث والمسح", hint: "ختام الجلسة", custom: "nafth" },
-  ];
-}
-
-const MODES: Array<{ id: Mode; title: string; sub: string }> = [
-  { id: "self", title: "أرقي نفسي", sub: "جلسة لك وحدك" },
-  { id: "family", title: "أرقي أحد أهلي", sub: "والدك، زوجك، أخوك…" },
-  { id: "child", title: "أرقي طفلي", sub: "بأدعية النبي ﷺ للأطفال" },
-];
+type Mode = GuideMode;
 
 export function SelfRuqyahPage() {
   const [mode, setMode] = useState<Mode | null>(null);
@@ -109,7 +73,7 @@ export function SelfRuqyahPage() {
           <div className="mt-6 flex flex-col gap-8">
             {step.custom === "intention" && <Intention />}
             {step.custom === "hand" && <HandStep />}
-            {step.custom === "nafth" && <ItemView item={item("sleep-nafth")} large />}
+            {step.custom === "nafth" && <ItemView item={item(GUIDE_NAFTH_ITEM)} large />}
             {step.items?.map((id) => <ItemView key={id} item={item(id)} large />)}
           </div>
         </motion.section>
@@ -124,15 +88,9 @@ export function SelfRuqyahPage() {
 }
 
 function Intention() {
-  const tips = [
-    "استحضر أن الشافي هو الله وحده، والرقية سبب ودعاء.",
-    "يُستحب أن تكون على وضوء، في مكان هادئ.",
-    "لا يلزم ماء ولا زيت ولا أي أداة — يكفيك كلام الله وصوتك.",
-    "اقرأ بصوت مسموع لك، بتمهّل وتدبّر.",
-  ];
   return (
     <ul className="flex flex-col gap-3">
-      {tips.map((t) => (
+      {INTENTION_TIPS.map((t) => (
         <li key={t} className="flex gap-3 rounded-2xl bg-surface-2 px-4 py-3 leading-7">
           <span className="text-primary" aria-hidden>✦</span>
           {t}
@@ -143,7 +101,7 @@ function Intention() {
 }
 
 function HandStep() {
-  const it: LibraryItem = item("hand-on-pain");
+  const it: LibraryItem = item(HAND_STEP.itemId);
   return (
     <div className="flex flex-col items-center gap-5 text-center">
       <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
@@ -152,14 +110,12 @@ function HandStep() {
       </svg>
       <p className="max-w-md leading-8 text-muted">{it.text}</p>
       <div className="grid w-full max-w-md gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl bg-surface-2 p-4">
-          <p className="naskh text-2xl">بسم الله</p>
-          <div className="mt-3 flex justify-center"><TapCounter target={3} /></div>
-        </div>
-        <div className="rounded-2xl bg-surface-2 p-4">
-          <p className="naskh text-xl">أعوذ بالله وقدرته من شرّ ما أجد وأحاذر</p>
-          <div className="mt-3 flex justify-center"><TapCounter target={7} /></div>
-        </div>
+        {HAND_STEP.phrases.map((p, i) => (
+          <div key={p.text} className="rounded-2xl bg-surface-2 p-4">
+            <p className={cx("naskh", i === 0 ? "text-2xl" : "text-xl")}>{p.text}</p>
+            <div className="mt-3 flex justify-center"><TapCounter target={p.repeat} /></div>
+          </div>
+        ))}
       </div>
       <p className="text-xs text-muted">المصدر: {it.source}</p>
     </div>

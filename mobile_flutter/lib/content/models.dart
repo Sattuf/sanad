@@ -201,3 +201,41 @@ class QuizQuestion {
 typedef QuizTier = ({double minRatio, String title, String message});
 typedef QuizRecommendation = ({String? zeroArea, double? minRatio, String programId, String reason});
 typedef QuizResult = ({int score, String tierTitle, String tierMessage, String programId, String reason});
+
+enum GuideMode { self, family, child }
+
+typedef GuideModeInfo = ({GuideMode id, String title, String sub});
+
+/// خطوة في مرشد الرقية الذاتية (guide.ts) — العناوين محسوبة لكل وضع في JSON.
+class GuideStep {
+  const GuideStep({required this.id, required this.title, required this.hint, this.items = const [], this.custom});
+
+  factory GuideStep.fromJson(Map<String, dynamic> j) => GuideStep(
+        id: j['id'] as String,
+        title: j['title'] as String,
+        hint: j['hint'] as String,
+        items: ((j['items'] as List?) ?? const []).cast<String>(),
+        custom: j['custom'] as String?,
+      );
+
+  final String id;
+  final String title;
+  final String hint;
+  final List<String> items;
+
+  /// intention | hand | nafth
+  final String? custom;
+}
+
+typedef GuidePhrase = ({String text, int repeat});
+
+/// حالة في وضع السكينة (sakina.ts): أذكارها وآياتها.
+class SakinaNeed {
+  const SakinaNeed({required this.id, required this.label, required this.items, required this.verses});
+  final String id;
+  final String label;
+  final List<String> items;
+  final List<String> verses;
+}
+
+typedef PacedDhikr = ({String text, String source});

@@ -2759,6 +2759,14 @@
    "tone": "success"
   }
  },
+ "mythSuggestions": [
+  "ملح الهملايا",
+  "الخرزة الزرقاء",
+  "قانون الجذب",
+  "الشاكرات",
+  "اسم الأم",
+  "الأبراج"
+ ],
  "quiz": {
   "questions": [
    {
@@ -2983,5 +2991,301 @@
     "reason": "لتثبيت وِرد التحصين اليومي أولاً."
    }
   ]
+ },
+ "guide": {
+  "modes": [
+   {
+    "id": "self",
+    "title": "أرقي نفسي",
+    "sub": "جلسة لك وحدك"
+   },
+   {
+    "id": "family",
+    "title": "أرقي أحد أهلي",
+    "sub": "والدك، زوجك، أخوك…"
+   },
+   {
+    "id": "child",
+    "title": "أرقي طفلي",
+    "sub": "بأدعية النبي ﷺ للأطفال"
+   }
+  ],
+  "steps": {
+   "self": [
+    {
+     "id": "intention",
+     "title": "النية وحضور القلب",
+     "hint": "قبل أن تبدأ",
+     "custom": "intention"
+    },
+    {
+     "id": "hand",
+     "title": "ضع يدك على موضع الألم",
+     "hint": "من السنّة — صحيح مسلم",
+     "custom": "hand"
+    },
+    {
+     "id": "fatiha",
+     "title": "سورة الفاتحة",
+     "hint": "اقرأها بتدبّر، وكرّرها إن شئت",
+     "items": [
+      "fatiha"
+     ]
+    },
+    {
+     "id": "kursi",
+     "title": "آية الكرسي",
+     "hint": "أعظم آية في كتاب الله",
+     "items": [
+      "kursi"
+     ]
+    },
+    {
+     "id": "baqarah",
+     "title": "خاتمة سورة البقرة",
+     "hint": "«كفتاه»",
+     "items": [
+      "baqarah-end"
+     ]
+    },
+    {
+     "id": "muawwidhat",
+     "title": "المعوّذات",
+     "hint": "ثلاث مرات",
+     "items": [
+      "muawwidhat"
+     ]
+    },
+    {
+     "id": "dua",
+     "title": "رقية النبي ﷺ",
+     "hint": "أدعية مأثورة",
+     "items": [
+      "ruqyah-nabawiyyah",
+      "dhunnun"
+     ]
+    },
+    {
+     "id": "nafth",
+     "title": "النفث والمسح",
+     "hint": "ختام الجلسة",
+     "custom": "nafth"
+    }
+   ],
+   "family": [
+    {
+     "id": "intention",
+     "title": "النية وحضور القلب",
+     "hint": "قبل أن تبدأ",
+     "custom": "intention"
+    },
+    {
+     "id": "hand",
+     "title": "ضع يدك على موضع الألم عنده",
+     "hint": "من السنّة — صحيح مسلم",
+     "custom": "hand"
+    },
+    {
+     "id": "fatiha",
+     "title": "سورة الفاتحة",
+     "hint": "اقرأها بتدبّر، وكرّرها إن شئت",
+     "items": [
+      "fatiha"
+     ]
+    },
+    {
+     "id": "kursi",
+     "title": "آية الكرسي",
+     "hint": "أعظم آية في كتاب الله",
+     "items": [
+      "kursi"
+     ]
+    },
+    {
+     "id": "baqarah",
+     "title": "خاتمة سورة البقرة",
+     "hint": "«كفتاه»",
+     "items": [
+      "baqarah-end"
+     ]
+    },
+    {
+     "id": "muawwidhat",
+     "title": "المعوّذات",
+     "hint": "ثلاث مرات",
+     "items": [
+      "muawwidhat"
+     ]
+    },
+    {
+     "id": "dua",
+     "title": "رقية جبريل والنبي ﷺ",
+     "hint": "أدعية مأثورة",
+     "items": [
+      "ruqyah-jibril",
+      "ruqyah-nabawiyyah"
+     ]
+    },
+    {
+     "id": "nafth",
+     "title": "النفث والمسح",
+     "hint": "ختام الجلسة",
+     "custom": "nafth"
+    }
+   ],
+   "child": [
+    {
+     "id": "intention",
+     "title": "النية وحضور القلب",
+     "hint": "قبل أن تبدأ",
+     "custom": "intention"
+    },
+    {
+     "id": "hand",
+     "title": "ضع يدك على موضع الألم عنده",
+     "hint": "من السنّة — صحيح مسلم",
+     "custom": "hand"
+    },
+    {
+     "id": "fatiha",
+     "title": "سورة الفاتحة",
+     "hint": "اقرأها بتدبّر، وكرّرها إن شئت",
+     "items": [
+      "fatiha"
+     ]
+    },
+    {
+     "id": "kursi",
+     "title": "آية الكرسي",
+     "hint": "أعظم آية في كتاب الله",
+     "items": [
+      "kursi"
+     ]
+    },
+    {
+     "id": "baqarah",
+     "title": "خاتمة سورة البقرة",
+     "hint": "«كفتاه»",
+     "items": [
+      "baqarah-end"
+     ]
+    },
+    {
+     "id": "muawwidhat",
+     "title": "المعوّذات",
+     "hint": "ثلاث مرات",
+     "items": [
+      "muawwidhat"
+     ]
+    },
+    {
+     "id": "dua",
+     "title": "تعويذ الطفل",
+     "hint": "أدعية مأثورة",
+     "items": [
+      "children",
+      "ruqyah-nabawiyyah"
+     ]
+    },
+    {
+     "id": "nafth",
+     "title": "النفث والمسح",
+     "hint": "ختام الجلسة",
+     "custom": "nafth"
+    }
+   ]
+  },
+  "nafthItemId": "sleep-nafth",
+  "intentionTips": [
+   "استحضر أن الشافي هو الله وحده، والرقية سبب ودعاء.",
+   "يُستحب أن تكون على وضوء، في مكان هادئ.",
+   "لا يلزم ماء ولا زيت ولا أي أداة — يكفيك كلام الله وصوتك.",
+   "اقرأ بصوت مسموع لك، بتمهّل وتدبّر."
+  ],
+  "hand": {
+   "itemId": "hand-on-pain",
+   "phrases": [
+    {
+     "text": "بسم الله",
+     "repeat": 3
+    },
+    {
+     "text": "أعوذ بالله وقدرته من شرّ ما أجد وأحاذر",
+     "repeat": 7
+    }
+   ]
+  }
+ },
+ "sakina": {
+  "needOrder": [
+   "distress",
+   "night",
+   "sleep"
+  ],
+  "needs": {
+   "distress": {
+    "label": "ضيق مفاجئ",
+    "items": [
+     "dua-karb",
+     "dhunnun",
+     "ya-hayy"
+    ],
+    "verses": [
+     "baqarah-248",
+     "tawbah-26",
+     "tawbah-40",
+     "fath-4",
+     "fath-18",
+     "fath-26",
+     "raad-28"
+    ]
+   },
+   "night": {
+    "label": "استيقظت فزعاً",
+    "items": [
+     "faza",
+     "bad-dream"
+    ],
+    "verses": [
+     "kursi",
+     "falaq",
+     "nas"
+    ]
+   },
+   "sleep": {
+    "label": "لا أستطيع النوم",
+    "items": [
+     "bismika",
+     "sleep-nafth"
+    ],
+    "verses": [
+     "kursi",
+     "baqarah-285-286",
+     "ikhlas",
+     "falaq",
+     "nas"
+    ]
+   }
+  },
+  "repeat": 3,
+  "pacedDhikr": [
+   {
+    "text": "أستغفر الله",
+    "source": "صحيح مسلم (2702)"
+   },
+   {
+    "text": "لا إله إلا الله",
+    "source": "«أفضل الذكر لا إله إلا الله» — سنن الترمذي (3383)"
+   },
+   {
+    "text": "سبحان الله وبحمده",
+    "source": "صحيح البخاري (6405) وصحيح مسلم (2691)"
+   },
+   {
+    "text": "لا حول ولا قوة إلا بالله",
+    "source": "«كنز من كنوز الجنة» — صحيح البخاري (6384)"
+   }
+  ],
+  "pulseSeconds": 5
  }
 }

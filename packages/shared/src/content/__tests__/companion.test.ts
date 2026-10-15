@@ -3,6 +3,8 @@ import { LIBRARY, expandRef } from "../companion/library";
 import { MYTHS, searchMyths } from "../companion/myths";
 import { PROGRAMS } from "../companion/programs";
 import { QUIZ, evaluateQuiz } from "../companion/quiz";
+import { GUIDE_MODES, GUIDE_NAFTH_ITEM, HAND_STEP, guideSteps } from "../companion/guide";
+import { PACED_DHIKR, SAKINA_NEEDS, SAKINA_NEED_ORDER } from "../companion/sakina";
 
 describe("سلامة المحتوى", () => {
   it("كل مهمة في كل برنامج تشير لعنصر موجود، وأيام البرنامج كاملة ومرقّمة", () => {
@@ -54,5 +56,21 @@ describe("سلامة المحتوى", () => {
     expect(evaluateQuiz(best).tier.title).toBe("وعيٌ راسخ");
     expect(evaluateQuiz(worst).programId).toBe("quiet-nights-14");
     expect(PROGRAMS.some((p) => p.id === evaluateQuiz({ ...best, "q-self": 0 }).programId)).toBe(true);
+  });
+
+  it("المرشد والسكينة يشيران لعناصر وآيات موجودة، وكل ذكر بمصدره", () => {
+    for (const m of GUIDE_MODES) {
+      const steps = guideSteps(m.id);
+      expect(new Set(steps.map((s) => s.id)).size).toBe(steps.length);
+      for (const s of steps) for (const id of s.items ?? []) expect(LIBRARY[id], `${m.id}: ${id}`).toBeDefined();
+    }
+    expect(LIBRARY[GUIDE_NAFTH_ITEM]).toBeDefined();
+    expect(LIBRARY[HAND_STEP.itemId]?.source).toBeTruthy();
+    expect([...SAKINA_NEED_ORDER].sort()).toEqual(Object.keys(SAKINA_NEEDS).sort());
+    for (const n of Object.values(SAKINA_NEEDS)) {
+      for (const id of n.items) expect(LIBRARY[id]?.text, id).toBeTruthy();
+      for (const r of n.verses) expect(expandRef(r).length, r).toBeGreaterThan(0);
+    }
+    for (const d of PACED_DHIKR) expect(d.source).toBeTruthy();
   });
 });

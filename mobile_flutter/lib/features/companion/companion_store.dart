@@ -19,8 +19,10 @@ final todayProvider = Provider<String>((ref) => localDay());
 */
 const _key = 'sanad.companion.v1';
 
+typedef SavedQuiz = ({int score, String programId, String at});
+
 class CompanionState {
-  const CompanionState({this.activeProgramId, this.startedOn, this.done = const {}, this.activeDays = const {}, this.finished = const []});
+  const CompanionState({this.activeProgramId, this.startedOn, this.done = const {}, this.activeDays = const {}, this.finished = const [], this.quiz});
 
   factory CompanionState.fromJson(Map<String, dynamic> j) => CompanionState(
         activeProgramId: j['activeProgramId'] as String?,
@@ -28,6 +30,10 @@ class CompanionState {
         done: ((j['done'] as Map?) ?? const {}).keys.cast<String>().toSet(),
         activeDays: ((j['activeDays'] as Map?) ?? const {}).keys.cast<String>().toSet(),
         finished: ((j['finished'] as List?) ?? const []).cast<String>(),
+        quiz: switch (j['quiz']) {
+          {'score': final int score, 'programId': final String programId, 'at': final String at} => (score: score, programId: programId, at: at),
+          _ => null,
+        },
       );
 
   final String? activeProgramId;
@@ -36,21 +42,26 @@ class CompanionState {
   final Set<String> activeDays;
   final List<String> finished;
 
+  /// آخر نتيجة لاختبار الوعي (للاقتراح فقط — لا تُرسل لأي مكان).
+  final SavedQuiz? quiz;
+
   Map<String, dynamic> toJson() => {
         'activeProgramId': activeProgramId,
         'startedOn': startedOn,
         'done': {for (final k in done) k: true},
         'activeDays': {for (final k in activeDays) k: true},
         'finished': finished,
+        'quiz': quiz == null ? null : {'score': quiz!.score, 'programId': quiz!.programId, 'at': quiz!.at},
       };
 
-  CompanionState copyWith({String? Function()? activeProgramId, String? Function()? startedOn, Set<String>? done, Set<String>? activeDays, List<String>? finished}) =>
+  CompanionState copyWith({String? Function()? activeProgramId, String? Function()? startedOn, Set<String>? done, Set<String>? activeDays, List<String>? finished, SavedQuiz? Function()? quiz}) =>
       CompanionState(
         activeProgramId: activeProgramId != null ? activeProgramId() : this.activeProgramId,
         startedOn: startedOn != null ? startedOn() : this.startedOn,
         done: done ?? this.done,
         activeDays: activeDays ?? this.activeDays,
         finished: finished ?? this.finished,
+        quiz: quiz != null ? quiz() : this.quiz,
       );
 }
 
@@ -84,6 +95,8 @@ class CompanionNotifier extends Notifier<CompanionState> {
     if (!checked) done.remove(key);
     _save(state.copyWith(done: done, activeDays: checked ? {...state.activeDays, ref.read(todayProvider)} : state.activeDays));
   }
+
+  void saveQuiz(int score, String programId) => _save(state.copyWith(quiz: () => (score: score, programId: programId, at: ref.read(todayProvider))));
 
   void finish() {
     final id = state.activeProgramId;

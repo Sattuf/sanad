@@ -15,6 +15,9 @@ export const VERDICT_META: Record<Verdict, { label: string; tone: "danger" | "wa
   legit: { label: "مشروع", tone: "success" },
 };
 
+/** اقتراحات بحث سريعة تحت حقل «ميزان الوعي». */
+export const MYTH_SUGGESTIONS = ["ملح الهملايا", "الخرزة الزرقاء", "قانون الجذب", "الشاكرات", "اسم الأم", "الأبراج"];
+
 export interface Myth {
   id: string;
   title: string;

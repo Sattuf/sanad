@@ -32,6 +32,19 @@
   --private-bg: #fbeaea;
   --focus: #2f7ec7;
   --dawn: linear-gradient(160deg, #eaf4f2 0%, #e4effa 55%, #f8f1e3 100%);
+  /* شاشة السكينة ليلية دائماً — القيم نفسها في الوضعين */
+  --sakina-bg-top: #15283a;
+  --sakina-bg: #0b141c;
+  --sakina-bg-deep: #070d12;
+  --sakina-text: #dfe9ec;
+  --sakina-ink: #eef4f3;
+  --sakina-dhikr: #e6f1ef;
+  --sakina-accent: #9fc9c3;
+  --sakina-soft: #cfe6e2;
+  --sakina-muted: #8aa3ad;
+  --sakina-faint: #6f8994;
+  --sakina-glow: #7cc7bf;
+  --sakina-warn: #f2c675;
   color-scheme: light;
 }
 
@@ -63,6 +76,19 @@
     --private-bg: #2b1414;
     --focus: #7ab8f5;
     --dawn: linear-gradient(160deg, #142330 0%, #16283a 55%, #1d2a2a 100%);
+    /* شاشة السكينة ليلية دائماً — القيم نفسها في الوضعين */
+    --sakina-bg-top: #15283a;
+    --sakina-bg: #0b141c;
+    --sakina-bg-deep: #070d12;
+    --sakina-text: #dfe9ec;
+    --sakina-ink: #eef4f3;
+    --sakina-dhikr: #e6f1ef;
+    --sakina-accent: #9fc9c3;
+    --sakina-soft: #cfe6e2;
+    --sakina-muted: #8aa3ad;
+    --sakina-faint: #6f8994;
+    --sakina-glow: #7cc7bf;
+    --sakina-warn: #f2c675;
     color-scheme: dark;
   }
 }
@@ -94,6 +120,19 @@
   --private-bg: #2b1414;
   --focus: #7ab8f5;
   --dawn: linear-gradient(160deg, #142330 0%, #16283a 55%, #1d2a2a 100%);
+  /* شاشة السكينة ليلية دائماً — القيم نفسها في الوضعين */
+  --sakina-bg-top: #15283a;
+  --sakina-bg: #0b141c;
+  --sakina-bg-deep: #070d12;
+  --sakina-text: #dfe9ec;
+  --sakina-ink: #eef4f3;
+  --sakina-dhikr: #e6f1ef;
+  --sakina-accent: #9fc9c3;
+  --sakina-soft: #cfe6e2;
+  --sakina-muted: #8aa3ad;
+  --sakina-faint: #6f8994;
+  --sakina-glow: #7cc7bf;
+  --sakina-warn: #f2c675;
   color-scheme: dark;
 }
 

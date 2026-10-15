@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- تلاوات الآيات من خادم سند (تُحفظ على الجهاز بعد أول استماع) -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="sanad"
         android:name="${applicationName}"

@@ -31,6 +31,18 @@ class SanadTokens {
     required this.private,
     required this.privateBg,
     required this.focus,
+    required this.sakinaBgTop,
+    required this.sakinaBg,
+    required this.sakinaBgDeep,
+    required this.sakinaText,
+    required this.sakinaInk,
+    required this.sakinaDhikr,
+    required this.sakinaAccent,
+    required this.sakinaSoft,
+    required this.sakinaMuted,
+    required this.sakinaFaint,
+    required this.sakinaGlow,
+    required this.sakinaWarn,
     required this.dawn,
   });
 
@@ -59,6 +71,18 @@ class SanadTokens {
   final Color private;
   final Color privateBg;
   final Color focus;
+  final Color sakinaBgTop;
+  final Color sakinaBg;
+  final Color sakinaBgDeep;
+  final Color sakinaText;
+  final Color sakinaInk;
+  final Color sakinaDhikr;
+  final Color sakinaAccent;
+  final Color sakinaSoft;
+  final Color sakinaMuted;
+  final Color sakinaFaint;
+  final Color sakinaGlow;
+  final Color sakinaWarn;
   final LinearGradient dawn;
 
   static const light = SanadTokens(
@@ -87,6 +111,18 @@ class SanadTokens {
     private: Color(0xFF7A1F1F),
     privateBg: Color(0xFFFBEAEA),
     focus: Color(0xFF2F7EC7),
+    sakinaBgTop: Color(0xFF15283A),
+    sakinaBg: Color(0xFF0B141C),
+    sakinaBgDeep: Color(0xFF070D12),
+    sakinaText: Color(0xFFDFE9EC),
+    sakinaInk: Color(0xFFEEF4F3),
+    sakinaDhikr: Color(0xFFE6F1EF),
+    sakinaAccent: Color(0xFF9FC9C3),
+    sakinaSoft: Color(0xFFCFE6E2),
+    sakinaMuted: Color(0xFF8AA3AD),
+    sakinaFaint: Color(0xFF6F8994),
+    sakinaGlow: Color(0xFF7CC7BF),
+    sakinaWarn: Color(0xFFF2C675),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFFEAF4F2), Color(0xFFE4EFFA), Color(0xFFF8F1E3)], stops: [0, 0.55, 1]),
   );
 
@@ -116,6 +152,18 @@ class SanadTokens {
     private: Color(0xFFFF9A92),
     privateBg: Color(0xFF2B1414),
     focus: Color(0xFF7AB8F5),
+    sakinaBgTop: Color(0xFF15283A),
+    sakinaBg: Color(0xFF0B141C),
+    sakinaBgDeep: Color(0xFF070D12),
+    sakinaText: Color(0xFFDFE9EC),
+    sakinaInk: Color(0xFFEEF4F3),
+    sakinaDhikr: Color(0xFFE6F1EF),
+    sakinaAccent: Color(0xFF9FC9C3),
+    sakinaSoft: Color(0xFFCFE6E2),
+    sakinaMuted: Color(0xFF8AA3AD),
+    sakinaFaint: Color(0xFF6F8994),
+    sakinaGlow: Color(0xFF7CC7BF),
+    sakinaWarn: Color(0xFFF2C675),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFF142330), Color(0xFF16283A), Color(0xFF1D2A2A)], stops: [0, 0.55, 1]),
   );
 }

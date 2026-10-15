@@ -4,14 +4,12 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ShareButton } from "../../components/companion";
 import { Badge, Card, Input, PageHeader } from "../../components/ui";
 import { item } from "../../content/library";
-import { MYTHS, VERDICT_META, searchMyths, type Myth, type Verdict } from "@sanad/shared/content/companion/myths";
+import { MYTHS, MYTH_SUGGESTIONS as SUGGESTIONS, VERDICT_META, searchMyths, type Myth, type Verdict } from "@sanad/shared/content/companion/myths";
 import { programById } from "../../content/programs";
 import { MAX_SCORE, QUIZ, evaluateQuiz } from "@sanad/shared/content/companion/quiz";
 import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
 import { useCompanion } from "../../stores/companion";
-
-const SUGGESTIONS = ["ملح الهملايا", "الخرزة الزرقاء", "قانون الجذب", "الشاكرات", "اسم الأم", "الأبراج"];
 
 /** «ميزان الوعي» — هل هذا صحيح شرعاً؟ */
 export function AwarenessPage() {

@@ -1,35 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/companion/awareness_screen.dart';
+import '../features/companion/programs_screen.dart';
+import '../features/companion/sakina_screen.dart';
+import '../features/companion/self_ruqyah_screen.dart';
 import '../features/companion/today_screen.dart';
 import '../theme/theme.dart';
 
 /*
   المسارات نفسها في الويب (docs/flutter-app-plan.md §4)، فتعمل الروابط العميقة بالشكل نفسه.
-  الأسبوع 1: «يومي» كاملة، والباقي شاشات «قيد البناء» بنفس الهوية حتى تصل مراحلها.
+  الأسابيع 1–3: الرفيق بلا حساب كاملاً (يومي، البرامج، المرشد، الميزان والاختبار، السكينة)،
+  والباقي شاشات «قيد البناء» بنفس الهوية حتى تصل مراحلها.
 */
 final router = GoRouter(
   initialLocation: '/today',
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, shell) => AppShell(shell: shell),
+      builder: (context, state, shell) => AppShell(shell: shell, location: state.uri.path),
       branches: [
         StatefulShellBranch(routes: [GoRoute(path: '/today', builder: (_, _) => const TodayScreen())]),
-        StatefulShellBranch(routes: [GoRoute(path: '/programs', builder: (_, _) => const ComingSoon(title: 'برامج الالتزام', phase: 'الأسبوعان 2–3'))]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/programs',
+            builder: (_, _) => const ProgramsScreen(),
+            routes: [GoRoute(path: ':id', builder: (_, state) => ProgramDetailScreen(id: state.pathParameters['id']!))],
+          ),
+        ]),
         StatefulShellBranch(routes: [GoRoute(path: '/ruqyah', builder: (_, _) => const ComingSoon(title: 'الرقية والتحصين', phase: 'الأسابيع 5–7'))]),
-        StatefulShellBranch(routes: [GoRoute(path: '/awareness', builder: (_, _) => const ComingSoon(title: 'ميزان الوعي', phase: 'الأسبوعان 2–3'))]),
+        StatefulShellBranch(routes: [
+          GoRoute(path: '/awareness', builder: (_, _) => const AwarenessScreen(), routes: [GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen())]),
+        ]),
         StatefulShellBranch(routes: [GoRoute(path: '/account', builder: (_, _) => const ComingSoon(title: 'حسابي', phase: 'الأسابيع 5–9'))]),
       ],
     ),
-    GoRoute(path: '/sakina', builder: (_, _) => const ComingSoon(title: 'سكينة', phase: 'الأسبوعان 2–3', standalone: true)),
-    GoRoute(path: '/self-ruqyah', builder: (_, _) => const ComingSoon(title: 'ارقِ نفسك', phase: 'الأسبوعان 2–3', standalone: true)),
+    GoRoute(path: '/sakina', builder: (_, state) => SakinaScreen(need: state.uri.queryParameters['for'])),
+    GoRoute(path: '/self-ruqyah', builder: (_, _) => const SelfRuqyahScreen()),
     GoRoute(path: '/journal', builder: (_, _) => const ComingSoon(title: 'مذكّرتي', phase: 'الأسبوعان 4–5', standalone: true)),
   ],
 );
 
 class AppShell extends StatelessWidget {
-  const AppShell({super.key, required this.shell});
+  const AppShell({super.key, required this.shell, required this.location});
   final StatefulNavigationShell shell;
+  final String location;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +52,8 @@ class AppShell extends StatelessWidget {
       body: shell,
       // زر السكينة حاضر في كل الشاشات، في الجهة نفسها كالويب (يسار الشاشة في RTL)
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton.extended(
+      // صفحة البرنامج لها شريط إجراء ثابت في الأسفل، فلا يغطّيه الزر
+      floatingActionButton: location.startsWith('/programs/') ? null : FloatingActionButton.extended(
         heroTag: 'sakina',
         onPressed: () => context.push('/sakina'),
         backgroundColor: t.surface,

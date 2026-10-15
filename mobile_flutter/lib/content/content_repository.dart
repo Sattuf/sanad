@@ -19,6 +19,18 @@ class ContentRepository {
     required this.quizTiers,
     required this.quizRecommendations,
     required this.riskPatterns,
+    required this.verdictTone,
+    required this.mythSuggestions,
+    required this.guideModes,
+    required this.guideSteps,
+    required this.guideNafthItemId,
+    required this.intentionTips,
+    required this.handItemId,
+    required this.handPhrases,
+    required this.sakinaNeeds,
+    required this.sakinaRepeat,
+    required this.pacedDhikr,
+    required this.pulseSeconds,
   });
 
   /// من نصوص JSON الثلاثة (تُقرأ من الأصول في التطبيق، ومن الملفات في الاختبارات).
@@ -27,6 +39,10 @@ class ContentRepository {
     final c = jsonDecode(companionJson) as Map<String, dynamic>;
     final s = jsonDecode(safetyJson) as Map<String, dynamic>;
     final quiz = c['quiz'] as Map<String, dynamic>;
+    final guide = c['guide'] as Map<String, dynamic>;
+    final hand = guide['hand'] as Map<String, dynamic>;
+    final sakina = c['sakina'] as Map<String, dynamic>;
+    final needs = sakina['needs'] as Map<String, dynamic>;
     return ContentRepository._(
       quran: (q['passages'] as Map<String, dynamic>).map((k, v) => MapEntry(k, QuranPassage.fromJson(v as Map<String, dynamic>))),
       library: (c['library'] as Map<String, dynamic>).map((k, v) => MapEntry(k, LibraryItem.fromJson(v as Map<String, dynamic>))),
@@ -53,6 +69,30 @@ class ContentRepository {
       riskPatterns: (s['riskPatterns'] as List)
           .map((p) => RegExp((p as Map<String, dynamic>)['source'] as String, caseSensitive: !(p['caseInsensitive'] as bool)))
           .toList(),
+      verdictTone: (c['verdictMeta'] as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as Map<String, dynamic>)['tone'] as String)),
+      mythSuggestions: (c['mythSuggestions'] as List).cast<String>(),
+      guideModes: (guide['modes'] as List)
+          .map((m) => (id: GuideMode.values.byName((m as Map<String, dynamic>)['id'] as String), title: m['title'] as String, sub: m['sub'] as String))
+          .toList(),
+      guideSteps: (guide['steps'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(GuideMode.values.byName(k), (v as List).map((x) => GuideStep.fromJson(x as Map<String, dynamic>)).toList()),
+      ),
+      guideNafthItemId: guide['nafthItemId'] as String,
+      intentionTips: (guide['intentionTips'] as List).cast<String>(),
+      handItemId: hand['itemId'] as String,
+      handPhrases: (hand['phrases'] as List).map((p) => (text: (p as Map<String, dynamic>)['text'] as String, repeat: p['repeat'] as int)).toList(),
+      sakinaNeeds: [
+        for (final id in (sakina['needOrder'] as List).cast<String>())
+          SakinaNeed(
+            id: id,
+            label: (needs[id] as Map<String, dynamic>)['label'] as String,
+            items: (needs[id]['items'] as List).cast<String>(),
+            verses: (needs[id]['verses'] as List).cast<String>(),
+          ),
+      ],
+      sakinaRepeat: sakina['repeat'] as int,
+      pacedDhikr: (sakina['pacedDhikr'] as List).map((d) => (text: (d as Map<String, dynamic>)['text'] as String, source: d['source'] as String)).toList(),
+      pulseSeconds: sakina['pulseSeconds'] as int,
     );
   }
 
@@ -73,11 +113,32 @@ class ContentRepository {
   final List<QuizRecommendation> quizRecommendations;
   final List<RegExp> riskPatterns;
 
+  /// danger | warning | neutral | success — لون شارة الحكم.
+  final Map<String, String> verdictTone;
+  final List<String> mythSuggestions;
+  final List<GuideModeInfo> guideModes;
+  final Map<GuideMode, List<GuideStep>> guideSteps;
+  final String guideNafthItemId;
+  final List<String> intentionTips;
+  final String handItemId;
+  final List<GuidePhrase> handPhrases;
+  final List<SakinaNeed> sakinaNeeds;
+  final int sakinaRepeat;
+  final List<PacedDhikr> pacedDhikr;
+  final int pulseSeconds;
+
   LibraryItem item(String id) => library[id] ?? (throw StateError('عنصر غير معروف: $id'));
 
   Program? programById(String? id) {
     for (final p in programs) {
       if (p.id == id) return p;
+    }
+    return null;
+  }
+
+  Myth? mythById(String? id) {
+    for (final m in myths) {
+      if (m.id == id) return m;
     }
     return null;
   }
