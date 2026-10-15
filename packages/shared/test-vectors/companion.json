@@ -1,0 +1,37 @@
+{
+  "$comment": "متجهات تطابق يشغّلها الويب (Vitest) وتطبيق Flutter (flutter_test) معاً — ADR-0023. أي اختلاف بين الطرفين = اختبار فاشل.",
+  "normalize": [
+    ["الطّاقةُ السلبيّة", "الطاقه السلبيه"],
+    ["أإآٱ", "اااا"],
+    ["مستشفى", "مستشفي"],
+    ["رقم ١٣ والـــرقية!", "رقم 13 والرقيه"],
+    ["  مسافات   كثيرة  ", "مسافات كثيره"]
+  ],
+  "risk": {
+    "positive": ["صرت أفكر إني أبي أموت", "فقدتُ الأمل في الحياة", "I want to die", "أفكر في الانتحار", "راح اقتل نفسي"],
+    "negative": ["نمت جيداً والحمد لله", "أشعر بضيق خفيف اليوم", "قرأت آية الكرسي قبل النوم", ""]
+  },
+  "mythSearch": [
+    { "query": "التبخير بملح الهملايا لطرد الطاقة السلبية", "first": "himalayan-salt" },
+    { "query": "الخرزة الزرقاء", "first": "amulets" },
+    { "query": "قانونُ الجَذْب", "first": "law-of-attraction" },
+    { "query": "طلب اسم أمي", "first": "mother-name" },
+    { "query": "حظك اليوم", "first": "horoscopes" },
+    { "query": "كلمة لا علاقة لها إطلاقاً xyz", "first": null }
+  ],
+  "quiz": [
+    { "answers": "all-2", "score": 18, "tier": "وعيٌ راسخ", "programId": "self-ruqyah-21" },
+    { "answers": "all-0", "score": 0, "tier": "بداية جديدة", "programId": "quiet-nights-14" },
+    { "answers": "all-1", "score": 9, "tier": "على الطريق الصحيح", "programId": "foundation-7" },
+    { "answers": { "base": 1, "q-self": 0 }, "score": 8, "tier": "بداية جديدة", "programId": "self-ruqyah-21" },
+    { "answers": { "base": 2, "q-symptoms": 0 }, "score": 16, "tier": "وعيٌ راسخ", "programId": "calm-heart-10" }
+  ],
+  "programDay": [
+    { "startedOn": "2026-10-01", "length": 7, "today": "2026-10-01", "day": 1 },
+    { "startedOn": "2026-10-01", "length": 7, "today": "2026-10-03", "day": 3 },
+    { "startedOn": "2026-10-01", "length": 7, "today": "2026-11-30", "day": 7 },
+    { "startedOn": "2026-10-05", "length": 21, "today": "2026-10-01", "day": 1 },
+    { "startedOn": "2026-12-30", "length": 21, "today": "2027-01-02", "day": 4 },
+    { "startedOn": null, "length": 10, "today": "2026-10-01", "day": 1 }
+  ]
+}

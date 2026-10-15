@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { programById, type ProgramDay } from "../content/programs";
-import { daysBetween, localDay } from "../lib/dates";
+import { currentProgramDay, programById, type ProgramDay } from "../content/programs";
+import { localDay } from "../lib/dates";
 import { readJson, writeJson } from "../lib/safeStorage";
 
 /*
@@ -58,8 +58,7 @@ useCompanion.subscribe((s) => {
 
 /** اليوم الحالي في البرنامج حسب التقويم (يبدأ من 1، ولا يتجاوز طول البرنامج). */
 export function currentDay(startedOn: string | null, length: number, today = localDay()): number {
-  if (!startedOn) return 1;
-  return Math.min(length, Math.max(1, daysBetween(startedOn, today) + 1));
+  return currentProgramDay(startedOn, length, today);
 }
 
 export function dayProgress(programId: string, day: ProgramDay, done: Record<string, true>) {

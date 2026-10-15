@@ -4,7 +4,7 @@
   ليست فتوى في حالة بعينها. أي إضافة تحتاج مراجعة مختص شرعي قبل الإطلاق (docs/adr/0022).
 */
 
-import { matchScore } from "../lib/arabic";
+import { matchScore } from "../../lib/arabic";
 
 export type Verdict = "prohibited" | "baseless" | "detail" | "legit";
 

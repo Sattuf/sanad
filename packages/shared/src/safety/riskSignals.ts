@@ -1,11 +1,12 @@
-import { normalizeArabic } from "./arabic";
+import { normalizeArabic } from "../lib/arabic";
 
 /*
   نظير SafeReferralEvaluator في الخادم للنصوص التي لا تغادر الجهاز (المذكرة المشفّرة محلياً).
   البند 5: أي مؤشر خطر عاجل يوجّه للإحالة فوراً بصرف النظر عن مصدر النص. الانحياز مقصود نحو الحساسية.
   أي تعديل هنا يجب أن يُعكس في الخادم والعكس.
 */
-const INDICATORS: RegExp[] = [
+/** تُصدَّر لتطبيق Flutter كما هي (scripts/export-dart.mjs) — صيغة RegExp متوافقة بين JS وDart. */
+export const RISK_INDICATORS: RegExp[] = [
   /انتحار|انتحر|بنتحر|سانتحر|راح\s*انتحر/,
   /(اقتل|اؤذي|اذي|اجرح|اضر|اعذب)\s*(نفسي|روحي|حالي)/,
   /(ابي|اريد|بدي|ودي|ابغي|ابغى|نفسي)\s*(ا)?موت/,
@@ -24,5 +25,5 @@ const INDICATORS: RegExp[] = [
 export function requiresEmergencyReferral(text: string | undefined | null): boolean {
   if (!text?.trim()) return false;
   const n = normalizeArabic(text);
-  return INDICATORS.some((r) => r.test(n));
+  return RISK_INDICATORS.some((r) => r.test(n));
 }

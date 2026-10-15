@@ -5,7 +5,7 @@ import { Banner, Button, Card, Field, Input, PageHeader, Textarea } from "../../
 import { addDays, arNum, localDay, shortDayLabel } from "../../lib/dates";
 import { downloadText } from "../../lib/ics";
 import { cx } from "../../lib/cx";
-import { requiresEmergencyReferral } from "../../lib/riskSignals";
+import { requiresEmergencyReferral } from "@sanad/shared/safety/riskSignals";
 import { vault, WrongPinError } from "../../lib/vault";
 import { useCompanion } from "../../stores/companion";
 import { useEmergency } from "../../stores/emergency";

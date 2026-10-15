@@ -1,0 +1,37 @@
+import { describe, expect, it } from "vitest";
+import { normalizeArabic } from "../../lib/arabic";
+import { requiresEmergencyReferral } from "../../safety/riskSignals";
+import { searchMyths } from "../companion/myths";
+import { currentProgramDay } from "../companion/programs";
+import { QUIZ, evaluateQuiz } from "../companion/quiz";
+import vectors from "../../../test-vectors/companion.json";
+
+// المتجهات نفسها يشغّلها تطبيق Flutter (mobile_flutter/test/vectors_test.dart) — ADR-0023
+const v = vectors;
+
+/** "all-N" أو { base: N, <id>: score } ← إجابات لكل الأسئلة. */
+function expandAnswers(spec: string | Record<string, number>): Record<string, number> {
+  if (typeof spec === "string") return Object.fromEntries(QUIZ.map((q) => [q.id, Number(spec.split("-")[1])]));
+  const { base, ...rest } = spec;
+  return { ...Object.fromEntries(QUIZ.map((q) => [q.id, base])), ...rest };
+}
+
+describe("متجهات التطابق مع Flutter", () => {
+  it.each(v.normalize as [string, string][])("توحيد %s", (input, out) => expect(normalizeArabic(input)).toBe(out));
+  it.each(v.risk.positive as string[])("خطر: %s", (t) => expect(requiresEmergencyReferral(t)).toBe(true));
+  it.each(v.risk.negative as string[])("آمن: %s", (t) => expect(requiresEmergencyReferral(t)).toBe(false));
+  it.each(v.mythSearch as { query: string; first: string | null }[])("الميزان: $query", ({ query, first }) =>
+    expect(searchMyths(query)[0]?.id ?? null).toBe(first),
+  );
+  it.each(v.quiz as unknown as { answers: string | Record<string, number>; score: number; tier: string; programId: string }[])(
+    "الاختبار $answers",
+    ({ answers, score, tier, programId }) => {
+      const r = evaluateQuiz(expandAnswers(answers));
+      expect([r.score, r.tier.title, r.programId]).toEqual([score, tier, programId]);
+    },
+  );
+  it.each(v.programDay as { startedOn: string | null; length: number; today: string; day: number }[])(
+    "يوم البرنامج $startedOn ← $today",
+    ({ startedOn, length, today, day }) => expect(currentProgramDay(startedOn, length, today)).toBe(day),
+  );
+});

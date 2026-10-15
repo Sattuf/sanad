@@ -98,31 +98,32 @@ export interface QuizResult {
   reason: string;
 }
 
+/** الشرائح بترتيب تنازلي — أول شريحة يبلغ المستخدم حدّها الأدنى (نسبة من الدرجة الكاملة). */
+export const QUIZ_TIERS: Array<{ minRatio: number; title: string; message: string }> = [
+  { minRatio: 0.8, title: "وعيٌ راسخ", message: "عاداتك متّزنة وبعيدة عن فخاخ الوهم. ثبّتها بوِرد يومي، وشارك ما تعرفه مع من تحب." },
+  { minRatio: 0.5, title: "على الطريق الصحيح", message: "عندك أساس جيد، وبعض العادات تحتاج ضبطاً بسيطاً. أسبوع واحد يكفي لتبدأ الفرق." },
+  { minRatio: 0, title: "بداية جديدة", message: "كثيرون يقعون في هذه الفخاخ دون قصد — المهم أنك عرفت الآن. ابدأ بخطوات صغيرة وثابتة." },
+];
+
+/**
+ * قواعد الاقتراح بالترتيب: أول قاعدة تنطبق تفوز.
+ * zeroArea = مجموع هذا المحور صفر، minRatio = النسبة الكلية لا تقل عن الحد، والقاعدة الأخيرة بلا شرط هي الافتراضية.
+ */
+export const QUIZ_RECOMMENDATIONS: Array<{ zeroArea?: QuizArea; minRatio?: number; programId: string; reason: string }> = [
+  { zeroArea: "sleep", programId: "quiet-nights-14", reason: "لأن روتين ما قبل النوم هو أسرع ما يمكن تحسينه." },
+  { zeroArea: "selfReliance", programId: "self-ruqyah-21", reason: "لتتعلّم أن ترقي نفسك وأهلك بلا وسيط." },
+  { zeroArea: "balance", programId: "calm-heart-10", reason: "لتجمع بين الأذكار والأخذ بالأسباب في الأيام المثقلة." },
+  { minRatio: 0.8, programId: "self-ruqyah-21", reason: "خطوتك التالية: أن تصبح مرجع أهلك في الرقية الذاتية." },
+  { programId: "foundation-7", reason: "لتثبيت وِرد التحصين اليومي أولاً." },
+];
+
 export function evaluateQuiz(answers: Record<string, number>): QuizResult {
   const score = QUIZ.reduce((sum, q) => sum + (answers[q.id] ?? 0), 0);
   const ratio = score / MAX_SCORE;
-  const tier =
-    ratio >= 0.8
-      ? { title: "وعيٌ راسخ", message: "عاداتك متّزنة وبعيدة عن فخاخ الوهم. ثبّتها بوِرد يومي، وشارك ما تعرفه مع من تحب." }
-      : ratio >= 0.5
-        ? { title: "على الطريق الصحيح", message: "عندك أساس جيد، وبعض العادات تحتاج ضبطاً بسيطاً. أسبوع واحد يكفي لتبدأ الفرق." }
-        : { title: "بداية جديدة", message: "كثيرون يقعون في هذه الفخاخ دون قصد — المهم أنك عرفت الآن. ابدأ بخطوات صغيرة وثابتة." };
-
+  const { title, message } = QUIZ_TIERS.find((t) => ratio >= t.minRatio)!;
   const area = (a: QuizArea) => QUIZ.filter((q) => q.area === a).reduce((s, q) => s + (answers[q.id] ?? 0), 0);
-  let programId = "foundation-7";
-  let reason = "لتثبيت وِرد التحصين اليومي أولاً.";
-  if (area("sleep") === 0) {
-    programId = "quiet-nights-14";
-    reason = "لأن روتين ما قبل النوم هو أسرع ما يمكن تحسينه.";
-  } else if (area("selfReliance") === 0) {
-    programId = "self-ruqyah-21";
-    reason = "لتتعلّم أن ترقي نفسك وأهلك بلا وسيط.";
-  } else if (area("balance") === 0) {
-    programId = "calm-heart-10";
-    reason = "لتجمع بين الأذكار والأخذ بالأسباب في الأيام المثقلة.";
-  } else if (ratio >= 0.8) {
-    programId = "self-ruqyah-21";
-    reason = "خطوتك التالية: أن تصبح مرجع أهلك في الرقية الذاتية.";
-  }
-  return { score, tier, programId, reason };
+  const rec = QUIZ_RECOMMENDATIONS.find(
+    (r) => (r.zeroArea === undefined || area(r.zeroArea) === 0) && (r.minRatio === undefined || ratio >= r.minRatio),
+  )!;
+  return { score, tier: { title, message }, programId: rec.programId, reason: rec.reason };
 }

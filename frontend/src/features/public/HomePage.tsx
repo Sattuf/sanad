@@ -6,7 +6,7 @@ import type { Transparency } from "@sanad/shared/api/types";
 import { ProgressRing } from "../../components/companion";
 import { Card } from "../../components/ui";
 import { expandRef } from "../../content/library";
-import { MYTHS, VERDICT_META } from "../../content/myths";
+import { MYTHS, VERDICT_META } from "@sanad/shared/content/companion/myths";
 import { programById } from "../../content/programs";
 import { arNum } from "../../lib/dates";
 import { currentDay, useCompanion } from "../../stores/companion";

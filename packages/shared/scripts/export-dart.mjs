@@ -1,0 +1,69 @@
+// يصدّر محتوى الحزمة المشتركة وأنماط السلامة إلى JSON يقرؤه تطبيق Flutter (ADR-0023).
+// المصدر الوحيد هو TypeScript هنا — لا تُعدَّل ملفات JSON يدوياً.
+//   node scripts/export-dart.mjs           ← يكتب mobile_flutter/assets/content/*.json
+//   node scripts/export-dart.mjs --check   ← يفشل إن لم تطابق الملفات المصدر (CI)
+// يقرأ ملفات TS مباشرة بإزالة الأنواع المدمجة في Node (22.18+ / 23.6+)، بلا أي اعتماد.
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { registerHooks } from "node:module";
+import { fileURLToPath } from "node:url";
+
+// استيرادات الحزمة بلا امتداد (أسلوب Vite/Metro) ← نجرّب .ts
+registerHooks({
+  resolve(specifier, context, next) {
+    try {
+      return next(specifier, context);
+    } catch (err) {
+      if (specifier.startsWith(".") && !/\.[a-z]+$/i.test(specifier)) return next(`${specifier}.ts`, context);
+      throw err;
+    }
+  },
+});
+
+const src = (p) => new URL(`../src/${p}`, import.meta.url).href;
+const { quran } = await import(src("content/quran.ts"));
+const { LIBRARY } = await import(src("content/companion/library.ts"));
+const { PROGRAMS, SLOT_LABEL } = await import(src("content/companion/programs.ts"));
+const { MYTHS, VERDICT_META } = await import(src("content/companion/myths.ts"));
+const { QUIZ, QUIZ_TIERS, QUIZ_RECOMMENDATIONS } = await import(src("content/companion/quiz.ts"));
+const { RISK_INDICATORS } = await import(src("safety/riskSignals.ts"));
+
+const GENERATED = "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)";
+const files = {
+  "quran.json": { $generated: GENERATED, passages: quran },
+  "companion.json": {
+    $generated: GENERATED,
+    library: LIBRARY,
+    programs: PROGRAMS,
+    slotLabel: SLOT_LABEL,
+    myths: MYTHS,
+    verdictMeta: VERDICT_META,
+    quiz: { questions: QUIZ, tiers: QUIZ_TIERS, recommendations: QUIZ_RECOMMENDATIONS },
+  },
+  "safety.json": {
+    $generated: GENERATED,
+    // صيغة RegExp متوافقة بين JS وDart؛ النص يُوحَّد قبل الفحص بنفس normalizeArabic
+    riskPatterns: RISK_INDICATORS.map((r) => ({ source: r.source, caseInsensitive: r.flags.includes("i") })),
+  },
+};
+
+const outDir = fileURLToPath(new URL("../../../mobile_flutter/assets/content/", import.meta.url));
+const check = process.argv.includes("--check");
+const stale = [];
+if (!check) mkdirSync(outDir, { recursive: true });
+for (const [name, data] of Object.entries(files)) {
+  const text = `${JSON.stringify(data, null, 1)}\n`;
+  if (check) {
+    let current = "";
+    try {
+      current = readFileSync(outDir + name, "utf8").replace(/\r\n/g, "\n");
+    } catch {
+      /* غير موجود */
+    }
+    if (current !== text) stale.push(name);
+  } else writeFileSync(outDir + name, text);
+}
+if (stale.length) {
+  console.error(`ملفات Flutter لا تطابق packages/shared: ${stale.join("، ")}\nشغّل: node packages/shared/scripts/export-dart.mjs`);
+  process.exit(1);
+}
+console.log(check ? "محتوى Flutter مطابق للمصدر ✓" : `كُتبت ${Object.keys(files).length} ملفات في mobile_flutter/assets/content`);

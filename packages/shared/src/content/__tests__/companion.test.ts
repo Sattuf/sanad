@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { LIBRARY, expandRef } from "../library";
-import { MYTHS, searchMyths } from "../myths";
-import { PROGRAMS } from "../programs";
-import { QUIZ, evaluateQuiz } from "../quiz";
+import { LIBRARY, expandRef } from "../companion/library";
+import { MYTHS, searchMyths } from "../companion/myths";
+import { PROGRAMS } from "../companion/programs";
+import { QUIZ, evaluateQuiz } from "../companion/quiz";
 
 describe("سلامة المحتوى", () => {
   it("كل مهمة في كل برنامج تشير لعنصر موجود، وأيام البرنامج كاملة ومرقّمة", () => {
