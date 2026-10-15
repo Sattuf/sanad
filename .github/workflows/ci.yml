@@ -70,6 +70,28 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
+  # تطبيق Flutter (ADR-0023): المحتوى والألوان مولَّدة من المصدر، ومتجهات التطابق نفسها التي يشغّلها الويب
+  flutter:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: mobile_flutter }
+    steps:
+      - uses: actions/checkout@v4
+      # Node 24: المولّدات تقرأ TypeScript بإزالة الأنواع المدمجة وبخطّاف الحل المتزامن
+      - uses: actions/setup-node@v4
+        with: { node-version: "24" }
+      - name: المحتوى والسلامة مطابقان لـ packages/shared
+        run: node ../packages/shared/scripts/export-dart.mjs --check
+      - name: الألوان مطابقة لـ frontend/src/styles/index.css
+        run: node ../frontend/scripts/export-tokens.mjs --check
+      - uses: subosito/flutter-action@v2
+        with: { flutter-version: "3.44.3", channel: stable, cache: true }
+      - run: flutter pub get
+      - run: flutter analyze
+      # لقطات المراجعة تختلف بين الأنظمة فلا تُقارن هنا
+      - run: flutter test --exclude-tags screenshot
+
   mobile:
     needs: [secret-scan]
     runs-on: ubuntu-latest

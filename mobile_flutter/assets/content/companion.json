@@ -1,0 +1,2987 @@
+{
+ "$generated": "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)",
+ "library": {
+  "fatiha": {
+   "id": "fatiha",
+   "kind": "verses",
+   "title": "سورة الفاتحة",
+   "refs": [
+    "fatiha"
+   ],
+   "minutes": 1,
+   "note": "قال النبي ﷺ لمن رقى بها: «وما يدريك أنها رقية».",
+   "source": "صحيح البخاري (5736)"
+  },
+  "kursi": {
+   "id": "kursi",
+   "kind": "verses",
+   "title": "آية الكرسي",
+   "refs": [
+    "kursi"
+   ],
+   "minutes": 1,
+   "note": "من قرأها إذا أوى إلى فراشه «لم يزل عليه من الله حافظ».",
+   "source": "صحيح البخاري (2311)"
+  },
+  "baqarah-end": {
+   "id": "baqarah-end",
+   "kind": "verses",
+   "title": "خاتمة سورة البقرة",
+   "refs": [
+    "baqarah-285-286"
+   ],
+   "minutes": 2,
+   "note": "«من قرأ بالآيتين من آخر سورة البقرة في ليلة كفتاه».",
+   "source": "صحيح البخاري (5009) وصحيح مسلم (808)"
+  },
+  "muawwidhat": {
+   "id": "muawwidhat",
+   "kind": "verses",
+   "title": "المعوّذات",
+   "refs": [
+    "ikhlas",
+    "falaq",
+    "nas"
+   ],
+   "repeat": 3,
+   "minutes": 2,
+   "note": "«قل هو الله أحد والمعوّذتين حين تمسي وحين تصبح ثلاث مرات تكفيك من كل شيء».",
+   "source": "سنن أبي داود (5082) وسنن الترمذي (3575)"
+  },
+  "sakina-verses": {
+   "id": "sakina-verses",
+   "kind": "verses",
+   "title": "آيات السكينة",
+   "refs": [
+    "baqarah-248",
+    "tawbah-26",
+    "tawbah-40",
+    "fath-4",
+    "fath-18",
+    "fath-26"
+   ],
+   "minutes": 3,
+   "note": "ذكر ابن القيم أن شيخه ابن تيمية كان يقرؤها إذا اشتدّت عليه الأمور.",
+   "source": "مدارج السالكين — منزلة السكينة"
+  },
+  "tumaninah": {
+   "id": "tumaninah",
+   "kind": "verses",
+   "title": "آيات الطمأنينة",
+   "refs": [
+    "raad-28",
+    "yunus-57",
+    "isra-82"
+   ],
+   "minutes": 1
+  },
+  "sharh": {
+   "id": "sharh",
+   "kind": "verses",
+   "title": "سورة الشرح",
+   "refs": [
+    "sharh"
+   ],
+   "minutes": 1
+  },
+  "qalam-end": {
+   "id": "qalam-end",
+   "kind": "verses",
+   "title": "خاتمة سورة القلم",
+   "refs": [
+    "qalam-51-52"
+   ],
+   "minutes": 1,
+   "note": "مما يقرؤه الرقاة في الرقية من العين."
+  },
+  "bismillah-3": {
+   "id": "bismillah-3",
+   "kind": "dhikr",
+   "title": "ذكر الحفظ",
+   "text": "بسم الله الذي لا يضرّ مع اسمه شيءٌ في الأرض ولا في السماء، وهو السميع العليم",
+   "repeat": 3,
+   "note": "صباحاً ومساءً.",
+   "source": "سنن أبي داود (5088) وسنن الترمذي (3388)"
+  },
+  "kalimat-tammat": {
+   "id": "kalimat-tammat",
+   "kind": "dhikr",
+   "title": "الاستعاذة بكلمات الله",
+   "text": "أعوذ بكلمات الله التامّات من شرّ ما خلق",
+   "repeat": 3,
+   "note": "في المساء، وعند نزول أي مكان.",
+   "source": "صحيح مسلم (2708، 2709)"
+  },
+  "dua-karb": {
+   "id": "dua-karb",
+   "kind": "dhikr",
+   "title": "دعاء الكرب",
+   "text": "لا إله إلا الله العظيم الحليم، لا إله إلا الله ربّ العرش العظيم، لا إله إلا الله ربّ السماوات وربّ الأرض وربّ العرش الكريم",
+   "source": "صحيح البخاري (6346) وصحيح مسلم (2730)"
+  },
+  "dhunnun": {
+   "id": "dhunnun",
+   "kind": "dhikr",
+   "title": "دعوة ذي النون",
+   "text": "لا إله إلا أنت سبحانك إني كنتُ من الظالمين",
+   "note": "«لم يدعُ بها رجل مسلم في شيء قط إلا استجاب الله له».",
+   "source": "سنن الترمذي (3505)"
+  },
+  "hamm-hazan": {
+   "id": "hamm-hazan",
+   "kind": "dhikr",
+   "title": "الاستعاذة من الهمّ والحزن",
+   "text": "اللهم إني أعوذ بك من الهمّ والحزن، والعجز والكسل، والبخل والجبن، وضَلَع الدَّين وغلبة الرجال",
+   "source": "صحيح البخاري (6369)"
+  },
+  "ibn-masud": {
+   "id": "ibn-masud",
+   "kind": "dhikr",
+   "title": "دعاء ذهاب الهمّ",
+   "text": "اللهم إني عبدك، ابن عبدك، ابن أمتك، ناصيتي بيدك، ماضٍ فيّ حكمك، عدلٌ فيّ قضاؤك، أسألك بكل اسمٍ هو لك سمّيت به نفسك، أو أنزلته في كتابك، أو علّمته أحداً من خلقك، أو استأثرت به في علم الغيب عندك، أن تجعل القرآن ربيع قلبي، ونور صدري، وجلاء حزني، وذهاب همّي",
+   "source": "مسند أحمد (3712)، وصحّحه الألباني"
+  },
+  "ya-hayy": {
+   "id": "ya-hayy",
+   "kind": "dhikr",
+   "title": "الاستغاثة برحمة الله",
+   "text": "يا حيّ يا قيّوم برحمتك أستغيث، أصلح لي شأني كلّه، ولا تكلني إلى نفسي طرفة عين",
+   "source": "رواه النسائي في عمل اليوم والليلة والحاكم، وحسّنه الألباني"
+  },
+  "sayyid-istighfar": {
+   "id": "sayyid-istighfar",
+   "kind": "dhikr",
+   "title": "سيّد الاستغفار",
+   "text": "اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شرّ ما صنعت، أبوء لك بنعمتك عليّ، وأبوء بذنبي فاغفر لي، فإنه لا يغفر الذنوب إلا أنت",
+   "source": "صحيح البخاري (6306)"
+  },
+  "istighfar-100": {
+   "id": "istighfar-100",
+   "kind": "dhikr",
+   "title": "الاستغفار",
+   "text": "أستغفر الله",
+   "repeat": 100,
+   "note": "قال ﷺ: «وإني لأستغفر الله في اليوم مائة مرة».",
+   "source": "صحيح مسلم (2702)"
+  },
+  "hand-on-pain": {
+   "id": "hand-on-pain",
+   "kind": "dhikr",
+   "title": "الرقية بوضع اليد",
+   "text": "ضع يدك على موضع الألم وقل: «بسم الله» ثلاثاً، ثم قل سبع مرات: «أعوذ بالله وقدرته من شرّ ما أجد وأحاذر»",
+   "source": "صحيح مسلم (2202)"
+  },
+  "ruqyah-nabawiyyah": {
+   "id": "ruqyah-nabawiyyah",
+   "kind": "dhikr",
+   "title": "رقية النبي ﷺ",
+   "text": "اللهم ربّ الناس، أذهب البأس، اشفِ أنت الشافي، لا شفاء إلا شفاؤك، شفاءً لا يغادر سقماً",
+   "source": "صحيح البخاري (5743) وصحيح مسلم (2191)"
+  },
+  "ruqyah-jibril": {
+   "id": "ruqyah-jibril",
+   "kind": "dhikr",
+   "title": "رقية جبريل عليه السلام",
+   "text": "بسم الله أرقيك، من كل شيء يؤذيك، من شرّ كل نفسٍ أو عين حاسد، الله يشفيك، بسم الله أرقيك",
+   "note": "تُقال لمن ترقيه من أهلك.",
+   "source": "صحيح مسلم (2186)"
+  },
+  "children": {
+   "id": "children",
+   "kind": "dhikr",
+   "title": "تعويذ الأطفال",
+   "text": "أُعيذكما بكلمات الله التامّة، من كل شيطانٍ وهامّة، ومن كل عينٍ لامّة",
+   "note": "كان النبي ﷺ يعوّذ بها الحسن والحسين — وللواحد: «أُعيذك».",
+   "source": "صحيح البخاري (3371)"
+  },
+  "tabreek": {
+   "id": "tabreek",
+   "kind": "dhikr",
+   "title": "التبريك عند الإعجاب",
+   "text": "ما شاء الله، اللهم بارك فيه",
+   "note": "قال ﷺ لمن أعجبه شيء من أخيه: «هلّا برّكت». عادة لطيفة تحفظ بها نفسك وغيرك.",
+   "source": "سنن ابن ماجه (3509)، وموطأ مالك"
+  },
+  "sleep-nafth": {
+   "id": "sleep-nafth",
+   "kind": "dhikr",
+   "title": "النفث قبل النوم",
+   "text": "اجمع كفّيك، واقرأ فيهما الإخلاص والمعوّذتين، ثم انفث فيهما وامسح بهما ما استطعت من جسدك، مبتدئاً برأسك ووجهك — ثلاث مرات",
+   "source": "صحيح البخاري (5017)"
+  },
+  "bismika": {
+   "id": "bismika",
+   "kind": "dhikr",
+   "title": "ذكر النوم",
+   "text": "باسمك اللهم أموت وأحيا",
+   "source": "صحيح البخاري (6324)"
+  },
+  "faza": {
+   "id": "faza",
+   "kind": "dhikr",
+   "title": "عند الفزع من النوم",
+   "text": "أعوذ بكلمات الله التامّة من غضبه وعقابه وشرّ عباده، ومن همزات الشياطين وأن يحضرون",
+   "source": "سنن أبي داود (3893) وسنن الترمذي (3528)"
+  },
+  "bad-dream": {
+   "id": "bad-dream",
+   "kind": "dhikr",
+   "title": "إذا رأيت ما تكره في المنام",
+   "text": "انفث عن يسارك ثلاثاً، واستعذ بالله من الشيطان ثلاثاً، وتحوّل عن جنبك الذي كنت عليه، ولا تحدّث بها أحداً",
+   "source": "صحيح مسلم (2261، 2262)"
+  },
+  "slow-dhikr": {
+   "id": "slow-dhikr",
+   "kind": "practice",
+   "title": "ذكر بتمهّل ٣ دقائق",
+   "minutes": 3,
+   "text": "اجلس بهدوء، وردّد «أستغفر الله» أو «لا إله إلا الله» بتمهّل وحضور قلب. تجد دائرة تضبط لك الإيقاع في «سكينة»."
+  },
+  "screens-off": {
+   "id": "screens-off",
+   "kind": "practice",
+   "title": "إطفاء الشاشات قبل النوم",
+   "text": "أبعد الهاتف قبل النوم بنصف ساعة، واجعل آخر ما تسمعه أذكار النوم."
+  },
+  "sun-walk": {
+   "id": "sun-walk",
+   "kind": "practice",
+   "title": "مشي ١٥ دقيقة في الضوء",
+   "minutes": 15,
+   "text": "حركة خفيفة في ضوء النهار — من أبسط ما يُعين على النوم والمزاج."
+  },
+  "gratitude": {
+   "id": "gratitude",
+   "kind": "practice",
+   "title": "ثلاث نِعَم",
+   "text": "اكتب ثلاث نعم لاحظتها اليوم، واحمد الله عليها."
+  },
+  "intention": {
+   "id": "intention",
+   "kind": "practice",
+   "title": "النية واليقين",
+   "text": "الرقية والأذكار عبادة وتوكّل على الله، لا طقس سحري. ابدأ بنية التحصين والقرب من الله، وأحسن الظن به."
+  },
+  "medical-check": {
+   "id": "medical-check",
+   "kind": "practice",
+   "title": "خذ بالأسباب الطبية",
+   "text": "إن استمرّ الأرق أو الإرهاق أو القلق أكثر من أسبوعين، فاستشر طبيباً — أعراض كثيرة لها أسباب عضوية أو نفسية قابلة للفحص. «تداووا عباد الله».",
+   "source": "سنن أبي داود (3855) وسنن الترمذي (2038)"
+  },
+  "reflect": {
+   "id": "reflect",
+   "kind": "practice",
+   "title": "وقفة مع نفسك",
+   "text": "سجّل حالتك في «مذكّرتي» — دقيقة واحدة تكفي لترى كيف تتغيّر أيامك."
+  },
+  "self-ruqyah": {
+   "id": "self-ruqyah",
+   "kind": "practice",
+   "title": "جلسة رقية ذاتية",
+   "minutes": 10,
+   "text": "اتبع المرشد خطوة بخطوة: نية، ثم آيات وأدعية مأثورة بتلاوة مسموعة."
+  }
+ },
+ "programs": [
+  {
+   "id": "foundation-7",
+   "title": "أساس التحصين",
+   "tagline": "٧ أيام لبناء وِردٍ يحميك كل يوم",
+   "description": "أذكار الصباح والمساء والنوم الثابتة في السنّة، مع عادة جديدة صغيرة كل يوم. البداية المثالية لكل أحد.",
+   "days": 7,
+   "minutesPerDay": 10,
+   "tint": "teal",
+   "forWhom": "للجميع — وقاية قبل أي شيء",
+   "plan": [
+    {
+     "day": 1,
+     "title": "النية قبل العمل",
+     "tasks": [
+      {
+       "id": "anytime-intention",
+       "itemId": "intention",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "title": "عادة التبريك",
+     "tasks": [
+      {
+       "id": "anytime-tabreek",
+       "itemId": "tabreek",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "title": "سيّد الاستغفار",
+     "tasks": [
+      {
+       "id": "morning-sayyid-istighfar",
+       "itemId": "sayyid-istighfar",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "title": "احفظ دعاء الكرب",
+     "tasks": [
+      {
+       "id": "anytime-dua-karb",
+       "itemId": "dua-karb",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 5,
+     "title": "الفاتحة رقية",
+     "tasks": [
+      {
+       "id": "anytime-fatiha",
+       "itemId": "fatiha",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 6,
+     "title": "حصّن أهلك",
+     "tasks": [
+      {
+       "id": "evening-children",
+       "itemId": "children",
+       "slot": "evening"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 7,
+     "title": "وقفة مع نفسك",
+     "tasks": [
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "self-ruqyah-21",
+   "title": "الرقية الذاتية المأثورة",
+   "tagline": "٢١ يوماً لتتعلّم كيف ترقي نفسك وأهلك",
+   "description": "ثلاثة أسابيع متدرّجة: أسبوع للأساس، وأسبوع لجلسة رقية ذاتية يومية بالمرشد التفاعلي، وأسبوع للثبات ورقية الأهل. بلا وسيط، وبما ورد فقط.",
+   "days": 21,
+   "minutesPerDay": 20,
+   "tint": "sky",
+   "forWhom": "لمن يريد الاستغناء: يرقي نفسه وأهله بنفسه",
+   "plan": [
+    {
+     "day": 1,
+     "title": "الرقية عبادة لا طقس",
+     "tasks": [
+      {
+       "id": "anytime-intention",
+       "itemId": "intention",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "title": "الفاتحة رقية",
+     "tasks": [
+      {
+       "id": "anytime-fatiha",
+       "itemId": "fatiha",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "title": "آية الكرسي بتدبّر",
+     "tasks": [
+      {
+       "id": "morning-kursi",
+       "itemId": "kursi",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "title": "الرقية بوضع اليد",
+     "tasks": [
+      {
+       "id": "anytime-hand-on-pain",
+       "itemId": "hand-on-pain",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 5,
+     "title": "رقية النبي ﷺ",
+     "tasks": [
+      {
+       "id": "anytime-ruqyah-nabawiyyah",
+       "itemId": "ruqyah-nabawiyyah",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 6,
+     "title": "التبريك يحفظك ويحفظ غيرك",
+     "tasks": [
+      {
+       "id": "anytime-tabreek",
+       "itemId": "tabreek",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 7,
+     "title": "وقفة الأسبوع الأول",
+     "tasks": [
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 8,
+     "title": "جلستك الأولى",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 9,
+     "title": "جلسة + خاتمة القلم",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-qalam-end",
+       "itemId": "qalam-end",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 10,
+     "title": "جلسة + آيات السكينة",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-sakina-verses",
+       "itemId": "sakina-verses",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 11,
+     "title": "جلسة + خذ بالأسباب",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-medical-check",
+       "itemId": "medical-check",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 12,
+     "title": "جلسة + الاستغفار",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-istighfar-100",
+       "itemId": "istighfar-100",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 13,
+     "title": "جلسة + دعوة ذي النون",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-dhunnun",
+       "itemId": "dhunnun",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 14,
+     "title": "وقفة الأسبوع الثاني",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 15,
+     "title": "ارقِ أحد أهلك",
+     "tasks": [
+      {
+       "id": "anytime-ruqyah-jibril",
+       "itemId": "ruqyah-jibril",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 16,
+     "title": "حصّن أطفالك",
+     "tasks": [
+      {
+       "id": "evening-children",
+       "itemId": "children",
+       "slot": "evening"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 17,
+     "title": "جلسة رقية ذاتية",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 18,
+     "title": "دعاء ذهاب الهمّ",
+     "tasks": [
+      {
+       "id": "anytime-ibn-masud",
+       "itemId": "ibn-masud",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 19,
+     "title": "جلسة رقية ذاتية",
+     "tasks": [
+      {
+       "id": "anytime-self-ruqyah",
+       "itemId": "self-ruqyah",
+       "slot": "anytime",
+       "to": "/self-ruqyah"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 20,
+     "title": "سورة الشرح",
+     "tasks": [
+      {
+       "id": "anytime-sharh",
+       "itemId": "sharh",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 21,
+     "title": "وِردك صار عادة",
+     "tasks": [
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-kalimat-tammat",
+       "itemId": "kalimat-tammat",
+       "slot": "evening"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "calm-heart-10",
+   "title": "قلب مطمئن",
+   "tagline": "١٠ أيام مع أدعية الهمّ والكرب وعادات تهدّئ الجسد",
+   "description": "للأيام المثقلة بالقلق: أدعية نبوية للهمّ والحزن، وذكر بتمهّل ومشي، وتذكير لطيف بالأخذ بالأسباب.",
+   "days": 10,
+   "minutesPerDay": 15,
+   "tint": "sage",
+   "forWhom": "لمن يمرّ بضيق أو قلق أو ضغط",
+   "plan": [
+    {
+     "day": 1,
+     "title": "ألا بذكر الله تطمئن القلوب",
+     "tasks": [
+      {
+       "id": "anytime-tumaninah",
+       "itemId": "tumaninah",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "title": "دعاء الكرب",
+     "tasks": [
+      {
+       "id": "anytime-dua-karb",
+       "itemId": "dua-karb",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "title": "دعاء ذهاب الهمّ",
+     "tasks": [
+      {
+       "id": "anytime-ibn-masud",
+       "itemId": "ibn-masud",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "title": "آيات السكينة",
+     "tasks": [
+      {
+       "id": "anytime-sakina-verses",
+       "itemId": "sakina-verses",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 5,
+     "title": "حركة في الضوء",
+     "tasks": [
+      {
+       "id": "anytime-sun-walk",
+       "itemId": "sun-walk",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 6,
+     "title": "دعوة ذي النون",
+     "tasks": [
+      {
+       "id": "anytime-dhunnun",
+       "itemId": "dhunnun",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 7,
+     "title": "ثلاث نِعَم",
+     "tasks": [
+      {
+       "id": "night-gratitude",
+       "itemId": "gratitude",
+       "slot": "night"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 8,
+     "title": "يا حيّ يا قيّوم",
+     "tasks": [
+      {
+       "id": "anytime-ya-hayy",
+       "itemId": "ya-hayy",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 9,
+     "title": "خذ بالأسباب",
+     "tasks": [
+      {
+       "id": "anytime-medical-check",
+       "itemId": "medical-check",
+       "slot": "anytime"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    },
+    {
+     "day": 10,
+     "title": "سورة الشرح ووقفة",
+     "tasks": [
+      {
+       "id": "anytime-sharh",
+       "itemId": "sharh",
+       "slot": "anytime"
+      },
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "morning-bismillah-3",
+       "itemId": "bismillah-3",
+       "slot": "morning"
+      },
+      {
+       "id": "morning-hamm-hazan",
+       "itemId": "hamm-hazan",
+       "slot": "morning"
+      },
+      {
+       "id": "evening-muawwidhat",
+       "itemId": "muawwidhat",
+       "slot": "evening"
+      },
+      {
+       "id": "anytime-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "anytime"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "quiet-nights-14",
+   "title": "ليالٍ هادئة",
+   "tagline": "١٤ ليلة لنومٍ مطمئن وروتين ثابت",
+   "description": "أذكار النوم كاملة، وما ورد عند الفزع والرؤيا المكروهة، مع روتين بسيط قبل النوم بلا شاشات.",
+   "days": 14,
+   "minutesPerDay": 10,
+   "tint": "sand",
+   "forWhom": "لمن يعاني الأرق أو الفزع الليلي",
+   "plan": [
+    {
+     "day": 1,
+     "title": "روتين النوم",
+     "tasks": [
+      {
+       "id": "night-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "title": "عند الفزع",
+     "tasks": [
+      {
+       "id": "night-faza",
+       "itemId": "faza",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "title": "الرؤيا المكروهة",
+     "tasks": [
+      {
+       "id": "night-bad-dream",
+       "itemId": "bad-dream",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "title": "خاتمة البقرة",
+     "tasks": [
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 5,
+     "title": "حركة في الضوء",
+     "tasks": [
+      {
+       "id": "anytime-sun-walk",
+       "itemId": "sun-walk",
+       "slot": "anytime"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 6,
+     "title": "سيّد الاستغفار",
+     "tasks": [
+      {
+       "id": "evening-sayyid-istighfar",
+       "itemId": "sayyid-istighfar",
+       "slot": "evening"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 7,
+     "title": "وقفة الأسبوع",
+     "tasks": [
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 8,
+     "title": "روتين النوم",
+     "tasks": [
+      {
+       "id": "night-slow-dhikr",
+       "itemId": "slow-dhikr",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 9,
+     "title": "عند الفزع",
+     "tasks": [
+      {
+       "id": "night-faza",
+       "itemId": "faza",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 10,
+     "title": "الرؤيا المكروهة",
+     "tasks": [
+      {
+       "id": "night-bad-dream",
+       "itemId": "bad-dream",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 11,
+     "title": "خاتمة البقرة",
+     "tasks": [
+      {
+       "id": "night-baqarah-end",
+       "itemId": "baqarah-end",
+       "slot": "night"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 12,
+     "title": "حركة في الضوء",
+     "tasks": [
+      {
+       "id": "anytime-sun-walk",
+       "itemId": "sun-walk",
+       "slot": "anytime"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 13,
+     "title": "سيّد الاستغفار",
+     "tasks": [
+      {
+       "id": "evening-sayyid-istighfar",
+       "itemId": "sayyid-istighfar",
+       "slot": "evening"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    },
+    {
+     "day": 14,
+     "title": "وقفة الأسبوع",
+     "tasks": [
+      {
+       "id": "anytime-reflect",
+       "itemId": "reflect",
+       "slot": "anytime",
+       "to": "/journal"
+      },
+      {
+       "id": "night-screens-off",
+       "itemId": "screens-off",
+       "slot": "night"
+      },
+      {
+       "id": "night-kursi",
+       "itemId": "kursi",
+       "slot": "night"
+      },
+      {
+       "id": "night-sleep-nafth",
+       "itemId": "sleep-nafth",
+       "slot": "night"
+      },
+      {
+       "id": "night-bismika",
+       "itemId": "bismika",
+       "slot": "night"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "slotLabel": {
+  "morning": "الصباح",
+  "evening": "المساء",
+  "night": "قبل النوم",
+  "anytime": "في أي وقت"
+ },
+ "myths": [
+  {
+   "id": "amulets",
+   "title": "تعليق الخرزة الزرقاء أو الكفّ أو الخيط الأحمر لدفع العين",
+   "keywords": [
+    "خرزه",
+    "خرزة زرقاء",
+    "عين زرقاء",
+    "نظر",
+    "كف",
+    "خمسه",
+    "خميسه",
+    "خيط احمر",
+    "تميمه",
+    "حجاب",
+    "حرز",
+    "تعليق"
+   ],
+   "verdict": "prohibited",
+   "shariah": "تعليق شيء يُعتقد أنه يدفع الضر بذاته من التمائم التي نهى عنها النبي ﷺ، لأنه تعلّق للقلب بغير الله.",
+   "evidence": {
+    "text": "«من علّق تميمة فقد أشرك»",
+    "source": "مسند أحمد (17422)، وصحّحه الألباني"
+   },
+   "science": "لا يوجد أي أثر مُثبت لقطعة زجاج أو خيط على ما يصيب الإنسان. ما يشعر به البعض من «أمان» هو اطمئنان نفسي مؤقت يزيد التعلّق والقلق عند فقدها.",
+   "alternative": "التحصين بالأذكار المأثورة صباحاً ومساءً، والتبريك عند الإعجاب.",
+   "alternativeItemId": "bismillah-3"
+  },
+  {
+   "id": "himalayan-salt",
+   "title": "التبخير بملح الهملايا أو المصابيح الملحية لطرد «الطاقة السلبية»",
+   "keywords": [
+    "ملح",
+    "هملايا",
+    "هيمالايا",
+    "مصباح ملح",
+    "تبخير",
+    "بخور",
+    "طاقه سلبيه",
+    "طرد الطاقه",
+    "تنظيف الطاقه"
+   ],
+   "verdict": "baseless",
+   "shariah": "لا أصل في الشرع لـ«طاقة سلبية» تُطرد بالملح أو البخور. البخور للتطيّب مباح، أما اعتقاد أنه يطرد الشرّ بذاته فلا دليل عليه، ويُخشى أن يكون من التعلّق المنهي عنه.",
+   "science": "الدراسات لا تُظهر أن مصابيح الملح تطلق أيونات بكمية مؤثرة أو تنقّي الهواء. والبخور الكثيف في غرفة مغلقة قد يهيّج الجهاز التنفسي.",
+   "alternative": "قراءة سورة البقرة في البيت، فقد قال ﷺ: «إن الشيطان ينفر من البيت الذي تُقرأ فيه سورة البقرة» (صحيح مسلم 780).",
+   "alternativeItemId": "baqarah-end"
+  },
+  {
+   "id": "law-of-attraction",
+   "title": "قانون الجذب و«اطلب من الكون»",
+   "keywords": [
+    "قانون الجذب",
+    "الجذب",
+    "الكون",
+    "اطلب من الكون",
+    "رساله للكون",
+    "التوكيدات",
+    "تمرين الجذب",
+    "الوفره",
+    "ذبذبات",
+    "تردد"
+   ],
+   "verdict": "prohibited",
+   "shariah": "توجيه الطلب إلى «الكون» واعتقاد أنه يستجيب لذبذبات الأفكار يخالف التوحيد؛ فالذي يجيب ويعطي هو الله وحده. التفاؤل وحسن الظن بالله عبادة، أما «الكون يستجيب لك» فليس منها.",
+   "evidence": {
+    "text": "﴿وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ﴾",
+    "source": "سورة غافر: 60"
+   },
+   "science": "لا يوجد دليل علمي على «قانون جذب». أثر التفكير الإيجابي على الدافعية حقيقي لكنه محدود، والإفراط فيه يلوم الإنسان على مصائبه ويزيد الشعور بالذنب.",
+   "alternative": "الدعاء مع الأخذ بالأسباب والتوكّل، وكتابة النِّعم شكراً لله.",
+   "alternativeItemId": "ya-hayy"
+  },
+  {
+   "id": "chakras-reiki",
+   "title": "تمارين الشاكرات والريكي و«الطاقة الكونية» للعلاج",
+   "keywords": [
+    "شاكرا",
+    "شاكرات",
+    "ريكي",
+    "طاقه كونيه",
+    "تشي",
+    "برانا",
+    "فتح الشاكرات",
+    "العلاج بالطاقه",
+    "مسار الطاقه"
+   ],
+   "verdict": "prohibited",
+   "shariah": "هذه الممارسات قائمة على فلسفات وثنية عن «قوة كونية» تُستمدّ وتُوجَّه، وقد حذّر منها عدد من الهيئات الشرعية لما فيها من اعتقادات تخالف التوحيد.",
+   "science": "المراجعات العلمية لم تجد أثراً للريكي يزيد على أثر الإيحاء (Placebo). الاسترخاء الذي يشعر به البعض يأتي من التنفّس والهدوء لا من «الطاقة».",
+   "alternative": "الذكر بتمهّل وحضور قلب — طمأنينة بلا أي اعتقاد مشبوه.",
+   "alternativeItemId": "slow-dhikr"
+  },
+  {
+   "id": "horoscopes",
+   "title": "الأبراج وقراءة الطالع والفنجان",
+   "keywords": [
+    "ابراج",
+    "برج",
+    "حظك اليوم",
+    "طالع",
+    "فنجان",
+    "قراءه الكف",
+    "تاروت",
+    "توقعات",
+    "فلك"
+   ],
+   "verdict": "prohibited",
+   "shariah": "ادّعاء معرفة الغيب من النجوم أو الفنجان من الكهانة، وسؤال أصحابها منهيّ عنه ولو على سبيل التسلية.",
+   "evidence": {
+    "text": "«من أتى عرّافاً فسأله عن شيء لم تُقبل له صلاة أربعين ليلة»",
+    "source": "صحيح مسلم (2230)"
+   },
+   "science": "تعتمد الأبراج على «تأثير بارنوم»: عبارات عامة يشعر كل شخص أنها تصفه. الدراسات المضبوطة لم تجد أي علاقة بين البرج والشخصية.",
+   "alternative": "الاستخارة في الأمور المهمة، والتوكّل على الله."
+  },
+  {
+   "id": "mother-name",
+   "title": "راقٍ يطلب اسم الأم أو قطعة من ملابسك أو يخبرك بأمور غيبية",
+   "keywords": [
+    "اسم الام",
+    "اسم امك",
+    "اثر",
+    "ملابس",
+    "قطعه من ملابسك",
+    "شعر",
+    "صوره",
+    "يعرف الغيب",
+    "مشعوذ",
+    "دجال",
+    "ساحر",
+    "كاهن",
+    "يكشف"
+   ],
+   "verdict": "prohibited",
+   "shariah": "هذه من علامات الكهّان والمشعوذين لا الرقاة الشرعيين. الراقي الشرعي يقرأ القرآن والأدعية المأثورة جهراً، ولا يدّعي علم الغيب، ولا يطلب ما لا علاقة له بالرقية.",
+   "evidence": {
+    "text": "«من أتى كاهناً فصدّقه بما يقول فقد كفر بما أُنزل على محمد ﷺ»",
+    "source": "سنن أبي داود (3904)"
+   },
+   "science": "الأسئلة الغامضة و«القراءة الباردة» (Cold Reading) تقنيات معروفة تُوهم بمعرفة خفية، وغالباً ما يتبعها استغلال مالي أو عاطفي.",
+   "alternative": "تعلّم أن ترقي نفسك بنفسك — وإن احتجت مختصاً فاختر جهة موثّقة إدارياً من دليل سند.",
+   "alternativeItemId": "fatiha"
+  },
+  {
+   "id": "superstition",
+   "title": "التشاؤم من الرقم ١٣ أو بعض الأيام أو الطيور",
+   "keywords": [
+    "تشاؤم",
+    "تطير",
+    "شؤم",
+    "رقم 13",
+    "13",
+    "غراب",
+    "بومه",
+    "يوم الاربعاء",
+    "نحس",
+    "فال"
+   ],
+   "verdict": "prohibited",
+   "shariah": "التطيّر — بناء القرار على شيء يُرى أو يُسمع — منهيّ عنه. ومن عرض له شيء من ذلك فليمضِ متوكّلاً على الله.",
+   "evidence": {
+    "text": "«الطِّيَرة شرك»",
+    "source": "سنن أبي داود (3910) وسنن الترمذي (1614)"
+   },
+   "science": "التشاؤم مثال على «الانحياز التأكيدي»: نتذكر المصادفات التي تؤكد الخوف وننسى آلاف المرات التي لم يحدث فيها شيء.",
+   "alternative": "إن خطر لك التشاؤم قل: «اللهم لا خير إلا خيرك، ولا طير إلا طيرك، ولا إله غيرك» (مسند أحمد 7045)."
+  },
+  {
+   "id": "crystals",
+   "title": "الأحجار الكريمة والكريستالات للحماية أو الشفاء",
+   "keywords": [
+    "كريستال",
+    "احجار",
+    "حجر كريم",
+    "عقيق",
+    "فيروز",
+    "كوارتز",
+    "حجر الطاقه",
+    "احجار الشفاء",
+    "سوار"
+   ],
+   "verdict": "prohibited",
+   "shariah": "لبس الحجر للزينة مباح، أما اعتقاد أنه يحمي أو يجلب الرزق أو يشفي بذاته فهو من جنس التمائم المنهي عنها.",
+   "science": "لا توجد أي دراسة مضبوطة تُثبت أثراً للأحجار على الصحة أو المزاج يتجاوز الإيحاء.",
+   "alternative": "ورد يومي ثابت من الأذكار المأثورة.",
+   "alternativeItemId": "muawwidhat"
+  },
+  {
+   "id": "yoga",
+   "title": "اليوغا والتأمل",
+   "keywords": [
+    "يوجا",
+    "يوغا",
+    "تامل",
+    "مديتيشن",
+    "تحيه الشمس",
+    "مانترا",
+    "ماينفلنس",
+    "اليقظه الذهنيه"
+   ],
+   "verdict": "detail",
+   "shariah": "تمارين الإطالة والتنفّس بوصفها رياضة بدنية لا حرج فيها. أما ما يصاحبها من طقوس تعبّدية (تحية الشمس، ترديد المانترا، اعتقاد الطاقة) فيُجتنب.",
+   "science": "للتمارين البدنية والتنفس البطيء أثر مُثبت في خفض التوتر — وهو أثر جسدي لا يحتاج أي فلسفة روحية.",
+   "alternative": "التفكّر والذكر بتمهّل وحضور قلب.",
+   "alternativeItemId": "slow-dhikr"
+  },
+  {
+   "id": "every-symptom",
+   "title": "كل تعب أو أرق أو تساقط شعر سببه عين أو سحر",
+   "keywords": [
+    "اعراض",
+    "اعراض العين",
+    "اعراض السحر",
+    "تساقط الشعر",
+    "خمول",
+    "صداع",
+    "ارق",
+    "تعب",
+    "ضيقه",
+    "كسل",
+    "هل انا محسود",
+    "هل انا مسحور"
+   ],
+   "verdict": "baseless",
+   "shariah": "العين حقّ، لكن ردّ كل عارض إليها بلا بيّنة يفتح باب الوسواس وسوء الظن بالناس. والشرع أمر بالتداوي والأخذ بالأسباب مع الرقية، لا بدلاً منها.",
+   "evidence": {
+    "text": "«تداووا عباد الله، فإن الله لم يضع داءً إلا وضع له دواء»",
+    "source": "سنن أبي داود (3855) وسنن الترمذي (2038)"
+   },
+   "science": "أعراض شائعة كالإرهاق والأرق وتساقط الشعر وضيق الصدر قد تكون لها أسباب قابلة للفحص: نقص فيتامين د أو الحديد، اضطراب الغدة الدرقية، القلق والاكتئاب، وقلّة النوم.",
+   "alternative": "ارقِ نفسك بما ورد، واستشر طبيباً إن استمرت الأعراض — الأمران معاً.",
+   "alternativeItemId": "medical-check"
+  },
+  {
+   "id": "salt-water-corners",
+   "title": "رشّ الماء والملح في زوايا البيت أو وضع الشبّة",
+   "keywords": [
+    "رش الملح",
+    "ماء وملح",
+    "زوايا البيت",
+    "شبه",
+    "الشبه",
+    "حرق الشبه",
+    "رصاص",
+    "صب الرصاص"
+   ],
+   "verdict": "baseless",
+   "shariah": "لم يرد في السنّة شيء من ذلك لتحصين البيوت، وحرق الشبّة أو صبّ الرصاص لـ«كشف» العين من أفعال المشعوذين.",
+   "science": "تغيّر شكل الشبّة أو الرصاص عند الحرارة ظاهرة فيزيائية طبيعية، لا «كشفاً» لشيء.",
+   "alternative": "قراءة سورة البقرة في البيت، وذكر الله عند دخوله.",
+   "alternativeItemId": "baqarah-end"
+  },
+  {
+   "id": "self-ruqyah",
+   "title": "أن يرقي الإنسان نفسه وأهله بالقرآن والأدعية",
+   "keywords": [
+    "رقيه ذاتيه",
+    "ارقي نفسي",
+    "رقية النفس",
+    "الرقيه الشرعيه",
+    "هل يجوز ان ارقي",
+    "رقيه الاطفال"
+   ],
+   "verdict": "legit",
+   "shariah": "مشروعة بل هي الأصل: كان النبي ﷺ يرقي نفسه وأهله. والرقية جائزة ما خلت من الشرك وكانت بكلام مفهوم.",
+   "evidence": {
+    "text": "«اعرضوا عليّ رُقاكم، لا بأس بالرقى ما لم يكن فيه شرك»",
+    "source": "صحيح مسلم (2200)"
+   },
+   "science": "الذكر والقراءة بتدبّر يخفضان التوتر ويمنحان شعوراً بالسيطرة والطمأنينة — دون حاجة لوسيط.",
+   "alternative": "ابدأ بالمرشد التفاعلي للرقية الذاتية.",
+   "alternativeItemId": "self-ruqyah"
+  },
+  {
+   "id": "tabreek",
+   "title": "قول «ما شاء الله، تبارك الله» عند الإعجاب",
+   "keywords": [
+    "ما شاء الله",
+    "تبارك الله",
+    "تبريك",
+    "بارك الله",
+    "الحسد",
+    "العين من الكلام"
+   ],
+   "verdict": "legit",
+   "shariah": "من السنّة أن يبرّك المرء إذا أعجبه شيء، صيانةً لنفسه وغيره.",
+   "evidence": {
+    "text": "«هلّا برّكت»",
+    "source": "سنن ابن ماجه (3509)، وموطأ مالك"
+   },
+   "science": "عادة لطيفة تحوّل لحظة الإعجاب إلى دعاء، وتقلّل مشاعر المقارنة والغيرة.",
+   "alternative": "اجعلها عادة يومية.",
+   "alternativeItemId": "tabreek"
+  },
+  {
+   "id": "treatment-with-medicine",
+   "title": "هل مراجعة الطبيب النفسي تنافي الرقية والتوكّل؟",
+   "keywords": [
+    "طبيب نفسي",
+    "دكتور نفسي",
+    "ادويه نفسيه",
+    "العلاج النفسي",
+    "اكتئاب",
+    "قلق",
+    "التوكل",
+    "حرام اروح دكتور"
+   ],
+   "verdict": "legit",
+   "shariah": "التداوي مشروع ومأمور به، والطب النفسي من الطب. الأخذ بالأسباب من التوكّل لا ينافيه، والرقية تجتمع معه ولا تعارضه.",
+   "evidence": {
+    "text": "«تداووا عباد الله»",
+    "source": "سنن أبي داود (3855)"
+   },
+   "science": "القلق والاكتئاب حالات شائعة لها علاجات فعّالة. التأخر في طلب المساعدة يطيل المعاناة بلا داعٍ.",
+   "alternative": "اجمع بين الرقية ومراجعة المختص — الأمران معاً.",
+   "alternativeItemId": "medical-check"
+  }
+ ],
+ "verdictMeta": {
+  "prohibited": {
+   "label": "منهيّ عنه",
+   "tone": "danger"
+  },
+  "baseless": {
+   "label": "لا أصل له",
+   "tone": "warning"
+  },
+  "detail": {
+   "label": "فيه تفصيل",
+   "tone": "neutral"
+  },
+  "legit": {
+   "label": "مشروع",
+   "tone": "success"
+  }
+ },
+ "quiz": {
+  "questions": [
+   {
+    "id": "q-tabreek",
+    "area": "habits",
+    "question": "حين يعجبك شيء عند غيرك، ماذا تفعل عادة؟",
+    "mythId": "tabreek",
+    "options": [
+     {
+      "label": "أقول: ما شاء الله، اللهم بارك",
+      "score": 2
+     },
+     {
+      "label": "لا أقول شيئاً",
+      "score": 1
+     },
+     {
+      "label": "أتجنّب النظر خوفاً من أن أحسده",
+      "score": 0
+     }
+    ]
+   },
+   {
+    "id": "q-amulet",
+    "area": "awareness",
+    "question": "ما رأيك في تعليق «الخرزة الزرقاء» في السيارة أو البيت؟",
+    "mythId": "amulets",
+    "options": [
+     {
+      "label": "أعلّقها احتياطاً، لن تضر",
+      "score": 0
+     },
+     {
+      "label": "لا أعلّقها، لكن لا أرى بها بأساً",
+      "score": 1
+     },
+     {
+      "label": "أتجنّبها وأتحصّن بالأذكار",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-symptoms",
+    "area": "balance",
+    "question": "شعرت بإرهاق وأرق أسبوعين متتاليين. ما أول ما تفعله؟",
+    "mythId": "every-symptom",
+    "options": [
+     {
+      "label": "إنها عين بالتأكيد — أبحث عن راقٍ",
+      "score": 0
+     },
+     {
+      "label": "أتجاهل الأمر حتى يزول",
+      "score": 1
+     },
+     {
+      "label": "أرقي نفسي وأراجع طبيباً معاً",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-adhkar",
+    "area": "habits",
+    "question": "أذكار الصباح والمساء في يومك:",
+    "options": [
+     {
+      "label": "ثابتة كل يوم",
+      "score": 2
+     },
+     {
+      "label": "أحياناً",
+      "score": 1
+     },
+     {
+      "label": "نادراً أو لا أعرفها",
+      "score": 0
+     }
+    ]
+   },
+   {
+    "id": "q-universe",
+    "area": "awareness",
+    "question": "محتوى «اطلب من الكون» و«ارفع ذبذباتك» على السوشيال ميديا:",
+    "mythId": "law-of-attraction",
+    "options": [
+     {
+      "label": "أطبّقه وأشعر أنه ينفع",
+      "score": 0
+     },
+     {
+      "label": "أشاهده للتحفيز فقط",
+      "score": 1
+     },
+     {
+      "label": "أعرف إشكاله وأستبدله بالدعاء والتوكّل",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-mother-name",
+    "area": "awareness",
+    "question": "راقٍ طلب منك اسم والدتك وقطعة من ملابسك. ماذا تفعل؟",
+    "mythId": "mother-name",
+    "options": [
+     {
+      "label": "أعطيه ما طلب، هو أعلم",
+      "score": 0
+     },
+     {
+      "label": "أتردّد لكن قد أعطيه",
+      "score": 1
+     },
+     {
+      "label": "أنصرف — هذه علامة دجل",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-self",
+    "area": "selfReliance",
+    "question": "هل تستطيع أن ترقي نفسك أو طفلك بنفسك؟",
+    "mythId": "self-ruqyah",
+    "options": [
+     {
+      "label": "لا، أحتاج دائماً لراقٍ",
+      "score": 0
+     },
+     {
+      "label": "أعرف القليل ولست واثقاً",
+      "score": 1
+     },
+     {
+      "label": "نعم، بما ورد في السنّة",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-horoscope",
+    "area": "awareness",
+    "question": "الأبراج وحظّك اليوم:",
+    "mythId": "horoscopes",
+    "options": [
+     {
+      "label": "أتابعها وأتأثّر بها",
+      "score": 0
+     },
+     {
+      "label": "أقرؤها للتسلية فقط",
+      "score": 1
+     },
+     {
+      "label": "لا أتابعها",
+      "score": 2
+     }
+    ]
+   },
+   {
+    "id": "q-sleep",
+    "area": "sleep",
+    "question": "آخر ما تفعله قبل النوم:",
+    "options": [
+     {
+      "label": "أتصفّح الهاتف حتى أغفو",
+      "score": 0
+     },
+     {
+      "label": "أذكار النوم أحياناً",
+      "score": 1
+     },
+     {
+      "label": "آية الكرسي والمعوّذات بانتظام",
+      "score": 2
+     }
+    ]
+   }
+  ],
+  "tiers": [
+   {
+    "minRatio": 0.8,
+    "title": "وعيٌ راسخ",
+    "message": "عاداتك متّزنة وبعيدة عن فخاخ الوهم. ثبّتها بوِرد يومي، وشارك ما تعرفه مع من تحب."
+   },
+   {
+    "minRatio": 0.5,
+    "title": "على الطريق الصحيح",
+    "message": "عندك أساس جيد، وبعض العادات تحتاج ضبطاً بسيطاً. أسبوع واحد يكفي لتبدأ الفرق."
+   },
+   {
+    "minRatio": 0,
+    "title": "بداية جديدة",
+    "message": "كثيرون يقعون في هذه الفخاخ دون قصد — المهم أنك عرفت الآن. ابدأ بخطوات صغيرة وثابتة."
+   }
+  ],
+  "recommendations": [
+   {
+    "zeroArea": "sleep",
+    "programId": "quiet-nights-14",
+    "reason": "لأن روتين ما قبل النوم هو أسرع ما يمكن تحسينه."
+   },
+   {
+    "zeroArea": "selfReliance",
+    "programId": "self-ruqyah-21",
+    "reason": "لتتعلّم أن ترقي نفسك وأهلك بلا وسيط."
+   },
+   {
+    "zeroArea": "balance",
+    "programId": "calm-heart-10",
+    "reason": "لتجمع بين الأذكار والأخذ بالأسباب في الأيام المثقلة."
+   },
+   {
+    "minRatio": 0.8,
+    "programId": "self-ruqyah-21",
+    "reason": "خطوتك التالية: أن تصبح مرجع أهلك في الرقية الذاتية."
+   },
+   {
+    "programId": "foundation-7",
+    "reason": "لتثبيت وِرد التحصين اليومي أولاً."
+   }
+  ]
+ }
+}

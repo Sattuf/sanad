@@ -1,0 +1,3 @@
+tags:
+  # لقطات مراجعة بصرية بالخطوط الحقيقية (flutter test --tags screenshot --update-goldens) — لا تُقارن في CI لاختلاف الرسم بين الأنظمة
+  screenshot:
