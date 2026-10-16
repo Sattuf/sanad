@@ -239,3 +239,5 @@ class SakinaNeed {
 }
 
 typedef PacedDhikr = ({String text, String source});
+
+typedef EmergencyReferral = ({String message, List<({String label, String phoneNumber})> contacts});

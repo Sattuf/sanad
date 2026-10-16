@@ -3216,6 +3216,37 @@
    ]
   }
  },
+ "journal": {
+  "metrics": [
+   {
+    "key": "calm",
+    "label": "الهدوء",
+    "low": "قلق شديد",
+    "high": "مطمئن"
+   },
+   {
+    "key": "sleep",
+    "label": "جودة النوم",
+    "low": "أرق",
+    "high": "نوم هانئ"
+   },
+   {
+    "key": "energy",
+    "label": "النشاط",
+    "low": "مُنهَك",
+    "high": "نشيط"
+   },
+   {
+    "key": "mood",
+    "label": "المزاج",
+    "low": "مثقل",
+    "high": "منشرح"
+   }
+  ],
+  "trendDays": 14,
+  "trendMinEntries": 3,
+  "stableDelta": 0.3
+ },
  "sakina": {
   "needOrder": [
    "distress",

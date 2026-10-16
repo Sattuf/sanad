@@ -6,6 +6,7 @@ import { addDays, arNum, localDay, shortDayLabel } from "../../lib/dates";
 import { downloadText } from "../../lib/ics";
 import { cx } from "../../lib/cx";
 import { requiresEmergencyReferral } from "@sanad/shared/safety/riskSignals";
+import { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES, journalTrends, sessionsDelta } from "@sanad/shared/content/companion/journal";
 import { vault, WrongPinError } from "../../lib/vault";
 import { useCompanion } from "../../stores/companion";
 import { useEmergency } from "../../stores/emergency";
@@ -16,12 +17,7 @@ import { useJournal, type CheckIn, type JournalData, type Scale } from "../../st
   نعرض الاتجاه والارتباط بأيام الالتزام بلغة محايدة؛ لا نقول «تحسّنت بسبب الرقية» ولا نشخّص.
 */
 
-const METRICS: Array<{ key: "calm" | "sleep" | "energy" | "mood"; label: string; low: string; high: string }> = [
-  { key: "calm", label: "الهدوء", low: "قلق شديد", high: "مطمئن" },
-  { key: "sleep", label: "جودة النوم", low: "أرق", high: "نوم هانئ" },
-  { key: "energy", label: "النشاط", low: "مُنهَك", high: "نشيط" },
-  { key: "mood", label: "المزاج", low: "مثقل", high: "منشرح" },
-];
+const METRICS = JOURNAL_METRICS;
 
 export function JournalPage() {
   const unlocked = useJournal((s) => s.unlocked);
@@ -202,19 +198,17 @@ function CheckInForm({ day, existing, onPickDay }: { day: string; existing?: Che
   );
 }
 
-const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN);
-
 function Trends({ data }: { data: JournalData }) {
   const activeDays = useCompanion((s) => s.activeDays);
   const today = localDay();
-  const days = useMemo(() => Array.from({ length: 14 }, (_, i) => addDays(today, i - 13)), [today]);
+  const tr = useMemo(() => journalTrends(data.checkIns, activeDays, today), [data.checkIns, activeDays, today]);
+  const { days, count } = tr;
   const entries = days.map((d) => data.checkIns[d]);
-  const count = entries.filter(Boolean).length;
 
-  if (count < 3) {
+  if (count < TREND_MIN_ENTRIES) {
     return (
       <Card className="text-center">
-        <ProgressRing value={count / 14} size={72} stroke={7}>
+        <ProgressRing value={count / TREND_DAYS} size={72} stroke={7}>
           <span className="num">{arNum(count)}/١٤</span>
         </ProgressRing>
         <p className="mt-3 font-bold">رسمك البياني يتشكّل</p>
@@ -224,13 +218,6 @@ function Trends({ data }: { data: JournalData }) {
   }
 
   const committed = (d: string) => Boolean(activeDays[d]);
-  const withEntries = days.filter((d) => data.checkIns[d]);
-  const inC = withEntries.filter(committed).map((d) => data.checkIns[d]);
-  const outC = withEntries.filter((d) => !committed(d)).map((d) => data.checkIns[d]);
-  const recent = days.slice(7).map((d) => data.checkIns[d]).filter(Boolean) as CheckIn[];
-  const earlier = days.slice(0, 7).map((d) => data.checkIns[d]).filter(Boolean) as CheckIn[];
-  const lowSleep = withEntries.length >= 10 && avg(withEntries.map((d) => data.checkIns[d].sleep)) <= 1;
-  const lowCalm = withEntries.length >= 10 && avg(withEntries.map((d) => data.checkIns[d].calm)) <= 1;
 
   return (
     <Card>
@@ -246,21 +233,21 @@ function Trends({ data }: { data: JournalData }) {
       </div>
 
       <div className="mt-5 grid gap-2 text-sm">
-        {recent.length >= 2 && earlier.length >= 2 && <Insight label="الهدوء" now={avg(recent.map((e) => e.calm))} before={avg(earlier.map((e) => e.calm))} />}
-        {recent.length >= 2 && earlier.length >= 2 && <Insight label="النوم" now={avg(recent.map((e) => e.sleep))} before={avg(earlier.map((e) => e.sleep))} />}
-        {inC.length >= 2 && outC.length >= 2 && (
+        {tr.calm && <Insight label="الهدوء" now={tr.calm.now} before={tr.calm.before} />}
+        {tr.sleep && <Insight label="النوم" now={tr.sleep.now} before={tr.sleep.before} />}
+        {tr.committedCalm && (
           <p className="rounded-xl bg-surface-2 px-4 py-2 leading-7">
-            في أيام التزامك كان متوسط هدوئك <strong className="num">{arNum((avg(inC.map((e) => e.calm)) + 1).toFixed(1))}</strong> من ٥، مقابل{" "}
-            <strong className="num">{arNum((avg(outC.map((e) => e.calm)) + 1).toFixed(1))}</strong> في غيرها.
+            في أيام التزامك كان متوسط هدوئك <strong className="num">{arNum((tr.committedCalm.committed + 1).toFixed(1))}</strong> من ٥، مقابل{" "}
+            <strong className="num">{arNum((tr.committedCalm.other + 1).toFixed(1))}</strong> في غيرها.
           </p>
         )}
         <p className="text-xs text-muted">هذه ملاحظات عن أيامك أنت، لا حكم طبي — والتزامن بين أمرين لا يعني بالضرورة أن أحدهما سبب الآخر.</p>
       </div>
 
-      {(lowSleep || lowCalm) && (
+      {tr.low && (
         <div className="mt-4">
           <Banner tone="primary" title="خذ بالأسباب أيضاً">
-            لاحظنا أن {lowSleep ? "نومك" : "هدوءك"} منخفض معظم الأيام الماضية. استمر على وِردك، واستشر طبيباً كذلك — أسباب كثيرة للأرق والقلق
+            لاحظنا أن {tr.low === "sleep" ? "نومك" : "هدوءك"} منخفض معظم الأيام الماضية. استمر على وِردك، واستشر طبيباً كذلك — أسباب كثيرة للأرق والقلق
             قابلة للفحص والعلاج، والتداوي لا ينافي الرقية. <Link to="/directory?track=LicensedHealth" className="font-semibold underline">ابحث عن مختص موثّق</Link>
           </Banner>
         </div>
@@ -298,7 +285,7 @@ function Trends({ data }: { data: JournalData }) {
 
 function Insight({ label, now, before }: { label: string; now: number; before: number }) {
   const diff = now - before;
-  if (Math.abs(diff) < 0.3) return <p className="rounded-xl bg-surface-2 px-4 py-2">{label}: مستقر خلال الأسبوعين.</p>;
+  if (Math.abs(diff) < STABLE_DELTA) return <p className="rounded-xl bg-surface-2 px-4 py-2">{label}: مستقر خلال الأسبوعين.</p>;
   return (
     <p className="rounded-xl bg-surface-2 px-4 py-2">
       {label} في الأسبوع الأخير {diff > 0 ? "أعلى" : "أقل"} من الأسبوع الذي قبله ({arNum((before + 1).toFixed(1))} ← {arNum((now + 1).toFixed(1))} من ٥).
@@ -364,7 +351,7 @@ function MiniChart({ title, days, values, highlight }: { title: string; days: st
 function Sessions({ data }: { data: JournalData }) {
   if (!data.sessions.length) return null;
   const last = data.sessions.slice(-10);
-  const delta = avg(last.map((s) => s.after - s.before));
+  const delta = sessionsDelta(data.sessions);
   return (
     <Card>
       <h2 className="text-lg font-bold">جلساتك</h2>

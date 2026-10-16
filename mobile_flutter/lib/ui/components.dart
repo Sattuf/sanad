@@ -11,6 +11,7 @@ import '../content/models.dart';
 import '../core/audio.dart';
 import '../theme/theme.dart';
 import '../theme/tokens.g.dart';
+import 'share_card.dart';
 
 /// نظير `Card` في الويب: سطح أبيض، حدّ خفيف، زوايا rounded-2xl، حشوة p-5.
 class SanadCard extends StatelessWidget {
@@ -19,15 +20,13 @@ class SanadCard extends StatelessWidget {
   final EdgeInsets padding;
   final Color? color;
 
+  // Material لا Container: عناصر القوائم داخل البطاقة (ExpansionTile، SwitchListTile) ترسم تموّج اللمس عليه
   @override
-  Widget build(BuildContext context) => Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: color ?? context.t.surface,
-          borderRadius: BorderRadius.circular(Radii.x2l),
-          border: Border.all(color: context.t.border),
-        ),
-        child: child,
+  Widget build(BuildContext context) => Material(
+        color: color ?? context.t.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.x2l), side: BorderSide(color: context.t.border)),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(padding: padding, child: child),
       );
 }
 
@@ -322,6 +321,20 @@ class ItemView extends StatelessWidget {
   final bool large;
   final VoidCallback? onCounted;
 
+  /// بطاقة المشاركة: الذكر بنصه، أو مقطع قرآني واحد بآياته.
+  CardContent? _share() {
+    if (item.kind == ItemKind.dhikr && item.text != null) return (kicker: item.title, body: item.text!, source: item.source, quran: false);
+    if (item.kind == ItemKind.verses && item.refs.length == 1) {
+      return (
+        kicker: item.title,
+        body: content.expandRef(item.refs.single).map((a) => a.text).join(' ۝ '),
+        source: content.quran[item.refs.single]!.label,
+        quran: true,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.t;
@@ -347,6 +360,7 @@ class ItemView extends StatelessWidget {
             if (item.kind == ItemKind.dhikr && (item.repeat ?? 0) > 1) TapCounter(target: item.repeat!, onComplete: onCounted),
             if (item.kind == ItemKind.verses && (item.repeat ?? 0) > 1)
               Text('تُقرأ ${arNum(item.repeat!)} مرات', style: TextStyle(fontSize: 12, color: t.muted)),
+            if (_share() case final share?) ShareButton(content: share),
           ],
         ),
       ],
@@ -562,6 +576,18 @@ class _MythCardState extends State<MythCard> {
                               ),
                             ),
                         ]),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: ShareButton(
+                            bordered: true,
+                            content: (
+                              kicker: 'هل هذا صحيح؟ — ${widget.content.verdictLabel[m.verdict]}',
+                              body: '${m.title}\n\n${m.alternative}',
+                              source: m.evidenceSource,
+                              quran: false,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

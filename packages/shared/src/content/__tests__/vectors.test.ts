@@ -4,6 +4,7 @@ import { requiresEmergencyReferral } from "../../safety/riskSignals";
 import { searchMyths } from "../companion/myths";
 import { currentProgramDay } from "../companion/programs";
 import { QUIZ, evaluateQuiz } from "../companion/quiz";
+import { journalTrends, sessionsDelta, type CheckIn, type SessionRating } from "../companion/journal";
 import vectors from "../../../test-vectors/companion.json";
 
 // المتجهات نفسها يشغّلها تطبيق Flutter (mobile_flutter/test/vectors_test.dart) — ADR-0023
@@ -34,4 +35,13 @@ describe("متجهات التطابق مع Flutter", () => {
     "يوم البرنامج $startedOn ← $today",
     ({ startedOn, length, today, day }) => expect(currentProgramDay(startedOn, length, today)).toBe(day),
   );
+});
+
+describe("متجهات مذكّرتي مع Flutter", () => {
+  const j = v.journal as unknown as {
+    trends: { name: string; today: string; checkIns: Record<string, CheckIn>; activeDays: Record<string, boolean>; expect: unknown }[];
+    sessionsDelta: { sessions: SessionRating[]; expect: number };
+  };
+  it.each(j.trends)("اتجاه: $name", ({ checkIns, activeDays, today, expect: e }) => expect(journalTrends(checkIns, activeDays, today)).toEqual(e));
+  it("متوسط فرق الجلسات", () => expect(sessionsDelta(j.sessionsDelta.sessions)).toBe(j.sessionsDelta.expect));
 });

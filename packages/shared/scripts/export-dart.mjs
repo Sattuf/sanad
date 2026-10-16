@@ -27,7 +27,9 @@ const { MYTHS, MYTH_SUGGESTIONS, VERDICT_META } = await import(src("content/comp
 const { QUIZ, QUIZ_TIERS, QUIZ_RECOMMENDATIONS } = await import(src("content/companion/quiz.ts"));
 const { GUIDE_MODES, GUIDE_NAFTH_ITEM, HAND_STEP, INTENTION_TIPS, guideSteps } = await import(src("content/companion/guide.ts"));
 const { PACED_DHIKR, PULSE_SECONDS, SAKINA_NEEDS, SAKINA_NEED_ORDER, SAKINA_REPEAT } = await import(src("content/companion/sakina.ts"));
+const { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES } = await import(src("content/companion/journal.ts"));
 const { RISK_INDICATORS } = await import(src("safety/riskSignals.ts"));
+const { FALLBACK_REFERRAL } = await import(src("safety/emergency.ts"));
 
 const GENERATED = "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)";
 const files = {
@@ -49,12 +51,15 @@ const files = {
       intentionTips: INTENTION_TIPS,
       hand: HAND_STEP,
     },
+    journal: { metrics: JOURNAL_METRICS, trendDays: TREND_DAYS, trendMinEntries: TREND_MIN_ENTRIES, stableDelta: STABLE_DELTA },
     sakina: { needOrder: SAKINA_NEED_ORDER, needs: SAKINA_NEEDS, repeat: SAKINA_REPEAT, pacedDhikr: PACED_DHIKR, pulseSeconds: PULSE_SECONDS },
   },
   "safety.json": {
     $generated: GENERATED,
     // صيغة RegExp متوافقة بين JS وDart؛ النص يُوحَّد قبل الفحص بنفس normalizeArabic
     riskPatterns: RISK_INDICATORS.map((r) => ({ source: r.source, caseInsensitive: r.flags.includes("i") })),
+    // الإحالة الافتراضية حين يُكتشف خطر على الجهاز نفسه (البند 5)
+    fallbackReferral: FALLBACK_REFERRAL,
   },
 };
 

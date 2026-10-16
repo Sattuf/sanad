@@ -43,6 +43,25 @@ class SanadTokens {
     required this.sakinaFaint,
     required this.sakinaGlow,
     required this.sakinaWarn,
+    required this.cardDawn1,
+    required this.cardDawn2,
+    required this.cardDawn3,
+    required this.cardDawnInk,
+    required this.cardDawnSoft,
+    required this.cardDawnAccent,
+    required this.cardSky1,
+    required this.cardSky2,
+    required this.cardSky3,
+    required this.cardSkyInk,
+    required this.cardSkySoft,
+    required this.cardSkyAccent,
+    required this.cardNight1,
+    required this.cardNight2,
+    required this.cardNight3,
+    required this.cardNightInk,
+    required this.cardNightSoft,
+    required this.cardNightAccent,
+    required this.cardHalo,
     required this.dawn,
   });
 
@@ -83,6 +102,25 @@ class SanadTokens {
   final Color sakinaFaint;
   final Color sakinaGlow;
   final Color sakinaWarn;
+  final Color cardDawn1;
+  final Color cardDawn2;
+  final Color cardDawn3;
+  final Color cardDawnInk;
+  final Color cardDawnSoft;
+  final Color cardDawnAccent;
+  final Color cardSky1;
+  final Color cardSky2;
+  final Color cardSky3;
+  final Color cardSkyInk;
+  final Color cardSkySoft;
+  final Color cardSkyAccent;
+  final Color cardNight1;
+  final Color cardNight2;
+  final Color cardNight3;
+  final Color cardNightInk;
+  final Color cardNightSoft;
+  final Color cardNightAccent;
+  final Color cardHalo;
   final LinearGradient dawn;
 
   static const light = SanadTokens(
@@ -123,6 +161,25 @@ class SanadTokens {
     sakinaFaint: Color(0xFF6F8994),
     sakinaGlow: Color(0xFF7CC7BF),
     sakinaWarn: Color(0xFFF2C675),
+    cardDawn1: Color(0xFFE6F3F0),
+    cardDawn2: Color(0xFFE3EEF9),
+    cardDawn3: Color(0xFFF9F0DF),
+    cardDawnInk: Color(0xFF1E2B31),
+    cardDawnSoft: Color(0xFF5A6D74),
+    cardDawnAccent: Color(0xFF2A7A74),
+    cardSky1: Color(0xFFD7EBF7),
+    cardSky2: Color(0xFFE9F3F9),
+    cardSky3: Color(0xFFF4F8FB),
+    cardSkyInk: Color(0xFF18303F),
+    cardSkySoft: Color(0xFF4F6B7C),
+    cardSkyAccent: Color(0xFF3D7FA8),
+    cardNight1: Color(0xFF122233),
+    cardNight2: Color(0xFF16293B),
+    cardNight3: Color(0xFF1E2B2A),
+    cardNightInk: Color(0xFFEEF3F2),
+    cardNightSoft: Color(0xFFA8BCC4),
+    cardNightAccent: Color(0xFFF2CF86),
+    cardHalo: Color(0xFFFFFFFF),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFFEAF4F2), Color(0xFFE4EFFA), Color(0xFFF8F1E3)], stops: [0, 0.55, 1]),
   );
 
@@ -164,6 +221,25 @@ class SanadTokens {
     sakinaFaint: Color(0xFF6F8994),
     sakinaGlow: Color(0xFF7CC7BF),
     sakinaWarn: Color(0xFFF2C675),
+    cardDawn1: Color(0xFFE6F3F0),
+    cardDawn2: Color(0xFFE3EEF9),
+    cardDawn3: Color(0xFFF9F0DF),
+    cardDawnInk: Color(0xFF1E2B31),
+    cardDawnSoft: Color(0xFF5A6D74),
+    cardDawnAccent: Color(0xFF2A7A74),
+    cardSky1: Color(0xFFD7EBF7),
+    cardSky2: Color(0xFFE9F3F9),
+    cardSky3: Color(0xFFF4F8FB),
+    cardSkyInk: Color(0xFF18303F),
+    cardSkySoft: Color(0xFF4F6B7C),
+    cardSkyAccent: Color(0xFF3D7FA8),
+    cardNight1: Color(0xFF122233),
+    cardNight2: Color(0xFF16293B),
+    cardNight3: Color(0xFF1E2B2A),
+    cardNightInk: Color(0xFFEEF3F2),
+    cardNightSoft: Color(0xFFA8BCC4),
+    cardNightAccent: Color(0xFFF2CF86),
+    cardHalo: Color(0xFFFFFFFF),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFF142330), Color(0xFF16283A), Color(0xFF1D2A2A)], stops: [0, 0.55, 1]),
   );
 }

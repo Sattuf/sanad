@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'arabic.dart';
+import 'journal.dart';
 import 'models.dart';
 
 /// كل المحتوى والسلامة من JSON المولَّد (packages/shared ← scripts/export-dart.mjs).
@@ -31,6 +32,11 @@ class ContentRepository {
     required this.sakinaRepeat,
     required this.pacedDhikr,
     required this.pulseSeconds,
+    required this.journalMetrics,
+    required this.trendDays,
+    required this.trendMinEntries,
+    required this.stableDelta,
+    required this.fallbackReferral,
   });
 
   /// من نصوص JSON الثلاثة (تُقرأ من الأصول في التطبيق، ومن الملفات في الاختبارات).
@@ -43,6 +49,8 @@ class ContentRepository {
     final hand = guide['hand'] as Map<String, dynamic>;
     final sakina = c['sakina'] as Map<String, dynamic>;
     final needs = sakina['needs'] as Map<String, dynamic>;
+    final journal = c['journal'] as Map<String, dynamic>;
+    final referral = s['fallbackReferral'] as Map<String, dynamic>;
     return ContentRepository._(
       quran: (q['passages'] as Map<String, dynamic>).map((k, v) => MapEntry(k, QuranPassage.fromJson(v as Map<String, dynamic>))),
       library: (c['library'] as Map<String, dynamic>).map((k, v) => MapEntry(k, LibraryItem.fromJson(v as Map<String, dynamic>))),
@@ -93,6 +101,16 @@ class ContentRepository {
       sakinaRepeat: sakina['repeat'] as int,
       pacedDhikr: (sakina['pacedDhikr'] as List).map((d) => (text: (d as Map<String, dynamic>)['text'] as String, source: d['source'] as String)).toList(),
       pulseSeconds: sakina['pulseSeconds'] as int,
+      journalMetrics: (journal['metrics'] as List)
+          .map((m) => (key: (m as Map<String, dynamic>)['key'] as String, label: m['label'] as String, low: m['low'] as String, high: m['high'] as String))
+          .toList(),
+      trendDays: journal['trendDays'] as int,
+      trendMinEntries: journal['trendMinEntries'] as int,
+      stableDelta: (journal['stableDelta'] as num).toDouble(),
+      fallbackReferral: (
+        message: referral['message'] as String,
+        contacts: (referral['contacts'] as List).map((c) => (label: (c as Map<String, dynamic>)['label'] as String, phoneNumber: c['phoneNumber'] as String)).toList(),
+      ),
     );
   }
 
@@ -126,6 +144,13 @@ class ContentRepository {
   final int sakinaRepeat;
   final List<PacedDhikr> pacedDhikr;
   final int pulseSeconds;
+  final List<JournalMetric> journalMetrics;
+  final int trendDays;
+  final int trendMinEntries;
+  final double stableDelta;
+
+  /// الإحالة العاجلة حين يُكتشف خطر على الجهاز (البند 5) — FALLBACK_REFERRAL المشترك.
+  final EmergencyReferral fallbackReferral;
 
   LibraryItem item(String id) => library[id] ?? (throw StateError('عنصر غير معروف: $id'));
 

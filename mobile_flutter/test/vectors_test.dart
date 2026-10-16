@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/content/arabic.dart';
 import 'package:sanad/content/content_repository.dart';
+import 'package:sanad/content/journal.dart';
 
 ContentRepository loadContent() => ContentRepository.fromJson(
       quranJson: File('assets/content/quran.json').readAsStringSync(),
@@ -64,6 +65,32 @@ void main() {
         expect(currentProgramDay(c['startedOn'] as String?, c['length'] as int, c['today'] as String), c['day']);
       });
     }
+  });
+
+  group('مذكّرتي', () {
+    final j = v['journal'] as Map<String, dynamic>;
+    Object? norm(Object? x) => x is double && x == x.roundToDouble() ? x.toInt() : x; // JSON يكتب 3.0 كـ 3
+    for (final c in (j['trends'] as List).cast<Map<String, dynamic>>()) {
+      test('اتجاه: ${c['name']}', () {
+        final checkIns = (c['checkIns'] as Map<String, dynamic>).map((k, x) => MapEntry(k, CheckIn.fromJson(x as Map<String, dynamic>)));
+        final tr = journalTrends(checkIns, (c['activeDays'] as Map<String, dynamic>).keys.toSet(), c['today'] as String);
+        final e = c['expect'] as Map<String, dynamic>;
+        Map<String, Object?>? shift(Shift? s) => s == null ? null : {'now': norm(s.now), 'before': norm(s.before)};
+        expect({
+          'days': tr.days,
+          'count': tr.count,
+          'calm': shift(tr.calm),
+          'sleep': shift(tr.sleep),
+          'committedCalm': tr.committedCalm == null ? null : {'committed': norm(tr.committedCalm!.committed), 'other': norm(tr.committedCalm!.other)},
+          'low': tr.low,
+        }, e);
+      });
+    }
+    test('متوسط فرق الجلسات', () {
+      final s = j['sessionsDelta'] as Map<String, dynamic>;
+      final sessions = (s['sessions'] as List).map((x) => SessionRating.fromJson(x as Map<String, dynamic>)).toList();
+      expect(sessionsDelta(sessions), s['expect']);
+    });
   });
 
   test('كل مهمة في كل برنامج تشير لعنصر موجود، وكل آية لها نص', () {

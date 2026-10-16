@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/app/router.dart';
 import 'package:sanad/core/audio.dart';
+import 'package:sanad/core/platform_services.dart';
+import 'package:sanad/core/vault.dart';
+import 'package:sanad/features/journal/journal_store.dart';
+import 'package:sanad/ui/emergency.dart';
 import 'package:sanad/features/companion/companion_store.dart';
 import 'package:sanad/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +27,8 @@ Future<SharedPreferences> pumpApp(
   RecitationAudio? audio,
   bool dark = false,
   bool reduceMotion = false,
+  FakeDevice? device,
+  bool realVault = false,
 }) async {
   SharedPreferences.setMockInitialValues(prefs);
   final p = await SharedPreferences.getInstance();
@@ -40,13 +47,19 @@ Future<SharedPreferences> pumpApp(
         contentProvider.overrideWithValue(loadContent()),
         todayProvider.overrideWithValue(today),
         recitationAudioProvider.overrideWithValue(audio ?? FakeAudio()),
+        biometricKeyStoreProvider.overrideWithValue((device ??= FakeDevice()).bio),
+        reminderSchedulerProvider.overrideWithValue(device.reminders),
+        outboundProvider.overrideWithValue(device.outbound),
+        privacyPlatformProvider.overrideWithValue(device.privacy),
+        // PBKDF2 مخفّض لتسريع اختبارات الواجهة فقط؛ الصيغة الحقيقية (310 ألفاً) تحرسها vault_test.dart
+        vaultCryptoProvider.overrideWithValue(VaultCrypto(iterations: realVault ? pbkdf2Iterations : 1000)),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         locale: const Locale('ar'),
         theme: buildTheme(dark ? Brightness.dark : Brightness.light),
         routerConfig: router,
-        builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: child!),
+        builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: EmergencyOverlay(child: child!)),
       ),
     ),
   );
@@ -100,6 +113,9 @@ class FakeAudio implements RecitationAudio {
   }
 
   @override
+  Future<void> clearCache() async => cached.clear();
+
+  @override
   void claim(VoidCallback onPreempted) {
     final prev = _owner;
     _owner = onPreempted;
@@ -149,4 +165,69 @@ void main() {
     expect(find.text(loadContent().item('bismillah-3').text!), findsOneWidget);
     expect(find.textContaining('سنن أبي داود (5088)'), findsOneWidget);
   });
+}
+
+/// أجهزة وهمية: البصمة والتذكير والمشاركة وقناة الخصوصية — تسجّل ما طُلب منها.
+class FakeDevice {
+  final bio = FakeBio();
+  final reminders = FakeReminders();
+  final outbound = FakeOutbound();
+  final privacy = FakePrivacy();
+}
+
+class FakeBio implements BiometricKeyStore {
+  bool supported = true;
+  bool cancel = false;
+  List<int>? saved;
+
+  @override
+  Future<bool> available() async => supported;
+
+  @override
+  Future<void> save(List<int> raw) async => saved = [...raw];
+
+  @override
+  Future<Uint8List> read() async {
+    if (cancel || saved == null) throw StateError('أُلغيت البصمة');
+    return Uint8List.fromList(saved!);
+  }
+
+  @override
+  Future<void> delete() async => saved = null;
+}
+
+class FakeReminders implements ReminderScheduler {
+  bool grant = true;
+  final scheduled = <int, (int, int)>{};
+
+  @override
+  Future<bool> requestPermission() async => grant;
+
+  @override
+  Future<void> scheduleDaily(int id, int hour, int minute) async => scheduled[id] = (hour, minute);
+
+  @override
+  Future<void> cancel(int id) async => scheduled.remove(id);
+}
+
+class FakeOutbound implements Outbound {
+  final shared = <({String name, String mimeType, Uint8List bytes})>[];
+  final dialed = <String>[];
+
+  @override
+  Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text}) async =>
+      shared.add((name: name, mimeType: mimeType, bytes: bytes));
+
+  @override
+  Future<void> dial(String phoneNumber) async => dialed.add(phoneNumber);
+}
+
+class FakePrivacy implements PrivacyPlatform {
+  final calls = <(String, bool)>[];
+
+  @override
+  Future<void> setSecure(bool on) async => calls.add(('setSecure', on));
+
+  @override
+  Future<void> setNeutralIcon(bool on) async => calls.add(('setNeutralIcon', on));
 }

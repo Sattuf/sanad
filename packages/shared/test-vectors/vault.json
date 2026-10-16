@@ -1,0 +1,56 @@
+{
+ "$comment": "خزنتا مذكّرة معروفتان: web أنشأها packages/shared/src/lib/vault.ts، وflutter أنشأها mobile_flutter/lib/core/vault.dart. كلا الطرفين يجب أن يفتح الاثنتين بالرمز نفسه (ADR-0023). لا تُعدَّل يدوياً.",
+ "pin": "2580",
+ "wrongPin": "0000",
+ "data": {
+  "checkIns": {
+   "2026-10-14": {
+    "day": "2026-10-14",
+    "calm": 3,
+    "sleep": 2,
+    "energy": 2,
+    "mood": 3,
+    "note": "نمت جيداً والحمد لله",
+    "updatedAt": "2026-10-14T20:15:00.000Z"
+   }
+  },
+  "sessions": [
+   {
+    "at": "2026-10-14T21:00:00.000Z",
+    "kind": "ruqyah",
+    "before": 3,
+    "after": 7
+   }
+  ]
+ },
+ "web": {
+  "v": 1,
+  "salt": "vFmLenRFpwdwTBmcGOi4PQ==",
+  "pin": {
+   "iv": "e2vVQbQJ48eF0sun",
+   "ct": "CBZF/chmfbQn4jy8wq2epedZodNUyEqHoYA2h358mbCm7GjMy19QUFOAo8ngnMGA"
+  },
+  "data": {
+   "iv": "TVnGCih7v3LECTbx",
+   "ct": "4nyOrnQw/5wIbQjTMO+ndOfx044Ne7iLF08buB8o2PkjIiq4mUKAdauC9NDCdGPZ0uLv/uh6LMrkHCLHNoQY/UBTeuhDqlfJotrpywJ3Xw5pGoGUBHSNcg8veKGgJcgGhhJd/jG52aa+vt4H6UsQhCzIsVJkdknYOvIZvPQgy7rWkPIjzcoZeT5VUzb95f9MSVTlPwsyGnTYOs+gbb5WmlbYRBVj7FYZUIQ3fHO4i49UMYuxtbu8SfO6qWC+L7hbScOJ4bCKAA9ad9ckDMVWkJeSNhyEd0WmndW5kL8QNPZ1yqZPOly+XZl4hcQlASfqvaJkRqWBm6t98IRMjtcXJ69qNzbTrUC2THvvSAstbPLb"
+  }
+ },
+ "flutter": {
+  "v": 1,
+  "salt": "QsNdfrohk4JOTpEfph5OYQ==",
+  "pin": {
+   "iv": "VN5suggHYt/yfygH",
+   "ct": "rFud0jvfSqiEiUEnDrcnI6UDAAXRSiEWzJtJvmvCh3oISljzbg7akKl1KbK34VPC"
+  },
+  "data": {
+   "iv": "8TcLAuOuNCpDrj1r",
+   "ct": "fmlBdfRyRO3Z8FM0agHIg4R4Cv5bpr5OBbjaRf4PktSx2pzFNvjv7eqowE3XWXmgI5r/IfcRe7lM2xYZDUrOeyIJ0hZh+XGZlv9BJkXboaoGr8+FiXhkiAkBcdt8T9GkKp3fBHp58ss4jOyPoNITLC5J8p7l0BZ7lurhqqs646TZFgNdny2DfjQFSlW3DmaR55K8uo/8QqWbgrJOMLDAyLWAWga9ahANObpFc9a7unL+rlONQnvj3GCcL+OKvheTbMS2l4zTQDxMVsCRDdrfEI5ga8+IXt8NZ+96g0Nl2EolQFm+nLdsopNwcFuLlGpeDTzp3BI4bvpXG1RQUkp05Nclk9CAnXI18N3DNDPYz6+b"
+  }
+ },
+ "aes": {
+  "key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+  "iv": "ZGVmZ2hpamtsbW5v",
+  "plain": "سند — مذكّرتي",
+  "ct": "kKgH4KFGdny+9n8xX73aJMEbl9I6tFmrLa1zUjRTbGA0DAQPr/tZYqY="
+ }
+}

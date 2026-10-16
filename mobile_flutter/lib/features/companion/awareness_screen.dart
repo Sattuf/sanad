@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../content/arabic.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/share_card.dart';
 import 'companion_store.dart';
 
 /*
@@ -335,15 +336,29 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         ),
       ),
       const SizedBox(height: 24),
-      Center(
-        child: TextButton(
-          onPressed: () => setState(() {
-            answers = {};
-            step = 0;
-          }),
-          style: TextButton.styleFrom(foregroundColor: t.muted, shape: const StadiumBorder()),
-          child: const Text('أعد الاختبار'),
-        ),
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 12,
+        runSpacing: 8,
+        children: [
+          ShareButton(
+            bordered: true,
+            content: (
+              kicker: 'اختبرتُ وعيي في سند',
+              body: 'نتيجتي: ${r.tierTitle}\nهل ممارساتك اليومية صحية أم مدخل للوهم؟ جرّب الاختبار.',
+              source: '$siteHost/awareness/quiz',
+              quran: false,
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() {
+              answers = {};
+              step = 0;
+            }),
+            style: TextButton.styleFrom(foregroundColor: t.muted, shape: const StadiumBorder()),
+            child: const Text('أعد الاختبار'),
+          ),
+        ],
       ),
       const SizedBox(height: 24),
       Text(

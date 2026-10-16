@@ -6,6 +6,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>لفتح «مذكّرتي» المشفّرة بوجهك بدل الرمز. لا تغادر بصمتك جهازك.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Sanad</string>
 	<key>CFBundleExecutable</key>

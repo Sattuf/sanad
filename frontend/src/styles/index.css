@@ -45,6 +45,26 @@
   --sakina-faint: #6f8994;
   --sakina-glow: #7cc7bf;
   --sakina-warn: #f2c675;
+  /* بطاقات المشاركة صور ثابتة: ألوانها نفسها في الوضعين */
+  --card-dawn-1: #e6f3f0;
+  --card-dawn-2: #e3eef9;
+  --card-dawn-3: #f9f0df;
+  --card-dawn-ink: #1e2b31;
+  --card-dawn-soft: #5a6d74;
+  --card-dawn-accent: #2a7a74;
+  --card-sky-1: #d7ebf7;
+  --card-sky-2: #e9f3f9;
+  --card-sky-3: #f4f8fb;
+  --card-sky-ink: #18303f;
+  --card-sky-soft: #4f6b7c;
+  --card-sky-accent: #3d7fa8;
+  --card-night-1: #122233;
+  --card-night-2: #16293b;
+  --card-night-3: #1e2b2a;
+  --card-night-ink: #eef3f2;
+  --card-night-soft: #a8bcc4;
+  --card-night-accent: #f2cf86;
+  --card-halo: #ffffff;
   color-scheme: light;
 }
 
@@ -89,6 +109,26 @@
     --sakina-faint: #6f8994;
     --sakina-glow: #7cc7bf;
     --sakina-warn: #f2c675;
+    /* بطاقات المشاركة صور ثابتة: ألوانها نفسها في الوضعين */
+    --card-dawn-1: #e6f3f0;
+    --card-dawn-2: #e3eef9;
+    --card-dawn-3: #f9f0df;
+    --card-dawn-ink: #1e2b31;
+    --card-dawn-soft: #5a6d74;
+    --card-dawn-accent: #2a7a74;
+    --card-sky-1: #d7ebf7;
+    --card-sky-2: #e9f3f9;
+    --card-sky-3: #f4f8fb;
+    --card-sky-ink: #18303f;
+    --card-sky-soft: #4f6b7c;
+    --card-sky-accent: #3d7fa8;
+    --card-night-1: #122233;
+    --card-night-2: #16293b;
+    --card-night-3: #1e2b2a;
+    --card-night-ink: #eef3f2;
+    --card-night-soft: #a8bcc4;
+    --card-night-accent: #f2cf86;
+    --card-halo: #ffffff;
     color-scheme: dark;
   }
 }
@@ -133,6 +173,26 @@
   --sakina-faint: #6f8994;
   --sakina-glow: #7cc7bf;
   --sakina-warn: #f2c675;
+  /* بطاقات المشاركة صور ثابتة: ألوانها نفسها في الوضعين */
+  --card-dawn-1: #e6f3f0;
+  --card-dawn-2: #e3eef9;
+  --card-dawn-3: #f9f0df;
+  --card-dawn-ink: #1e2b31;
+  --card-dawn-soft: #5a6d74;
+  --card-dawn-accent: #2a7a74;
+  --card-sky-1: #d7ebf7;
+  --card-sky-2: #e9f3f9;
+  --card-sky-3: #f4f8fb;
+  --card-sky-ink: #18303f;
+  --card-sky-soft: #4f6b7c;
+  --card-sky-accent: #3d7fa8;
+  --card-night-1: #122233;
+  --card-night-2: #16293b;
+  --card-night-3: #1e2b2a;
+  --card-night-ink: #eef3f2;
+  --card-night-soft: #a8bcc4;
+  --card-night-accent: #f2cf86;
+  --card-halo: #ffffff;
   color-scheme: dark;
 }
 

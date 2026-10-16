@@ -17,11 +17,21 @@ export interface CardContent {
 type Theme = "dawn" | "sky" | "night";
 type Format = "square" | "story";
 
-const THEMES: Record<Theme, { label: string; stops: [string, string, string]; ink: string; soft: string; accent: string }> = {
-  dawn: { label: "فجر", stops: ["#e6f3f0", "#e3eef9", "#f9f0df"], ink: "#1e2b31", soft: "#5a6d74", accent: "#2a7a74" },
-  sky: { label: "سماء", stops: ["#d7ebf7", "#e9f3f9", "#f4f8fb"], ink: "#18303f", soft: "#4f6b7c", accent: "#3d7fa8" },
-  night: { label: "سَحَر", stops: ["#122233", "#16293b", "#1e2b2a"], ink: "#eef3f2", soft: "#a8bcc4", accent: "#f2cf86" },
-};
+const THEME_LABELS: Record<Theme, string> = { dawn: "فجر", sky: "سماء", night: "سَحَر" };
+const THEME_IDS = Object.keys(THEME_LABELS) as Theme[];
+
+/** ألوان البطاقة من رموز CSS (--card-*) — مصدر واحد للويب وتطبيق Flutter (tokens.g.dart). */
+function cardTheme(k: Theme): { label: string; stops: [string, string, string]; ink: string; soft: string; accent: string } {
+  const css = getComputedStyle(document.documentElement);
+  const v = (n: string) => css.getPropertyValue(`--card-${k}-${n}`).trim();
+  return { label: THEME_LABELS[k], stops: [v("1"), v("2"), v("3")], ink: v("ink"), soft: v("soft"), accent: v("accent") };
+}
+
+/** #rrggbb + شفافية ← rgba() للرسم على Canvas. */
+function alpha(hex: string, a: number) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
 
 const SIZES: Record<Format, [number, number]> = { square: [1080, 1080], story: [1080, 1920] };
 
@@ -46,7 +56,8 @@ async function drawCard(canvas: HTMLCanvasElement, content: CardContent, theme: 
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d")!;
-  const t = THEMES[theme];
+  const t = cardTheme(theme);
+  const halo = getComputedStyle(document.documentElement).getPropertyValue("--card-halo").trim();
   const bodyFont = content.quran ? "Amiri Quran" : "Amiri";
   await Promise.all([
     document.fonts.load(`64px "${bodyFont}"`),
@@ -63,8 +74,8 @@ async function drawCard(canvas: HTMLCanvasElement, content: CardContent, theme: 
   // هالات ضوء ناعمة
   for (const [x, y, r, a] of [[w * 0.85, h * 0.12, w * 0.45, 0.35], [w * 0.1, h * 0.92, w * 0.5, 0.25]] as const) {
     const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
-    rg.addColorStop(0, theme === "night" ? `rgba(242,207,134,${a * 0.5})` : `rgba(255,255,255,${a + 0.3})`);
-    rg.addColorStop(1, "rgba(255,255,255,0)");
+    rg.addColorStop(0, theme === "night" ? alpha(t.accent, a * 0.5) : alpha(halo, a + 0.3));
+    rg.addColorStop(1, alpha(halo, 0));
     ctx.fillStyle = rg;
     ctx.fillRect(0, 0, w, h);
   }
@@ -176,7 +187,7 @@ export function ShareCardDialog({ content, onClose }: { content: CardContent; on
           <canvas ref={ref} className={cx("h-auto rounded-xl shadow-md", format === "story" ? "max-h-[50vh] w-auto" : "w-full max-w-[360px]")} aria-label="معاينة البطاقة" />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {(Object.keys(THEMES) as Theme[]).map((k) => (
+          {THEME_IDS.map((k) => (
             <button
               key={k}
               type="button"
@@ -184,8 +195,8 @@ export function ShareCardDialog({ content, onClose }: { content: CardContent; on
               aria-pressed={theme === k}
               className={cx("flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm", theme === k ? "border-primary text-primary" : "border-border text-muted")}
             >
-              <span className="h-4 w-4 rounded-full" style={{ background: `linear-gradient(135deg, ${THEMES[k].stops[0]}, ${THEMES[k].stops[2]})` }} />
-              {THEMES[k].label}
+              <span className="h-4 w-4 rounded-full" style={{ background: `linear-gradient(135deg, var(--card-${k}-1), var(--card-${k}-3))` }} />
+              {THEME_LABELS[k]}
             </button>
           ))}
           <span className="mx-1 h-6 w-px bg-border" />

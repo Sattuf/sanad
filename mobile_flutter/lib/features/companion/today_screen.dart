@@ -8,7 +8,10 @@ import '../../content/content_repository.dart';
 import '../../content/models.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/share_card.dart';
+import '../privacy/discreet.dart';
 import 'companion_store.dart';
+import 'reminders.dart';
 
 /*
   «يومي» — نظير TodayPage في frontend/src/features/companion/ProgramPages.tsx، قسماً بقسم وبالنصوص نفسها:
@@ -56,6 +59,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           if (program == null) const _EmptyToday() else ..._programDay(context, content, s, program),
           const SizedBox(height: 28),
           const _QuickActions(),
+          // كالويب: التذكير مع برنامج قائم
+          if (program != null) ...[const SizedBox(height: 16), const RemindersCard()],
         ],
       ),
     );
@@ -187,7 +192,18 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               const SizedBox(height: 8),
               Text('صار الوِرد عادة. ماذا بعد؟ يمكنك الإبقاء عليه أو بدء برنامج آخر.', textAlign: TextAlign.center, style: TextStyle(color: t.muted)),
               const SizedBox(height: 16),
-              FilledButton(onPressed: notifier.finish, child: const Text('اختر برنامجاً جديداً')),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                runSpacing: 8,
+                children: [
+                  ShareButton(
+                    bordered: true,
+                    content: (kicker: 'أتممت برنامجاً في سند', body: '${program.title}\n${program.tagline}', source: 'رفيق السكينة اليومي', quran: false),
+                  ),
+                  FilledButton(onPressed: notifier.finish, child: const Text('اختر برنامجاً جديداً')),
+                ],
+              ),
             ],
           ),
         ),
@@ -406,15 +422,15 @@ class _Note extends StatelessWidget {
       );
 }
 
-class _QuickActions extends StatelessWidget {
+class _QuickActions extends ConsumerWidget {
   const _QuickActions();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
     final actions = [
       (to: '/journal', title: 'كيف حالك اليوم؟', sub: 'سجّل حالتك في دقيقة', bg: t.sky),
-      (to: '/self-ruqyah', title: 'ارقِ نفسك', sub: 'مرشد خطوة بخطوة', bg: t.sage),
+      (to: '/self-ruqyah', title: discreetLabel(ref, 'ارقِ نفسك', 'جلسة'), sub: 'مرشد خطوة بخطوة', bg: t.sage),
       (to: '/awareness', title: 'هل هذا صحيح؟', sub: 'ميزان الوعي', bg: t.sand),
     ];
     return Column(

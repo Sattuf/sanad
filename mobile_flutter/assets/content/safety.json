@@ -53,5 +53,16 @@
    "source": "\\b(suicid(e|al)|kill\\s+myself|end\\s+my\\s+life|self[-\\s]?harm|want\\s+to\\s+die|hurt\\s+myself)\\b",
    "caseInsensitive": true
   }
- ]
+ ],
+ "fallbackReferral": {
+  "required": true,
+  "message": "إن كنت أنت أو أي شخص في خطر مباشر الآن، اتصل بالطوارئ فوراً. سند ليست خدمة طوارئ ولا تتابع الرسائل لحظياً.",
+  "contacts": [
+   {
+    "label": "رقم الطوارئ الدولي من الجوال",
+    "phoneNumber": "112"
+   }
+  ],
+  "emergencyPagePath": "/emergency"
+ }
 }

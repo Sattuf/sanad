@@ -32,6 +32,9 @@ abstract class RecitationAudio {
 
   /// مشغّل واحد مشترك: من يبدأ التشغيل يوقف القائمة السابقة.
   void claim(VoidCallback onPreempted);
+
+  /// يحذف التلاوات المحفوظة (مسح كل البيانات).
+  Future<void> clearCache();
 }
 
 class DeviceRecitationAudio implements RecitationAudio {
@@ -107,6 +110,13 @@ class DeviceRecitationAudio implements RecitationAudio {
     final prev = _owner;
     _owner = onPreempted;
     if (prev != null && prev != onPreempted) prev();
+  }
+
+  @override
+  Future<void> clearCache() async {
+    await stop();
+    _dir ??= Directory('${(await getApplicationSupportDirectory()).path}/recitation');
+    if (await _dir!.exists()) await _dir!.delete(recursive: true);
   }
 
   void dispose() => _player?.dispose();

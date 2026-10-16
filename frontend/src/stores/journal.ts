@@ -1,33 +1,13 @@
 import { create } from "zustand";
+import type { CheckIn, JournalData, SessionRating } from "@sanad/shared/content/companion/journal";
 import { vault, type UnlockedVault } from "../lib/vault";
 
 /*
   مذكّرة السكينة — الحالة في الذاكرة فقط بعد فك التشفير، وتُمسح عند القفل.
   القفل التلقائي بعد 5 دقائق خمول أو عند إخفاء التبويب أكثر من دقيقة.
 */
-export type Scale = 0 | 1 | 2 | 3 | 4;
-
-export interface CheckIn {
-  day: string;
-  calm: Scale;
-  sleep: Scale;
-  energy: Scale;
-  mood: Scale;
-  note?: string;
-  updatedAt: string;
-}
-
-export interface SessionRating {
-  at: string;
-  kind: "ruqyah" | "sakina";
-  before: number;
-  after: number;
-}
-
-export interface JournalData {
-  checkIns: Record<string, CheckIn>;
-  sessions: SessionRating[];
-}
+// الأنواع مشتركة مع تطبيق Flutter (packages/shared/content/companion/journal.ts)
+export type { CheckIn, JournalData, Scale, SessionRating } from "@sanad/shared/content/companion/journal";
 
 const EMPTY: JournalData = { checkIns: {}, sessions: [] };
 

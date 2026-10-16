@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/content/arabic.dart';
 import 'package:sanad/content/models.dart';
 import 'package:sanad/core/audio.dart';
-import 'package:sanad/features/companion/journal_queue.dart';
+import 'package:sanad/features/journal/journal_store.dart';
 
 import 'today_screen_test.dart' show FakeAudio, pumpApp, reveal;
 import 'vectors_test.dart' show loadContent;
@@ -103,7 +103,7 @@ void main() {
     await tester.pumpAndSettle();
     await reveal(tester, find.text('سيُحفظ في مذكّرتك عند فتحها في هذه الجلسة.'));
 
-    final queued = ProviderScope.containerOf(tester.element(find.byType(Scaffold).last)).read(journalQueueProvider);
+    final queued = ProviderScope.containerOf(tester.element(find.byType(Scaffold).last)).read(journalProvider).pending;
     expect(queued.single.kind, 'ruqyah');
     expect((queued.single.before, queued.single.after), (3, 7));
     expect(prefs.getKeys().where((k) => k.contains('journal')), isEmpty);

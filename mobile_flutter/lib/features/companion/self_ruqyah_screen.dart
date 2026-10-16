@@ -4,11 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../content/arabic.dart';
 import '../../content/content_repository.dart';
+import '../../content/journal.dart';
 import '../../content/models.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
 import 'companion_store.dart';
-import 'journal_queue.dart';
+import '../journal/journal_store.dart';
 
 /*
   «ارقِ نفسك» — نظير SelfRuqyahPage في frontend/src/features/companion/SelfRuqyahPage.tsx.
@@ -380,13 +381,10 @@ class _FinishState extends ConsumerState<_Finish> {
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: FilledButton(
-                  onPressed: () {
-                    ref.read(journalQueueProvider.notifier).add((
-                      at: DateTime.now().toUtc().toIso8601String(),
-                      kind: 'ruqyah',
-                      before: widget.before!,
-                      after: after!,
-                    ));
+                  onPressed: () async {
+                    await ref
+                        .read(journalProvider.notifier)
+                        .addSession(SessionRating(at: DateTime.now().toUtc().toIso8601String(), kind: 'ruqyah', before: widget.before!, after: after!));
                     setState(() => saved = true);
                   },
                   child: const Text('احفظ في مذكّرتي'),
@@ -399,9 +397,8 @@ class _FinishState extends ConsumerState<_Finish> {
             margin: const EdgeInsets.only(top: 24),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(color: t.successBg, borderRadius: BorderRadius.circular(Radii.xl)),
-            // المذكّرة المشفّرة لم تُبنَ بعد في التطبيق، فهي «غير مفتوحة» دائماً — كحالة الويب حين تكون مقفلة
             child: Text(
-              'سيُحفظ في مذكّرتك عند فتحها في هذه الجلسة.',
+              ref.watch(journalProvider).unlocked ? 'حُفظ في مذكّرتك ✓' : 'سيُحفظ في مذكّرتك عند فتحها في هذه الجلسة.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: t.success),
             ),
