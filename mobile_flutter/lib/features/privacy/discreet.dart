@@ -6,6 +6,7 @@ import '../../core/platform_services.dart';
 import '../companion/companion_store.dart';
 import '../companion/reminders.dart';
 import '../journal/journal_store.dart';
+import '../ruqyah/ruqyah_reminders.dart';
 
 /*
   الوضع المتحفّظ — نظير stores/discreet.ts في الويب: لمن يتحرّج من ظهور كلمات مثل «رقية» على شاشته.
@@ -23,6 +24,7 @@ class DiscreetNotifier extends Notifier<bool> {
     await ref.read(prefsProvider).setString(_key, on ? 'true' : 'false');
     await ref.read(privacyPlatformProvider).setNeutralIcon(on);
     await ref.read(remindersProvider.notifier).refresh();
+    await ref.read(ruqyahRemindersProvider.notifier).refresh();
   }
 }
 

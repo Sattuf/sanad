@@ -73,6 +73,41 @@
   --google-red: #ff3d00;
   --google-green: #4caf50;
   --google-blue: #1976d2;
+  /* مشاهد «الرقية والتحصين» (Scene.tsx) ليلية دائماً: القيم نفسها في الوضعين */
+  --scene-text: #f4efe4;
+  --scene-soft: #e6dfd0;
+  --scene-muted: #d9d2c3;
+  --scene-verse: #fbf6ea;
+  --scene-on-gold: #1d1a12;
+  --scene-gold: #f2c675;
+  --scene-moon: #ece9e2;
+  --scene-lantern-a: #06181c;
+  --scene-lantern-b: #040e12;
+  --scene-lantern-base-1: #0b2e33;
+  --scene-lantern-base-2: #07151c;
+  --scene-dawn-a: #08141a;
+  --scene-dawn-b: #142228;
+  --scene-dawn-c: #0e1e24;
+  --scene-dawn-base-1: #f0c98c;
+  --scene-dawn-base-2: #c98f5a;
+  --scene-dawn-base-3: #28515a;
+  --scene-dusk-a: #0a0e22;
+  --scene-dusk-b: #060916;
+  --scene-dusk-base-1: #1c2452;
+  --scene-dusk-base-2: #0e3a45;
+  --scene-night-a: #040814;
+  --scene-night-b: #03060e;
+  --scene-night-base-1: #0a1030;
+  --scene-night-base-2: #050814;
+  --scene-mihrab-a: #051010;
+  --scene-mihrab-b: #0a1e1e;
+  --scene-mihrab-c: #081a1a;
+  --scene-mihrab-base-1: #2c4f4a;
+  --scene-mihrab-base-2: #0c1f1e;
+  --scene-manuscript-a: #061416;
+  --scene-manuscript-b: #040e10;
+  --scene-manuscript-base-1: #203c3a;
+  --scene-manuscript-base-2: #081614;
   color-scheme: light;
 }
 
@@ -145,6 +180,41 @@
     --google-red: #ff3d00;
     --google-green: #4caf50;
     --google-blue: #1976d2;
+    /* مشاهد «الرقية والتحصين» (Scene.tsx) ليلية دائماً: القيم نفسها في الوضعين */
+    --scene-text: #f4efe4;
+    --scene-soft: #e6dfd0;
+    --scene-muted: #d9d2c3;
+    --scene-verse: #fbf6ea;
+    --scene-on-gold: #1d1a12;
+    --scene-gold: #f2c675;
+    --scene-moon: #ece9e2;
+    --scene-lantern-a: #06181c;
+    --scene-lantern-b: #040e12;
+    --scene-lantern-base-1: #0b2e33;
+    --scene-lantern-base-2: #07151c;
+    --scene-dawn-a: #08141a;
+    --scene-dawn-b: #142228;
+    --scene-dawn-c: #0e1e24;
+    --scene-dawn-base-1: #f0c98c;
+    --scene-dawn-base-2: #c98f5a;
+    --scene-dawn-base-3: #28515a;
+    --scene-dusk-a: #0a0e22;
+    --scene-dusk-b: #060916;
+    --scene-dusk-base-1: #1c2452;
+    --scene-dusk-base-2: #0e3a45;
+    --scene-night-a: #040814;
+    --scene-night-b: #03060e;
+    --scene-night-base-1: #0a1030;
+    --scene-night-base-2: #050814;
+    --scene-mihrab-a: #051010;
+    --scene-mihrab-b: #0a1e1e;
+    --scene-mihrab-c: #081a1a;
+    --scene-mihrab-base-1: #2c4f4a;
+    --scene-mihrab-base-2: #0c1f1e;
+    --scene-manuscript-a: #061416;
+    --scene-manuscript-b: #040e10;
+    --scene-manuscript-base-1: #203c3a;
+    --scene-manuscript-base-2: #081614;
     color-scheme: dark;
   }
 }
@@ -217,6 +287,41 @@
   --google-red: #ff3d00;
   --google-green: #4caf50;
   --google-blue: #1976d2;
+  /* مشاهد «الرقية والتحصين» (Scene.tsx) ليلية دائماً: القيم نفسها في الوضعين */
+  --scene-text: #f4efe4;
+  --scene-soft: #e6dfd0;
+  --scene-muted: #d9d2c3;
+  --scene-verse: #fbf6ea;
+  --scene-on-gold: #1d1a12;
+  --scene-gold: #f2c675;
+  --scene-moon: #ece9e2;
+  --scene-lantern-a: #06181c;
+  --scene-lantern-b: #040e12;
+  --scene-lantern-base-1: #0b2e33;
+  --scene-lantern-base-2: #07151c;
+  --scene-dawn-a: #08141a;
+  --scene-dawn-b: #142228;
+  --scene-dawn-c: #0e1e24;
+  --scene-dawn-base-1: #f0c98c;
+  --scene-dawn-base-2: #c98f5a;
+  --scene-dawn-base-3: #28515a;
+  --scene-dusk-a: #0a0e22;
+  --scene-dusk-b: #060916;
+  --scene-dusk-base-1: #1c2452;
+  --scene-dusk-base-2: #0e3a45;
+  --scene-night-a: #040814;
+  --scene-night-b: #03060e;
+  --scene-night-base-1: #0a1030;
+  --scene-night-base-2: #050814;
+  --scene-mihrab-a: #051010;
+  --scene-mihrab-b: #0a1e1e;
+  --scene-mihrab-c: #081a1a;
+  --scene-mihrab-base-1: #2c4f4a;
+  --scene-mihrab-base-2: #0c1f1e;
+  --scene-manuscript-a: #061416;
+  --scene-manuscript-b: #040e10;
+  --scene-manuscript-base-1: #203c3a;
+  --scene-manuscript-base-2: #081614;
   color-scheme: dark;
 }
 

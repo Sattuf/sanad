@@ -12,6 +12,7 @@ import '../features/companion/today_screen.dart';
 import '../features/journal/journal_screen.dart';
 import '../features/privacy/discreet.dart';
 import '../features/privacy/privacy_screen.dart';
+import '../features/ruqyah/ruqyah_screens.dart';
 import '../theme/theme.dart';
 
 /*
@@ -33,7 +34,20 @@ final router = GoRouter(
             routes: [GoRoute(path: ':id', builder: (_, state) => ProgramDetailScreen(id: state.pathParameters['id']!))],
           ),
         ]),
-        StatefulShellBranch(routes: [GoRoute(path: '/ruqyah', builder: (_, _) => const ComingSoon(title: 'الرقية والتحصين', phase: 'الأسابيع 5–7'))]),
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/ruqyah',
+            builder: (_, _) => const RuqyahHubScreen(),
+            routes: [
+              GoRoute(path: 'guide/:guideId', builder: (_, state) => GuideScreen(guideId: state.pathParameters['guideId']!)),
+              // مفتاح بالمعرّف: المجموعة التالية تفتح من أعلاها بحالة جديدة لا بتمرير السابقة
+              GoRoute(
+                path: ':collectionId',
+                builder: (_, state) => CollectionScreen(key: ValueKey(state.pathParameters['collectionId']), collectionId: state.pathParameters['collectionId']!),
+              ),
+            ],
+          ),
+        ]),
         StatefulShellBranch(routes: [
           GoRoute(path: '/awareness', builder: (_, _) => const AwarenessScreen(), routes: [GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen())]),
         ]),
@@ -52,6 +66,13 @@ final router = GoRouter(
       routes: [GoRoute(path: 'two-factor', builder: (_, state) => TwoFactorScreen(ticket: state.extra! as String))],
     ),
     GoRoute(path: '/consent', builder: (_, _) => const ConsentScreen()),
+    GoRoute(
+      path: '/health',
+      builder: (_, _) => const HealthHubScreen(),
+      routes: [GoRoute(path: ':guideId', builder: (_, state) => GuideScreen(guideId: state.pathParameters['guideId']!))],
+    ),
+    // المكتبة الصوتية في الجزء الثالث من الأسابيع 5–7
+    GoRoute(path: '/library', builder: (_, _) => const ComingSoon(title: 'المكتبة الصوتية', phase: 'الأسابيع 5–7', standalone: true)),
   ],
 );
 

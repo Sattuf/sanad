@@ -5,6 +5,8 @@ import { searchMyths } from "../companion/myths";
 import { currentProgramDay } from "../companion/programs";
 import { QUIZ, evaluateQuiz } from "../companion/quiz";
 import { journalTrends, sessionsDelta, type CheckIn, type SessionRating } from "../companion/journal";
+import { collections, suggestedWird } from "../ruqyah";
+import { buildEntries, mergeCounts, parseTime, slotForHour, wirdPayload, type PublishedDua } from "../wird";
 import vectors from "../../../test-vectors/companion.json";
 
 // المتجهات نفسها يشغّلها تطبيق Flutter (mobile_flutter/test/vectors_test.dart) — ADR-0023
@@ -44,4 +46,24 @@ describe("متجهات مذكّرتي مع Flutter", () => {
   };
   it.each(j.trends)("اتجاه: $name", ({ checkIns, activeDays, today, expect: e }) => expect(journalTrends(checkIns, activeDays, today)).toEqual(e));
   it("متوسط فرق الجلسات", () => expect(sessionsDelta(j.sessionsDelta.sessions)).toBe(j.sessionsDelta.expect));
+});
+
+describe("متجهات الورد مع Flutter", () => {
+  const w = v.wird as unknown as {
+    slotForHour: [number, string | null][];
+    suggestedWird: [number, string, string][];
+    mergeCounts: { local: Record<string, number>; server: Record<string, number> | null; expect: Record<string, number> }[];
+    payload: { collectionId: string; day: string; duas: PublishedDua[]; counts: Record<string, number>; entryKeys: string[]; expect: unknown };
+    parseTime: [string, { hour: number; minute: number } | null][];
+  };
+  it.each(w.slotForHour)("وقت الورد للساعة %i", (h, id) => expect(slotForHour(h)?.id ?? null).toBe(id));
+  it.each(w.suggestedWird)("الورد المقترح للساعة %i", (h, id, label) => expect(suggestedWird(h)).toEqual({ id, label }));
+  it.each(w.mergeCounts)("الدمج", ({ local, server, expect: e }) => expect(mergeCounts(local, server ?? undefined)).toEqual(e));
+  it("جسم الحفظ", () => {
+    const sleep = collections.find((c) => c.id === w.payload.collectionId)!;
+    const entries = buildEntries(sleep.id, sleep.items, w.payload.duas);
+    expect(entries.map((e) => e.key)).toEqual(w.payload.entryKeys);
+    expect(wirdPayload(sleep.id, w.payload.day, entries, w.payload.counts)).toEqual(w.payload.expect);
+  });
+  it.each(w.parseTime)("الوقت %s", (t, e) => expect(parseTime(t)).toEqual(e));
 });

@@ -10,6 +10,7 @@ import 'core/platform_services.dart';
 import 'core/session.dart';
 import 'features/companion/companion_store.dart';
 import 'features/companion/reminders.dart';
+import 'features/ruqyah/ruqyah_reminders.dart';
 import 'features/privacy/discreet.dart';
 import 'theme/theme.dart';
 import 'ui/emergency.dart';
@@ -22,8 +23,8 @@ Future<void> main() async {
   final refreshStore = SecureRefreshTokenStore();
   final refreshToken = await refreshStore.read();
   final reminders = DeviceReminderScheduler();
-  // لمس تذكير «وِرد اليوم» يفتح «يومي»
-  DeviceReminderScheduler.onOpen = () => router.go('/today');
+  // لمس التذكير يفتح صفحته («يومي» أو الورد نفسه)
+  DeviceReminderScheduler.onOpen = router.go;
   final container = ProviderContainer(
     overrides: [
       prefsProvider.overrideWithValue(prefs),
@@ -39,6 +40,7 @@ Future<void> main() async {
   await container.read(privacyPlatformProvider).setNeutralIcon(discreet);
   await reminders.init();
   await container.read(remindersProvider.notifier).refresh();
+  await container.read(ruqyahRemindersProvider.notifier).refresh();
 }
 
 class SanadApp extends ConsumerWidget {

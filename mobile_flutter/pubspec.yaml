@@ -78,6 +78,8 @@ flutter:
     - assets/content/
     # شعار سند: frontend/public/favicon.svg مرسوماً بـ 192px (Chrome بلا واجهة) — يُعاد إن تغيّر الشعار
     - assets/brand/
+    # صور مشاهد «الرقية والتحصين» — منسوخة من frontend/public/library بـ export-tokens.mjs
+    - assets/scenes/
   # نفس خطوط الويب (رخصة OFL، النص مع الملفات)
   fonts:
     - family: IBMPlexSansArabic

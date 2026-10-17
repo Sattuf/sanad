@@ -577,5 +577,25 @@ export const guides: Guide[] = [...methodGuideList, ...awarenessGuides, ...healt
 /** رابط صفحة الدليل حسب قسمه. */
 export const guidePath = (g: Guide) => (g.kind === "health" ? `/health/${g.id}` : `/ruqyah/guide/${g.id}`);
 
+/** ترتيب أقسام المجموعات في الصفحة الرئيسية. */
+export const GROUP_ORDER: CollectionGroup[] = ["treatment", "prevention", "relief"];
+
+/** آيات قصيرة تتناوب في واجهة القسم — نصها من quran.ts نفسه. */
+export const HERO_VERSES: Array<{ ref: QuranKey; index: number }> = [
+  { ref: "isra-82", index: 0 },
+  { ref: "yunus-57", index: 0 },
+  { ref: "shuara-80", index: 0 },
+  { ref: "falaq", index: 0 },
+  { ref: "kahf-39", index: 0 },
+];
+
+/** الورد المقترح بحسب الساعة المحلية — زر «ابدأ …» في واجهة القسم. */
+export function suggestedWird(hour: number): { id: string; label: string } {
+  if (hour >= 4 && hour < 12) return { id: "morning-evening", label: "أذكار الصباح" };
+  if (hour >= 15 && hour < 21) return { id: "morning-evening", label: "أذكار المساء" };
+  if (hour >= 21 || hour < 4) return { id: "sleep", label: "أذكار النوم" };
+  return { id: "ruqyah-quran", label: "آيات الرقية" };
+}
+
 export const findCollection = (id: string | undefined) => collections.find((c) => c.id === id);
 export const findGuide = (id: string | undefined) => guides.find((g) => g.id === id);

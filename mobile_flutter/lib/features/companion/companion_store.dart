@@ -13,6 +13,9 @@ final contentProvider = Provider<ContentRepository>((ref) => throw Unimplemented
 /// «اليوم» قابل للحقن في الاختبارات.
 final todayProvider = Provider<String>((ref) => localDay());
 
+/// الساعة الحالية (للتحية والورد المقترح) — قابلة للحقن كي لا تتبدّل اللقطات بوقت تشغيلها.
+final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
 /*
   تقدّم برامج الالتزام — على الجهاز فقط، بنفس مفتاح وصيغة الويب (sanad.companion.v1 في stores/companion.ts).
   لا «سلسلة» تنكسر ولا لوم: الأيام الفائتة تبقى مفتوحة، ونعدّ «أيام الالتزام».

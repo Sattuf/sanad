@@ -7,12 +7,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/content/arabic.dart';
 import 'package:sanad/content/content_repository.dart';
 import 'package:sanad/content/journal.dart';
+import 'package:sanad/content/ruqyah.dart';
 
 ContentRepository loadContent() => ContentRepository.fromJson(
       quranJson: File('assets/content/quran.json').readAsStringSync(),
       companionJson: File('assets/content/companion.json').readAsStringSync(),
       safetyJson: File('assets/content/safety.json').readAsStringSync(),
       stringsJson: File('assets/content/strings.json').readAsStringSync(),
+      ruqyahJson: File('assets/content/ruqyah.json').readAsStringSync(),
     );
 
 void main() {
@@ -91,6 +93,49 @@ void main() {
       final s = j['sessionsDelta'] as Map<String, dynamic>;
       final sessions = (s['sessions'] as List).map((x) => SessionRating.fromJson(x as Map<String, dynamic>)).toList();
       expect(sessionsDelta(sessions), s['expect']);
+    });
+  });
+
+  group('الورد', () {
+    final w = v['wird'] as Map<String, dynamic>;
+    final r = content.ruqyah;
+    for (final c in (w['slotForHour'] as List).cast<List>()) {
+      test('وقت الورد للساعة ${c[0]}', () => expect(r.slotForHour(c[0] as int)?.id, c[1]));
+    }
+    for (final c in (w['suggestedWird'] as List).cast<List>()) {
+      test('الورد المقترح للساعة ${c[0]}', () => expect(r.suggestedWird(c[0] as int), (id: c[1], label: c[2])));
+    }
+    for (final c in (w['mergeCounts'] as List).cast<Map<String, dynamic>>()) {
+      test('الدمج ${c['local']}', () {
+        Map<String, int>? m(Object? x) => x == null ? null : (x as Map<String, dynamic>).cast<String, int>();
+        expect(mergeCounts(m(c['local'])!, m(c['server'])), c['expect']);
+      });
+    }
+    test('جسم الحفظ', () {
+      final p = w['payload'] as Map<String, dynamic>;
+      final col = r.collection(p['collectionId'] as String)!;
+      final duas = (p['duas'] as List).map((d) => PublishedDua.fromJson(d as Map<String, dynamic>)).toList();
+      final entries = buildEntries(col.id, col.items, duas);
+      expect([for (final e in entries) e.key], p['entryKeys']);
+      expect(wirdPayload(col.id, p['day'] as String, entries, (p['counts'] as Map<String, dynamic>).cast<String, int>(), maxCount: r.maxCount), p['expect']);
+    });
+    for (final c in (w['parseTime'] as List).cast<List>()) {
+      test('الوقت ${c[0]}', () {
+        final t = parseTime(c[0] as String);
+        expect(t == null ? null : {'hour': t.hour, 'minute': t.minute}, c[1]);
+      });
+    }
+    test('كل عنصر في المجموعات له نص أو آية موجودة، وكل دليل بقسم معروف', () {
+      for (final col in r.collections) {
+        for (final it in col.items) {
+          if (it.isQuran) {
+            expect(content.expandRef(it.ref!), isNotEmpty, reason: it.ref);
+          } else {
+            expect((it.text, it.source), isNot((null, null)), reason: it.title);
+          }
+        }
+      }
+      expect(r.guides.map((g) => g.kind).toSet(), {'method', 'awareness', 'health'});
     });
   });
 

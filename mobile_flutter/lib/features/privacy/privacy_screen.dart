@@ -8,6 +8,7 @@ import '../../ui/components.dart';
 import '../companion/companion_store.dart';
 import '../companion/reminders.dart';
 import '../journal/journal_store.dart';
+import '../ruqyah/ruqyah_reminders.dart';
 import 'discreet.dart';
 
 /*
@@ -28,6 +29,7 @@ class _PrivacyScreenState extends ConsumerState<PrivacyScreen> {
   Future<void> _wipeAll() async {
     await ref.read(journalProvider.notifier).wipe();
     await ref.read(remindersProvider.notifier).cancelAll();
+    await ref.read(ruqyahRemindersProvider.notifier).cancelAll();
     await ref.read(discreetProvider.notifier).set(false);
     await ref.read(prefsProvider).remove('sanad.companion.v1');
     ref.invalidate(companionProvider);

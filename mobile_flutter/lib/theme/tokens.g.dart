@@ -69,6 +69,40 @@ class SanadTokens {
     required this.googleRed,
     required this.googleGreen,
     required this.googleBlue,
+    required this.sceneText,
+    required this.sceneSoft,
+    required this.sceneMuted,
+    required this.sceneVerse,
+    required this.sceneOnGold,
+    required this.sceneGold,
+    required this.sceneMoon,
+    required this.sceneLanternA,
+    required this.sceneLanternB,
+    required this.sceneLanternBase1,
+    required this.sceneLanternBase2,
+    required this.sceneDawnA,
+    required this.sceneDawnB,
+    required this.sceneDawnC,
+    required this.sceneDawnBase1,
+    required this.sceneDawnBase2,
+    required this.sceneDawnBase3,
+    required this.sceneDuskA,
+    required this.sceneDuskB,
+    required this.sceneDuskBase1,
+    required this.sceneDuskBase2,
+    required this.sceneNightA,
+    required this.sceneNightB,
+    required this.sceneNightBase1,
+    required this.sceneNightBase2,
+    required this.sceneMihrabA,
+    required this.sceneMihrabB,
+    required this.sceneMihrabC,
+    required this.sceneMihrabBase1,
+    required this.sceneMihrabBase2,
+    required this.sceneManuscriptA,
+    required this.sceneManuscriptB,
+    required this.sceneManuscriptBase1,
+    required this.sceneManuscriptBase2,
     required this.dawn,
   });
 
@@ -135,6 +169,40 @@ class SanadTokens {
   final Color googleRed;
   final Color googleGreen;
   final Color googleBlue;
+  final Color sceneText;
+  final Color sceneSoft;
+  final Color sceneMuted;
+  final Color sceneVerse;
+  final Color sceneOnGold;
+  final Color sceneGold;
+  final Color sceneMoon;
+  final Color sceneLanternA;
+  final Color sceneLanternB;
+  final Color sceneLanternBase1;
+  final Color sceneLanternBase2;
+  final Color sceneDawnA;
+  final Color sceneDawnB;
+  final Color sceneDawnC;
+  final Color sceneDawnBase1;
+  final Color sceneDawnBase2;
+  final Color sceneDawnBase3;
+  final Color sceneDuskA;
+  final Color sceneDuskB;
+  final Color sceneDuskBase1;
+  final Color sceneDuskBase2;
+  final Color sceneNightA;
+  final Color sceneNightB;
+  final Color sceneNightBase1;
+  final Color sceneNightBase2;
+  final Color sceneMihrabA;
+  final Color sceneMihrabB;
+  final Color sceneMihrabC;
+  final Color sceneMihrabBase1;
+  final Color sceneMihrabBase2;
+  final Color sceneManuscriptA;
+  final Color sceneManuscriptB;
+  final Color sceneManuscriptBase1;
+  final Color sceneManuscriptBase2;
   final LinearGradient dawn;
 
   static const light = SanadTokens(
@@ -201,6 +269,40 @@ class SanadTokens {
     googleRed: Color(0xFFFF3D00),
     googleGreen: Color(0xFF4CAF50),
     googleBlue: Color(0xFF1976D2),
+    sceneText: Color(0xFFF4EFE4),
+    sceneSoft: Color(0xFFE6DFD0),
+    sceneMuted: Color(0xFFD9D2C3),
+    sceneVerse: Color(0xFFFBF6EA),
+    sceneOnGold: Color(0xFF1D1A12),
+    sceneGold: Color(0xFFF2C675),
+    sceneMoon: Color(0xFFECE9E2),
+    sceneLanternA: Color(0xFF06181C),
+    sceneLanternB: Color(0xFF040E12),
+    sceneLanternBase1: Color(0xFF0B2E33),
+    sceneLanternBase2: Color(0xFF07151C),
+    sceneDawnA: Color(0xFF08141A),
+    sceneDawnB: Color(0xFF142228),
+    sceneDawnC: Color(0xFF0E1E24),
+    sceneDawnBase1: Color(0xFFF0C98C),
+    sceneDawnBase2: Color(0xFFC98F5A),
+    sceneDawnBase3: Color(0xFF28515A),
+    sceneDuskA: Color(0xFF0A0E22),
+    sceneDuskB: Color(0xFF060916),
+    sceneDuskBase1: Color(0xFF1C2452),
+    sceneDuskBase2: Color(0xFF0E3A45),
+    sceneNightA: Color(0xFF040814),
+    sceneNightB: Color(0xFF03060E),
+    sceneNightBase1: Color(0xFF0A1030),
+    sceneNightBase2: Color(0xFF050814),
+    sceneMihrabA: Color(0xFF051010),
+    sceneMihrabB: Color(0xFF0A1E1E),
+    sceneMihrabC: Color(0xFF081A1A),
+    sceneMihrabBase1: Color(0xFF2C4F4A),
+    sceneMihrabBase2: Color(0xFF0C1F1E),
+    sceneManuscriptA: Color(0xFF061416),
+    sceneManuscriptB: Color(0xFF040E10),
+    sceneManuscriptBase1: Color(0xFF203C3A),
+    sceneManuscriptBase2: Color(0xFF081614),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFFEAF4F2), Color(0xFFE4EFFA), Color(0xFFF8F1E3)], stops: [0, 0.55, 1]),
   );
 
@@ -268,6 +370,40 @@ class SanadTokens {
     googleRed: Color(0xFFFF3D00),
     googleGreen: Color(0xFF4CAF50),
     googleBlue: Color(0xFF1976D2),
+    sceneText: Color(0xFFF4EFE4),
+    sceneSoft: Color(0xFFE6DFD0),
+    sceneMuted: Color(0xFFD9D2C3),
+    sceneVerse: Color(0xFFFBF6EA),
+    sceneOnGold: Color(0xFF1D1A12),
+    sceneGold: Color(0xFFF2C675),
+    sceneMoon: Color(0xFFECE9E2),
+    sceneLanternA: Color(0xFF06181C),
+    sceneLanternB: Color(0xFF040E12),
+    sceneLanternBase1: Color(0xFF0B2E33),
+    sceneLanternBase2: Color(0xFF07151C),
+    sceneDawnA: Color(0xFF08141A),
+    sceneDawnB: Color(0xFF142228),
+    sceneDawnC: Color(0xFF0E1E24),
+    sceneDawnBase1: Color(0xFFF0C98C),
+    sceneDawnBase2: Color(0xFFC98F5A),
+    sceneDawnBase3: Color(0xFF28515A),
+    sceneDuskA: Color(0xFF0A0E22),
+    sceneDuskB: Color(0xFF060916),
+    sceneDuskBase1: Color(0xFF1C2452),
+    sceneDuskBase2: Color(0xFF0E3A45),
+    sceneNightA: Color(0xFF040814),
+    sceneNightB: Color(0xFF03060E),
+    sceneNightBase1: Color(0xFF0A1030),
+    sceneNightBase2: Color(0xFF050814),
+    sceneMihrabA: Color(0xFF051010),
+    sceneMihrabB: Color(0xFF0A1E1E),
+    sceneMihrabC: Color(0xFF081A1A),
+    sceneMihrabBase1: Color(0xFF2C4F4A),
+    sceneMihrabBase2: Color(0xFF0C1F1E),
+    sceneManuscriptA: Color(0xFF061416),
+    sceneManuscriptB: Color(0xFF040E10),
+    sceneManuscriptBase1: Color(0xFF203C3A),
+    sceneManuscriptBase2: Color(0xFF081614),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFF142330), Color(0xFF16283A), Color(0xFF1D2A2A)], stops: [0, 0.55, 1]),
   );
 }

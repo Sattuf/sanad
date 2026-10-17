@@ -14,9 +14,10 @@ import 'package:path_provider/path_provider.dart';
 
 /// عنوان الخادم: `flutter run --dart-define=SANAD_API_BASE=https://…` (نظير EXPO_PUBLIC_API_BASE_URL).
 const apiBase = String.fromEnvironment('SANAD_API_BASE', defaultValue: 'http://localhost:5080');
-const reciter = 'Alafasy_128kbps';
+/// القارئ الافتراضي — أول القرّاء في packages/shared/content/recitation.ts (السكينة والمرشد يقرآن به دائماً).
+const defaultReciter = 'Alafasy_128kbps';
 
-String ayahAudioUrl(int surah, int ayah) => '$apiBase/api/v1/public/recitation/$reciter/$surah/$ayah';
+String ayahAudioUrl(int surah, int ayah, [String reciter = defaultReciter]) => '$apiBase/api/v1/public/recitation/$reciter/$surah/$ayah';
 
 /// واجهة الصوت — تُستبدل في الاختبارات بنسخة وهمية.
 abstract class RecitationAudio {
@@ -29,6 +30,10 @@ abstract class RecitationAudio {
   Future<void> playToEnd(String url);
 
   Future<void> stop();
+
+  /// إيقاف مؤقت ومتابعة المقطع الجاري (playToEnd يبقى منتظراً حتى ينتهي أو يُوقف).
+  Future<void> pause();
+  Future<void> resume();
 
   /// مشغّل واحد مشترك: من يبدأ التشغيل يوقف القائمة السابقة.
   void claim(VoidCallback onPreempted);
@@ -103,6 +108,15 @@ class DeviceRecitationAudio implements RecitationAudio {
     final c = _current;
     if (c != null && !c.isCompleted) c.complete();
     await _player?.stop();
+  }
+
+  @override
+  Future<void> pause() async => _player?.pause();
+
+  @override
+  Future<void> resume() async {
+    final p = _player;
+    if (p != null) unawaited(p.play());
   }
 
   @override

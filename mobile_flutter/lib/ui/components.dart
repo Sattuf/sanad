@@ -142,7 +142,7 @@ class _VerseBlockState extends ConsumerState<VerseBlock> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    final style = TextStyle(fontFamily: kQuran, fontSize: widget.large ? 28 : 23, height: 2.5, color: t.text);
+    final style = TextStyle(fontFamily: kQuran, fontFamilyFallback: kQuranFallback, fontSize: widget.large ? 28 : 23, height: 2.5, color: t.text);
     final label = widget.refs.map((r) => widget.content.quran[r]!.label).join('، ');
     var n = 0;
     return Column(

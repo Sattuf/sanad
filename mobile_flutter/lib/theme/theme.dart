@@ -15,6 +15,9 @@ const kSans = 'IBMPlexSansArabic';
 const kNaskh = 'Amiri';
 const kQuran = 'AmiriQuran';
 
+/// كالويب (--font-quran): ما لا يحويه خط المصحف — مثل تنوين الفتح المفتوح U+065E — يُؤخذ من أميري.
+const kQuranFallback = [kNaskh];
+
 /// الرموز متاحة لكل الشاشات: context.t.primary …
 class SanadColors extends ThemeExtension<SanadColors> {
   const SanadColors(this.tokens);

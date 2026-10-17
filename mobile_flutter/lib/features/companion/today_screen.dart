@@ -46,7 +46,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     final content = ref.watch(contentProvider);
     final s = ref.watch(companionProvider);
     final program = content.programById(s.activeProgramId);
-    final now = DateTime.now();
+    final now = ref.watch(clockProvider)();
     final g = _greeting(now.hour);
 
     return SafeArea(

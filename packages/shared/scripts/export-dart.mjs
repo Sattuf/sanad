@@ -31,6 +31,10 @@ const { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES } = await i
 const { RISK_INDICATORS } = await import(src("safety/riskSignals.ts"));
 const { FALLBACK_REFERRAL } = await import(src("safety/emergency.ts"));
 const { ar } = await import(src("i18n/ar.ts"));
+const { GROUP_ORDER, HERO_VERSES, collections, groups, guides, suggestedWird } = await import(src("content/ruqyah.ts"));
+const { MAX_COUNT, slotForHour, slots } = await import(src("content/wird.ts"));
+const { RECITERS } = await import(src("content/recitation.ts"));
+const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
 const GENERATED = "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)";
 const files = {
@@ -54,6 +58,19 @@ const files = {
     },
     journal: { metrics: JOURNAL_METRICS, trendDays: TREND_DAYS, trendMinEntries: TREND_MIN_ENTRIES, stableDelta: STABLE_DELTA },
     sakina: { needOrder: SAKINA_NEED_ORDER, needs: SAKINA_NEEDS, repeat: SAKINA_REPEAT, pacedDhikr: PACED_DHIKR, pulseSeconds: PULSE_SECONDS },
+  },
+  // «الرقية والتحصين» و«الصحة والطمأنينة»: المجموعات والأدلة، وأوقات الورد
+  "ruqyah.json": {
+    $generated: GENERATED,
+    groups,
+    groupOrder: GROUP_ORDER,
+    heroVerses: HERO_VERSES,
+    collections,
+    guides: guides.map((g) => ({ ...g, kind: g.kind ?? "method" })),
+    // الدالتان محسوبتان لكل ساعة، فلا يُعاد منطقهما ولا نصوصهما في Dart
+    suggestedWirdByHour: HOURS.map(suggestedWird),
+    reciters: RECITERS,
+    wird: { slots, maxCount: MAX_COUNT, slotByHour: HOURS.map((h) => slotForHour(h)?.id ?? null) },
   },
   // تسميات الواجهة المشتركة (التنقل، فئات المكتبة…) — الويب يقرؤها من i18n/ar.ts
   "strings.json": { $generated: GENERATED, ar },

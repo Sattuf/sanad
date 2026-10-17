@@ -12,11 +12,11 @@ export function HealthHubPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-2xl">
           <p className="text-sm font-semibold tracking-wide text-lamp-glow">سند · الصحة والطمأنينة</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">الصحة والطمأنينة</h1>
-          <p className="mt-4 text-lg leading-8 text-[#e6dfd0]">
+          <p className="mt-4 text-lg leading-8 text-[var(--scene-soft)]">
             توعية صحية ونفسية مبسّطة: كيف تجمع بين الرقية والتداوي، ومتى تراجع الطبيب، وكيف تختار مختصاً موثّقاً. معلومات عامة للتوعية، ولا تغني عن الفحص والتشخيص عند المختص.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/health/when-to-see-doctor" className="rounded-xl bg-lamp-glow px-5 py-3 font-bold text-[#1d1a12]">متى تراجع الطبيب؟</Link>
+            <Link to="/health/when-to-see-doctor" className="rounded-xl bg-lamp-glow px-5 py-3 font-bold text-[var(--scene-on-gold)]">متى تراجع الطبيب؟</Link>
             <Link to="/directory?track=LicensedHealth" className="rounded-xl border border-white/25 bg-white/10 px-5 py-3 font-semibold backdrop-blur hover:bg-white/20">
               مختصون صحيون موثّقون
             </Link>

@@ -1,18 +1,15 @@
 import { create } from "zustand";
 import { mediaUrl } from "../../api/client";
 import { quran, type QuranKey } from "@sanad/shared/content/quran";
+import { RECITERS, ayahAudioPath } from "@sanad/shared/content/recitation";
 
 /*
   تلاوة الآيات آية بآية بمشغّل واحد مشترك: لا تتداخل تلاوتان، والآية الجارية تُظلَّل في النص.
   الصوت يخدمه سند نفسه (/api/v1/public/recitation) بعد جلبه من everyayah.com مرة واحدة.
 */
 
-export const reciters = [
-  { id: "Alafasy_128kbps", name: "مشاري العفاسي" },
-  { id: "Husary_128kbps", name: "محمود خليل الحصري" },
-  { id: "Minshawy_Murattal_128kbps", name: "محمد صديق المنشاوي" },
-  { id: "Abdul_Basit_Murattal_192kbps", name: "عبد الباسط عبد الصمد" },
-] as const;
+// القرّاء ومسار الآية مشتركان مع تطبيق Flutter (packages/shared/content/recitation.ts)
+export const reciters = RECITERS;
 
 const RECITER_KEY = "sanad.ruqyah.reciter";
 
@@ -40,7 +37,7 @@ function readReciter(): string {
   }
 }
 
-export const ayahAudioPath = (reciter: string, surah: number, ayah: number) => `/api/v1/public/recitation/${reciter}/${surah}/${ayah}`;
+export { ayahAudioPath };
 
 let audio: HTMLAudioElement | null = null;
 let preload: HTMLAudioElement | null = null;

@@ -67,7 +67,7 @@ class CardPainter extends CustomPainter {
     var size0 = content.quran ? 64.0 : 60.0;
     late TextPainter body;
     for (; size0 >= 34; size0 -= 2) {
-      body = _text(content.body, TextStyle(fontFamily: bodyFont, fontSize: size0, height: 1.9, color: c.ink), maxW);
+      body = _text(content.body, TextStyle(fontFamily: bodyFont, fontFamilyFallback: kQuranFallback, fontSize: size0, height: 1.9, color: c.ink), maxW);
       if (body.height <= limit) break;
     }
     final top = h / 2 - body.height / 2;

@@ -53,6 +53,7 @@ Future<SharedPreferences> pumpApp(
         prefsProvider.overrideWithValue(p),
         contentProvider.overrideWithValue(loadContent()),
         todayProvider.overrideWithValue(today),
+        clockProvider.overrideWithValue(() => DateTime.parse('${today}T10:00:00')),
         recitationAudioProvider.overrideWithValue(audio ?? FakeAudio()),
         biometricKeyStoreProvider.overrideWithValue((device ??= FakeDevice()).bio),
         reminderSchedulerProvider.overrideWithValue(device.reminders),
@@ -88,15 +89,19 @@ Future<SharedPreferences> pumpApp(
 
 /// يمرّر القائمة الرئيسية حتى يظهر العنصر (القوائم تبني عناصرها عند الحاجة فقط).
 /// ثم يرفعه لأعلى القائمة حتى لا يقع تحت شريط التبويب.
+/// القائمة العمودية الرئيسية (لا شريط أدوات أفقي داخلها).
+final _mainScroll = find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).first;
+
 Future<void> reveal(WidgetTester tester, Finder f) async {
-  await tester.scrollUntilVisible(f, 200, scrollable: find.byType(Scrollable).first);
+  await tester.scrollUntilVisible(f, 200, scrollable: _mainScroll);
   await tester.ensureVisible(f);
   await tester.pumpAndSettle();
 }
 
 /// يعود إلى أعلى القائمة الرئيسية.
 Future<void> toTop(WidgetTester tester) async {
-  await tester.drag(find.byType(Scrollable).first, const Offset(0, 4000));
+  // قفز مباشر: السحب قد يبدأ على نص قابل للتحديد فيصير تحديداً لا تمريراً
+  tester.state<ScrollableState>(_mainScroll).position.jumpTo(0);
   await tester.pumpAndSettle();
 }
 
@@ -133,6 +138,14 @@ class FakeAudio implements RecitationAudio {
 
   @override
   Future<void> clearCache() async => cached.clear();
+
+  bool paused = false;
+
+  @override
+  Future<void> pause() async => paused = true;
+
+  @override
+  Future<void> resume() async => paused = false;
 
   @override
   void claim(VoidCallback onPreempted) {
@@ -224,10 +237,15 @@ class FakeReminders implements ReminderScheduler {
   @override
   Future<bool> requestPermission() async => grant;
 
+  final titles = <int, String>{};
+  final routes = <int, String>{};
+
   @override
-  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false}) async {
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false, String title = neutralReminderTitle, String route = '/today'}) async {
     scheduled[id] = (hour, minute);
     this.neutral[id] = neutral;
+    titles[id] = title;
+    routes[id] = route;
   }
 
   @override

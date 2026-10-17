@@ -91,11 +91,15 @@ class DeviceBiometricKeyStore implements BiometricKeyStore {
 
 final biometricKeyStoreProvider = Provider<BiometricKeyStore>((ref) => DeviceBiometricKeyStore());
 
+/// عنوان محايد عمداً حتى لا يكشف شيئاً على شاشة القفل.
+const neutralReminderTitle = 'وِرد اليوم';
+
 /// التذكير اليومي المحلي — يُجدول في النظام، فيصل والتطبيق مغلق وبلا شبكة.
 abstract class ReminderScheduler {
   Future<bool> requestPermission();
   /// [neutral]: أيقونة إشعار محايدة (الوضع المتحفّظ).
-  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false});
+  /// [title] عنوان الإشعار (محايد افتراضياً)، و[route] الصفحة التي يفتحها لمسه.
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false, String title = neutralReminderTitle, String route = '/today'});
   Future<void> cancel(int id);
 }
 
@@ -103,8 +107,8 @@ class DeviceReminderScheduler implements ReminderScheduler {
   final _plugin = FlutterLocalNotificationsPlugin();
   Future<void>? _ready;
 
-  /// يُستدعى عند لمس الإشعار — يفتح «يومي».
-  static void Function()? onOpen;
+  /// يُستدعى عند لمس الإشعار بالصفحة التي يفتحها.
+  static void Function(String route)? onOpen;
 
   Future<void> _init() => _ready ??= () async {
         tzdata.initializeTimeZones();
@@ -118,10 +122,10 @@ class DeviceReminderScheduler implements ReminderScheduler {
             android: AndroidInitializationSettings('@mipmap/ic_launcher'),
             iOS: DarwinInitializationSettings(requestAlertPermission: false, requestBadgePermission: false, requestSoundPermission: false),
           ),
-          onDidReceiveNotificationResponse: (_) => onOpen?.call(),
+          onDidReceiveNotificationResponse: (r) => onOpen?.call(r.payload ?? '/today'),
         );
         final launch = await _plugin.getNotificationAppLaunchDetails();
-        if (launch?.didNotificationLaunchApp ?? false) onOpen?.call();
+        if (launch?.didNotificationLaunchApp ?? false) onOpen?.call(launch!.notificationResponse?.payload ?? '/today');
       }();
 
   /// يُستدعى عند بدء التطبيق ليُعالج لمس إشعار فتح التطبيق.
@@ -138,7 +142,7 @@ class DeviceReminderScheduler implements ReminderScheduler {
   }
 
   @override
-  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false}) async {
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false, String title = neutralReminderTitle, String route = '/today'}) async {
     await _init();
     // في الدقيقة نفسها حين يسمح النظام بالمنبّهات الدقيقة؛ وإلا نافذة حتى ساعة لتوفير البطارية
     final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
@@ -148,8 +152,7 @@ class DeviceReminderScheduler implements ReminderScheduler {
     if (!at.isAfter(now)) at = at.add(const Duration(days: 1));
     await _plugin.zonedSchedule(
       id: id,
-      // عنوان محايد عمداً حتى لا يكشف شيئاً على شاشة القفل
-      title: 'وِرد اليوم',
+      title: title,
       scheduledDate: at,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
@@ -162,7 +165,7 @@ class DeviceReminderScheduler implements ReminderScheduler {
       ),
       androidScheduleMode: exact ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: '/today',
+      payload: route,
     );
   }
 

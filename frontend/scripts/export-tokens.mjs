@@ -2,7 +2,7 @@
 // الويب مرجع التصميم: أي تعديل لون يُعدَّل في CSS ثم يُعاد التوليد، ولا يُكتب لون يدوياً في Dart.
 //   node frontend/scripts/export-tokens.mjs          ← يكتب mobile_flutter/lib/theme/tokens.g.dart
 //   node frontend/scripts/export-tokens.mjs --check  ← يفشل إن لم يطابق الملف المصدر (CI)
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -63,6 +63,11 @@ ${names.map((k) => `  final Color ${camel(k)};`).join("\n")}
 }
 `;
 
+// صور مشاهد «الرقية والتحصين» (public/library/*.jpg) تُنسخ كما هي — مصدرها الويب أيضاً
+const scenesFrom = fileURLToPath(new URL("../public/library/", import.meta.url));
+const scenesTo = fileURLToPath(new URL("../../mobile_flutter/assets/scenes/", import.meta.url));
+const scenes = readdirSync(scenesFrom).filter((f) => f.endsWith(".jpg"));
+
 if (process.argv.includes("--check")) {
   let current = "";
   try {
@@ -70,13 +75,22 @@ if (process.argv.includes("--check")) {
   } catch {
     /* غير موجود */
   }
-  if (current !== dart) {
-    console.error("tokens.g.dart لا يطابق index.css — شغّل: node frontend/scripts/export-tokens.mjs");
+  const staleScenes = scenes.filter((f) => {
+    try {
+      return !readFileSync(scenesFrom + f).equals(readFileSync(scenesTo + f));
+    } catch {
+      return true;
+    }
+  });
+  if (current !== dart || staleScenes.length) {
+    console.error("tokens.g.dart أو صور المشاهد لا تطابق الويب — شغّل: node frontend/scripts/export-tokens.mjs");
     process.exit(1);
   }
-  console.log("رموز Flutter مطابقة للويب ✓");
+  console.log("رموز Flutter وصور المشاهد مطابقة للويب ✓");
 } else {
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, dart);
-  console.log(`كُتب ${out} (${names.length} لوناً + تدرّج الفجر)`);
+  mkdirSync(scenesTo, { recursive: true });
+  for (const f of scenes) copyFileSync(scenesFrom + f, scenesTo + f);
+  console.log(`كُتب ${out} (${names.length} لوناً + تدرّج الفجر) و${scenes.length} صور مشاهد`);
 }
