@@ -94,7 +94,8 @@ final biometricKeyStoreProvider = Provider<BiometricKeyStore>((ref) => DeviceBio
 /// التذكير اليومي المحلي — يُجدول في النظام، فيصل والتطبيق مغلق وبلا شبكة.
 abstract class ReminderScheduler {
   Future<bool> requestPermission();
-  Future<void> scheduleDaily(int id, int hour, int minute);
+  /// [neutral]: أيقونة إشعار محايدة (الوضع المتحفّظ).
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false});
   Future<void> cancel(int id);
 }
 
@@ -137,8 +138,11 @@ class DeviceReminderScheduler implements ReminderScheduler {
   }
 
   @override
-  Future<void> scheduleDaily(int id, int hour, int minute) async {
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false}) async {
     await _init();
+    // في الدقيقة نفسها حين يسمح النظام بالمنبّهات الدقيقة؛ وإلا نافذة حتى ساعة لتوفير البطارية
+    final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    final exact = await android?.canScheduleExactNotifications() ?? false;
     final now = tz.TZDateTime.now(tz.local);
     var at = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (!at.isAfter(now)) at = at.add(const Duration(days: 1));
@@ -147,12 +151,16 @@ class DeviceReminderScheduler implements ReminderScheduler {
       // عنوان محايد عمداً حتى لا يكشف شيئاً على شاشة القفل
       title: 'وِرد اليوم',
       scheduledDate: at,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails('daily', 'تذكير يومي', channelDescription: 'تذكير محلي بالوِرد اليومي'),
-        iOS: DarwinNotificationDetails(),
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily',
+          'تذكير يومي',
+          channelDescription: 'تذكير محلي بالوِرد اليومي',
+          icon: neutral ? 'ic_stat_notes' : null,
+        ),
+        iOS: const DarwinNotificationDetails(),
       ),
-      // غير دقيق بالدقيقة: لا يحتاج إذن «المنبّهات الدقيقة»، وقد يتأخر قليلاً لتوفير البطارية
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: exact ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: '/today',
     );

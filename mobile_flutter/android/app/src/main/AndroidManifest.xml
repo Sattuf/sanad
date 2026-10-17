@@ -4,6 +4,9 @@
     <!-- التذكير المحلي «وِرد اليوم»: يصل والتطبيق مغلق، ويُعاد جدولته بعد إعادة التشغيل -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- تذكير في الدقيقة نفسها حين يسمح النظام (أندرويد 12 مسموح افتراضياً، و13+ إن أذن المستخدم من الإعدادات)؛
+         وإلا يُجدول بنافذة حتى ساعة. لا نطلب الإذن ولا نستخدم USE_EXACT_ALARM المخصّص لتطبيقات المنبّه -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:label="سند"
         android:name="${applicationName}"

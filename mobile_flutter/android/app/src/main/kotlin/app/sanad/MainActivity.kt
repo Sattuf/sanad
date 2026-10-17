@@ -1,9 +1,11 @@
 package app.sanad
 
 import android.app.Activity
+import android.app.ActivityManager.TaskDescription
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -14,9 +16,28 @@ import io.flutter.plugin.common.MethodChannel
   FlutterFragmentActivity لأن نافذة البصمة (local_auth وflutter_secure_storage) تحتاجها.
   قناة app.sanad/privacy:
   - setSecure: يمنع لقطات الشاشة وصورة المهام الأخيرة أثناء فتح «مذكّرتي» (FLAG_SECURE).
-  - setNeutralIcon: الوضع المتحفّظ — يبدّل أيقونة التطبيق واسمه في قائمة التطبيقات إلى «ملاحظاتي».
+  - setNeutralIcon: الوضع المتحفّظ — يبدّل أيقونة التطبيق واسمه في قائمة التطبيقات إلى «ملاحظاتي»،
+    والأيقونة في بطاقة المهام الأخيرة.
 */
 class MainActivity : FlutterFragmentActivity() {
+    private var neutral = false
+    private var lastDescription: TaskDescription? = null
+    private val notesIcon by lazy { BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_notes) }
+
+    /*
+      Flutter يضبط وصف المهمة (الاسم واللون) بلا أيقونة كلما تغيّر عنوان التطبيق، فتظهر أيقونة التطبيق
+      في بطاقة المهام الأخيرة. في الوضع المتحفّظ نضيف الأيقونة المحايدة إلى كل وصف قبل تمريره للنظام.
+    */
+    @Suppress("DEPRECATION")
+    override fun setTaskDescription(taskDescription: TaskDescription?) {
+        lastDescription = taskDescription
+        if (!neutral || taskDescription == null) return super.setTaskDescription(taskDescription)
+        val label = taskDescription.label
+        val color = taskDescription.primaryColor
+        // صورة لا معرّف مورد: الصيغة التي تدعمها كل إصدارات أندرويد منذ API 21، وتحفظها المهام الأخيرة ملفاً
+        super.setTaskDescription(TaskDescription(label, notesIcon, color))
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "app.sanad/privacy").setMethodCallHandler { call, result ->
@@ -27,9 +48,11 @@ class MainActivity : FlutterFragmentActivity() {
                     result.success(null)
                 }
                 "setNeutralIcon" -> {
-                    val neutral = call.arguments == true
+                    neutral = call.arguments == true
                     setLauncher(DefaultLauncher::class.java, !neutral)
                     setLauncher(NotesLauncher::class.java, neutral)
+                    // نعيد تطبيق آخر وصف ليتبدّل الشعار في المهام الأخيرة فوراً
+                    setTaskDescription(lastDescription ?: TaskDescription())
                     result.success(null)
                 }
                 else -> result.notImplemented()

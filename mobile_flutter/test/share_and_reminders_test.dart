@@ -32,6 +32,19 @@ void main() {
     expect(device.reminders.scheduled, {3: (22, 0)});
   });
 
+  testWidgets('الوضع المتحفّظ يعيد جدولة التذكيرات المفعّلة بأيقونة إشعار محايدة، والعكس', (tester) async {
+    final device = FakeDevice();
+    await pumpApp(tester, location: '/privacy-mode', device: device, prefs: {'sanad.companion.v1': _active, 'sanad.reminders': jsonEncode(['night'])});
+    await tester.tap(find.byKey(const ValueKey('discreet')));
+    await tester.pumpAndSettle();
+    expect(device.reminders.scheduled, {3: (22, 0)});
+    expect(device.reminders.neutral, {3: true});
+
+    await tester.tap(find.byKey(const ValueKey('discreet')));
+    await tester.pumpAndSettle();
+    expect(device.reminders.neutral, {3: false});
+  });
+
   testWidgets('رفض إذن الإشعارات: لا جدولة ورسالة تشرح', (tester) async {
     final device = FakeDevice()..reminders.grant = false;
     await pumpApp(tester, device: device, prefs: {'sanad.companion.v1': _active});

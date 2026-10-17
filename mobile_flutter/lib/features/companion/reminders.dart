@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/platform_services.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../privacy/discreet.dart';
 import 'companion_store.dart';
 
 /*
@@ -43,9 +44,18 @@ class RemindersNotifier extends Notifier<Set<String>> {
       return true;
     }
     if (!await scheduler.requestPermission()) return false;
-    await scheduler.scheduleDaily(slot.notificationId, slot.hour, slot.minute);
+    await scheduler.scheduleDaily(slot.notificationId, slot.hour, slot.minute, neutral: ref.read(discreetProvider));
     await _save({...state, slot.id});
     return true;
+  }
+
+  /// يعيد جدولة التذكيرات المفعّلة: عند بدء التطبيق (قد يتغيّر إذن المنبّهات الدقيقة أو المنطقة الزمنية)،
+  /// وعند تبديل الوضع المتحفّظ لتتبدّل أيقونة الإشعار.
+  Future<void> refresh() async {
+    final scheduler = ref.read(reminderSchedulerProvider);
+    for (final s in reminderSlots) {
+      if (state.contains(s.id)) await scheduler.scheduleDaily(s.notificationId, s.hour, s.minute, neutral: ref.read(discreetProvider));
+    }
   }
 
   /// عند مسح كل البيانات.

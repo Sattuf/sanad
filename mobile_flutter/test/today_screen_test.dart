@@ -199,15 +199,22 @@ class FakeBio implements BiometricKeyStore {
 class FakeReminders implements ReminderScheduler {
   bool grant = true;
   final scheduled = <int, (int, int)>{};
+  final neutral = <int, bool>{};
 
   @override
   Future<bool> requestPermission() async => grant;
 
   @override
-  Future<void> scheduleDaily(int id, int hour, int minute) async => scheduled[id] = (hour, minute);
+  Future<void> scheduleDaily(int id, int hour, int minute, {bool neutral = false}) async {
+    scheduled[id] = (hour, minute);
+    this.neutral[id] = neutral;
+  }
 
   @override
-  Future<void> cancel(int id) async => scheduled.remove(id);
+  Future<void> cancel(int id) async {
+    scheduled.remove(id);
+    neutral.remove(id);
+  }
 }
 
 class FakeOutbound implements Outbound {

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- موارد يطلبها Dart بالاسم (أيقونة إشعار الوضع المتحفّظ) — لا تُحذف في نسخ الإصدار المضغوطة -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_notes,@mipmap/ic_launcher_notes" />

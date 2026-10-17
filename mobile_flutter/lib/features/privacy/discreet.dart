@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/platform_services.dart';
 import '../companion/companion_store.dart';
+import '../companion/reminders.dart';
 import '../journal/journal_store.dart';
 
 /*
@@ -21,6 +22,7 @@ class DiscreetNotifier extends Notifier<bool> {
     state = on;
     await ref.read(prefsProvider).setString(_key, on ? 'true' : 'false');
     await ref.read(privacyPlatformProvider).setNeutralIcon(on);
+    await ref.read(remindersProvider.notifier).refresh();
   }
 }
 

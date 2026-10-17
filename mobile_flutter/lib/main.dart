@@ -8,6 +8,7 @@ import 'app/router.dart';
 import 'content/content_repository.dart';
 import 'core/platform_services.dart';
 import 'features/companion/companion_store.dart';
+import 'features/companion/reminders.dart';
 import 'features/privacy/discreet.dart';
 import 'theme/theme.dart';
 import 'ui/emergency.dart';
@@ -19,13 +20,15 @@ Future<void> main() async {
   final reminders = DeviceReminderScheduler();
   // لمس تذكير «وِرد اليوم» يفتح «يومي»
   DeviceReminderScheduler.onOpen = () => router.go('/today');
-  runApp(
-    ProviderScope(
-      overrides: [prefsProvider.overrideWithValue(prefs), contentProvider.overrideWithValue(content), reminderSchedulerProvider.overrideWithValue(reminders)],
-      child: const SanadApp(),
-    ),
+  final container = ProviderContainer(
+    overrides: [prefsProvider.overrideWithValue(prefs), contentProvider.overrideWithValue(content), reminderSchedulerProvider.overrideWithValue(reminders)],
   );
+  runApp(UncontrolledProviderScope(container: container, child: const SanadApp()));
+  // الوضع المتحفّظ محفوظ: نعيد ضبط الأيقونة في المهام الأخيرة بعد كل تشغيل
+  final discreet = container.read(discreetProvider);
+  await container.read(privacyPlatformProvider).setNeutralIcon(discreet);
   await reminders.init();
+  await container.read(remindersProvider.notifier).refresh();
 }
 
 class SanadApp extends ConsumerWidget {
