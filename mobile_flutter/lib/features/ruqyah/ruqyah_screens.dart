@@ -853,11 +853,12 @@ class _RecitationControls extends ConsumerWidget {
     final s = ref.watch(recitationProvider);
     final c = ref.read(recitationProvider.notifier);
     final reciters = ref.watch(contentProvider).ruqyah.reciters;
-    final label = switch (s.status) {
-      RecitationStatus.playing || RecitationStatus.loading => '❚❚ إيقاف مؤقت',
-      RecitationStatus.paused => '▶ متابعة',
-      RecitationStatus.error => '↻ أعد المحاولة',
-      RecitationStatus.idle => '▶ استمع للآيات',
+    // الرمز أيقونة لا حرفاً: أندرويد يرسم ▶ رمزاً تعبيرياً ملوّناً
+    final (Widget icon, String label) = switch (s.status) {
+      RecitationStatus.playing || RecitationStatus.loading => (const PlayIcon(playing: true, size: 18), 'إيقاف مؤقت'),
+      RecitationStatus.paused => (const PlayIcon(playing: false, size: 18), 'متابعة'),
+      RecitationStatus.error => (const Icon(Icons.refresh_rounded, size: 18), 'أعد المحاولة'),
+      RecitationStatus.idle => (const PlayIcon(playing: false, size: 18), 'استمع للآيات'),
     };
     return Container(
       padding: const EdgeInsets.all(3),
@@ -877,7 +878,7 @@ class _RecitationControls extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               textStyle: const TextStyle(fontFamily: kSans, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            child: Text(label),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [icon, const SizedBox(width: 6), Text(label)]),
           ),
           if (s.active)
             IconButton(
@@ -998,7 +999,7 @@ class _ItemCardState extends ConsumerState<_ItemCard> {
                     Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700)),
                     if (passage != null)
                       Text(
-                        'سورة ${passage.surahName} · ${passage.from == passage.to ? 'الآية ${arNum(passage.from)}' : 'الآيات ${arNum(passage.from)}–${arNum(passage.to)}'}',
+                        'سورة ${passage.surahName} · ${passage.from == passage.to ? 'الآية\u00A0${arNum(passage.from)}' : 'الآيات\u00A0${arNum(passage.from)}\u2060–\u2060${arNum(passage.to)}'}',
                         style: TextStyle(fontSize: 12, color: t.muted),
                       ),
                   ],
@@ -1014,7 +1015,10 @@ class _ItemCardState extends ConsumerState<_ItemCard> {
                       activeAyah == null ? c.play([(itemIndex: widget.index, ref: item.ref!)]) : c.toggle();
                     },
                     style: actionStyle.copyWith(foregroundColor: WidgetStatePropertyAll(activeAyah != null ? t.lamp : t.primary)),
-                    child: Text(activeAyah != null ? '❚❚ إيقاف' : '▶ استمع'),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [PlayIcon(playing: activeAyah != null, size: 16), const SizedBox(width: 4), Text(activeAyah != null ? 'إيقاف' : 'استمع')],
+                    ),
                   ),
                 ),
               Semantics(

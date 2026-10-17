@@ -128,12 +128,12 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('recite-all')));
     await tester.pumpAndSettle();
     expect(audio.played, [ayahAudioUrl(p.surah, p.from, r.reciters.first.id)]);
-    expect(find.text('❚❚ إيقاف مؤقت'), findsOneWidget);
+    expect(find.text('إيقاف مؤقت'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('recite-all')));
     await tester.pumpAndSettle();
     expect(audio.paused, isTrue);
-    expect(find.text('▶ متابعة'), findsOneWidget);
+    expect(find.text('متابعة'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('recite-all')));
     await tester.pumpAndSettle();
     expect(audio.paused, isFalse);

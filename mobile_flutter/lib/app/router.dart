@@ -87,25 +87,27 @@ class AppShell extends ConsumerWidget {
     final t = context.t;
     final discreet = ref.watch(discreetProvider);
     return Scaffold(
-      body: Stack(
-        children: [
-          shell,
-          // الخروج السريع في الوضع المتحفّظ (✕ أعلى الشاشة كالويب)
-          if (discreet)
-            PositionedDirectional(
-              top: 0,
-              end: 4,
-              child: SafeArea(
-                child: IconButton(
-                  key: const ValueKey('quick-exit'),
-                  onPressed: () => quickExit(ref, GoRouter.of(context)),
-                  tooltip: 'خروج سريع',
-                  icon: Icon(Icons.close_rounded, color: t.muted),
+      // الخروج السريع في الوضع المتحفّظ (✕ أعلى الشاشة كالويب): في شريط رفيع خاص به فوق المحتوى،
+      // لا عائماً فوقه — كان يغطّي زاوية بطاقات المشاهد في صفحات الرقية
+      body: !discreet
+          ? shell
+          : Column(
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: IconButton(
+                      key: const ValueKey('quick-exit'),
+                      onPressed: () => quickExit(ref, GoRouter.of(context)),
+                      tooltip: 'خروج سريع',
+                      icon: Icon(Icons.close_rounded, color: t.muted),
+                    ),
+                  ),
                 ),
-              ),
+                Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: shell)),
+              ],
             ),
-        ],
-      ),
       // زر السكينة حاضر في كل الشاشات، في الجهة نفسها كالويب (يسار الشاشة في RTL)
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       // صفحة البرنامج لها شريط إجراء ثابت في الأسفل، فلا يغطّيه الزر
