@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio.dart';
 import '../companion/companion_store.dart';
+import '../privacy/discreet.dart';
 
 /*
   تلاوة آيات المجموعة آية بآية بمشغّل واحد مشترك — نظير useRecitation في frontend/src/features/ruqyah/recitation.ts:
@@ -61,6 +62,14 @@ class RecitationController extends Notifier<RecitationState> {
     return ayahAudioUrl(p.surah, p.from + ayah, state.reciter);
   }
 
+  /// اسم السورة والقارئ في إشعار التشغيل وشاشة القفل — ومحايد في الوضع المتحفّظ.
+  NowPlaying _info(int position) {
+    if (ref.read(discreetProvider)) return neutralNowPlaying;
+    final p = ref.read(contentProvider).quran[state.queue[position].ref]!;
+    final reciter = ref.read(contentProvider).ruqyah.reciters.firstWhere((r) => r.id == state.reciter);
+    return (title: p.surahName, subtitle: reciter.name);
+  }
+
   /// الموضع التالي (آية تالية، أو أول آية في المقطع التالي) — أو null في النهاية.
   ({int position, int ayah})? _next(int position, int ayah) {
     final p = ref.read(contentProvider).quran[state.queue[position].ref]!;
@@ -81,7 +90,9 @@ class RecitationController extends Notifier<RecitationState> {
         await _audio.cache(url);
         if (run != _run) return;
         state = state.copyWith(status: RecitationStatus.playing);
-        await _audio.playToEnd(url);
+        final next = _next(at.position, at.ayah);
+        if (next != null) unawaited(_audio.cache(_url(next.position, next.ayah)).catchError((_) {}));
+        await _audio.playToEnd(url, info: _info(at.position));
       } catch (_) {
         if (run == _run) state = state.copyWith(status: RecitationStatus.error);
         return;
@@ -90,6 +101,7 @@ class RecitationController extends Notifier<RecitationState> {
       at = _next(at.position, at.ayah);
     }
     state = state.copyWith(queue: const [], position: 0, ayah: 0, status: RecitationStatus.idle);
+    unawaited(_audio.stop()); // يُزيل إشعار التشغيل بعد آخر آية
   }
 
   void _preempted() {

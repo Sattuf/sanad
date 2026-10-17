@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 
 /*
@@ -19,7 +20,16 @@ const defaultReciter = 'Alafasy_128kbps';
 
 String ayahAudioUrl(int surah, int ayah, [String reciter = defaultReciter]) => '$apiBase/api/v1/public/recitation/$reciter/$surah/$ayah';
 
+/// ما يظهر في إشعار التشغيل وشاشة القفل. في الوضع المتحفّظ عنوان محايد لا يكشف المحتوى.
+typedef NowPlaying = ({String title, String? subtitle});
+
+const neutralNowPlaying = (title: 'مقطع صوتي', subtitle: null);
+
+/// موضع التشغيل ومدته — لشريط مشغّل المكتبة.
+typedef PlaybackProgress = ({Duration position, Duration? duration});
+
 /// واجهة الصوت — تُستبدل في الاختبارات بنسخة وهمية.
+/// مشغّل واحد للتطبيق كله (التلاوة والسكينة والمكتبة)، يعمل في الخلفية والشاشة مقفلة.
 abstract class RecitationAudio {
   Future<bool> isCached(String url);
 
@@ -27,7 +37,13 @@ abstract class RecitationAudio {
   Future<void> cache(String url);
 
   /// يشغّل المقطع (المحفوظ) ويكتمل عند انتهائه أو إيقافه.
-  Future<void> playToEnd(String url);
+  /// stream: يُشغَّل من الشبكة دون حفظ (مقاطع المكتبة الطويلة).
+  Future<void> playToEnd(String url, {NowPlaying? info, bool stream = false});
+
+  /// الموضع والمدة للمقطع الجاري.
+  Stream<PlaybackProgress> get progress;
+
+  Future<void> seek(Duration position);
 
   Future<void> stop();
 
@@ -82,9 +98,11 @@ class DeviceRecitationAudio implements RecitationAudio {
   }
 
   @override
-  Future<void> playToEnd(String url) async {
-    final file = await _ensure(url);
+  Future<void> playToEnd(String url, {NowPlaying? info, bool stream = false}) async {
+    final file = stream ? null : await _ensure(url);
     final player = _player ??= AudioPlayer();
+    // وسم الإشعار: just_audio_background يشترطه على كل مقطع
+    final tag = MediaItem(id: url, title: (info ?? neutralNowPlaying).title, album: (info ?? neutralNowPlaying).subtitle);
     final done = _current = Completer<void>();
     final sub = player.playerStateStream.listen(
       (s) {
@@ -95,7 +113,8 @@ class DeviceRecitationAudio implements RecitationAudio {
       },
     );
     try {
-      await player.setFilePath(file.path);
+      // المشغّل يبقى «يعمل» بين الآيات فلا تخرج الخدمة من المقدّمة والشاشة مقفلة
+      await player.setAudioSource(file == null ? AudioSource.uri(Uri.parse(url), tag: tag) : AudioSource.file(file.path, tag: tag));
       unawaited(player.play());
       await done.future;
     } finally {
@@ -109,6 +128,15 @@ class DeviceRecitationAudio implements RecitationAudio {
     if (c != null && !c.isCompleted) c.complete();
     await _player?.stop();
   }
+
+  @override
+  Stream<PlaybackProgress> get progress {
+    final p = _player ??= AudioPlayer();
+    return p.positionStream.map((pos) => (position: pos, duration: p.duration));
+  }
+
+  @override
+  Future<void> seek(Duration position) async => _player?.seek(position);
 
   @override
   Future<void> pause() async => _player?.pause();
@@ -145,11 +173,14 @@ final recitationAudioProvider = Provider<RecitationAudio>((ref) {
 /// مشغّل قائمة — نظير usePlaylist في الويب: المقاطع بالترتيب، والقائمة كاملة `repeat` مرة.
 /// index = موضع المقطع الجاري (للتظليل)، round = الجولة الحالية.
 class Playlist extends ChangeNotifier {
-  Playlist(this._audio, this.urls, {this.repeat = 1});
+  Playlist(this._audio, this.urls, {this.repeat = 1, this.info});
 
   final RecitationAudio _audio;
   final List<String> urls;
   int repeat;
+
+  /// عنوان الإشعار؛ بلا عنوان يظهر محايداً.
+  final NowPlaying? info;
 
   int index = -1;
   int round = 1;
@@ -172,7 +203,10 @@ class Playlist extends ChangeNotifier {
           await _audio.cache(urls[i]);
           if (run != _run) return;
           _set(loading: false);
-          await _audio.playToEnd(urls[i]);
+          // الآية التالية تُجلب أثناء هذه، فلا فجوة والشاشة مقفلة
+          final next = i + 1 < urls.length ? urls[i + 1] : (r < repeat ? urls.first : null);
+          if (next != null) unawaited(_audio.cache(next).catchError((_) {}));
+          await _audio.playToEnd(urls[i], info: info);
         } catch (_) {
           if (run != _run) return;
           failed = true;
@@ -182,7 +216,10 @@ class Playlist extends ChangeNotifier {
         }
       }
     }
-    if (run == _run) _reset();
+    if (run == _run) {
+      _reset();
+      unawaited(_audio.stop()); // يُزيل إشعار التشغيل بعد آخر مقطع
+    }
   }
 
   void stop() {

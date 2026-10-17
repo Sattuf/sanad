@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/router.dart';
@@ -18,6 +19,12 @@ import 'ui/emergency.dart';
 /// سند — رفيق السكينة اليومي (ADR-0023). العربية وRTL افتراضياً ووحيدة، كالويب.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // التلاوة تستمر والشاشة مقفلة: خدمة وسائط أمامية بإشعار تحكّم. الأيقونة المحايدة دائماً، والإشعار يُزال عند الإيقاف المؤقت
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'app.sanad.playback',
+    androidNotificationChannelName: 'التشغيل الصوتي',
+    androidNotificationIcon: 'drawable/ic_stat_notes',
+  );
   final (prefs, content) = (await SharedPreferences.getInstance(), await ContentRepository.load(rootBundle));
   // رمز التحديث من Keychain/Keystore قبل أول إطار: الجلسة تُستعاد صامتاً بأول طلب
   final refreshStore = SecureRefreshTokenStore();

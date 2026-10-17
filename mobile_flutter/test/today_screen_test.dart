@@ -123,11 +123,25 @@ class FakeAudio implements RecitationAudio {
     cached.add(url);
   }
 
+  final infos = <NowPlaying?>[];
+
   @override
-  Future<void> playToEnd(String url) {
+  Future<void> playToEnd(String url, {NowPlaying? info, bool stream = false}) {
     played.add(url);
+    infos.add(info);
+    if (stream) streamed.add(url);
     return (_playing = Completer<void>()).future;
   }
+
+  final streamed = <String>[];
+  final seeks = <Duration>[];
+  final progressController = StreamController<PlaybackProgress>.broadcast();
+
+  @override
+  Stream<PlaybackProgress> get progress => progressController.stream;
+
+  @override
+  Future<void> seek(Duration position) async => seeks.add(position);
 
   void finishCurrent() => _playing?.complete();
 

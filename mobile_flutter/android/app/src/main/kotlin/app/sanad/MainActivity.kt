@@ -8,18 +8,19 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.WindowManager
-import io.flutter.embedding.android.FlutterFragmentActivity
+import com.ryanheise.audioservice.AudioServiceFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /*
-  FlutterFragmentActivity لأن نافذة البصمة (local_auth وflutter_secure_storage) تحتاجها.
+  FlutterFragmentActivity لأن نافذة البصمة (local_auth وflutter_secure_storage) تحتاجها؛ ونسخة audio_service
+  منها لتستمر التلاوة في الخلفية والشاشة مقفلة (just_audio_background).
   قناة app.sanad/privacy:
   - setSecure: يمنع لقطات الشاشة وصورة المهام الأخيرة أثناء فتح «مذكّرتي» (FLAG_SECURE).
   - setNeutralIcon: الوضع المتحفّظ — يبدّل أيقونة التطبيق واسمه في قائمة التطبيقات إلى «ملاحظاتي»،
     والأيقونة في بطاقة المهام الأخيرة.
 */
-class MainActivity : FlutterFragmentActivity() {
+class MainActivity : AudioServiceFragmentActivity() {
     private var neutral = false
     private var lastDescription: TaskDescription? = null
     private val notesIcon by lazy { BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_notes) }
