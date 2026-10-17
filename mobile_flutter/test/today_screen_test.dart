@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/app/router.dart';
+import 'package:dio/dio.dart';
+import 'package:sanad/core/api.dart';
 import 'package:sanad/core/audio.dart';
+import 'package:sanad/core/session.dart';
+import 'package:sanad/features/account/auth.dart';
 import 'package:sanad/core/platform_services.dart';
 import 'package:sanad/core/vault.dart';
 import 'package:sanad/features/journal/journal_store.dart';
@@ -29,6 +33,9 @@ Future<SharedPreferences> pumpApp(
   bool reduceMotion = false,
   FakeDevice? device,
   bool realVault = false,
+  FakeServer? server,
+  FakeNativeSignIn? native,
+  String? refreshToken,
 }) async {
   SharedPreferences.setMockInitialValues(prefs);
   final p = await SharedPreferences.getInstance();
@@ -53,6 +60,18 @@ Future<SharedPreferences> pumpApp(
         privacyPlatformProvider.overrideWithValue(device.privacy),
         // PBKDF2 مخفّض لتسريع اختبارات الواجهة فقط؛ الصيغة الحقيقية (310 ألفاً) تحرسها vault_test.dart
         vaultCryptoProvider.overrideWithValue(VaultCrypto(iterations: realVault ? pbkdf2Iterations : 1000)),
+        // خادم وهمي: لا طلب يخرج من الاختبارات أبداً
+        apiProvider.overrideWith(
+          (ref) => ApiClient(
+            baseUrl: 'https://api.test',
+            session: ref.read(sessionProvider.notifier),
+            onEmergency: (r) => ref.read(emergencyProvider.notifier).raise(r),
+            dio: Dio()..httpClientAdapter = (server ?? FakeServer()),
+          ),
+        ),
+        refreshTokenStoreProvider.overrideWithValue(device.refreshStore),
+        initialRefreshTokenProvider.overrideWithValue(refreshToken),
+        nativeSignInProvider.overrideWithValue(native ?? FakeNativeSignIn()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
@@ -169,6 +188,7 @@ void main() {
 
 /// أجهزة وهمية: البصمة والتذكير والمشاركة وقناة الخصوصية — تسجّل ما طُلب منها.
 class FakeDevice {
+  final refreshStore = MemoryRefreshStore();
   final bio = FakeBio();
   final reminders = FakeReminders();
   final outbound = FakeOutbound();
@@ -220,6 +240,7 @@ class FakeReminders implements ReminderScheduler {
 class FakeOutbound implements Outbound {
   final shared = <({String name, String mimeType, Uint8List bytes})>[];
   final dialed = <String>[];
+  final opened = <Uri>[];
 
   @override
   Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text}) async =>
@@ -227,6 +248,9 @@ class FakeOutbound implements Outbound {
 
   @override
   Future<void> dial(String phoneNumber) async => dialed.add(phoneNumber);
+
+  @override
+  Future<void> openUrl(Uri url) async => opened.add(url);
 }
 
 class FakePrivacy implements PrivacyPlatform {
@@ -237,4 +261,63 @@ class FakePrivacy implements PrivacyPlatform {
 
   @override
   Future<void> setNeutralIcon(bool on) async => calls.add(('setNeutralIcon', on));
+}
+
+/// خادم وهمي لـ Dio: يردّ حسب «الطريقة المسار»، ويسجّل الطلبات. مسار غير معرّف = بلا اتصال.
+class FakeServer implements HttpClientAdapter {
+  final routes = <String, ResponseBody Function(RequestOptions)>{};
+  final requests = <RequestOptions>[];
+
+  void on(String route, ResponseBody Function(RequestOptions r) respond) => routes[route] = respond;
+
+  /// ردّ JSON ثابت.
+  void json(String route, Object? body, [int status = 200]) => on(route, (_) => jsonBody(body, status));
+
+  List<RequestOptions> calls(String route) => requests.where((r) => '${r.method} ${r.uri.path}' == route).toList();
+
+  @override
+  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? requestStream, Future<void>? cancelFuture) async {
+    requests.add(options);
+    final respond = routes['${options.method} ${options.uri.path}'];
+    if (respond == null) throw DioException.connectionError(requestOptions: options, reason: 'offline');
+    return respond(options);
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+ResponseBody jsonBody(Object? body, [int status = 200]) => ResponseBody.fromString(
+      body == null ? '' : jsonEncode(body),
+      status,
+      headers: {
+        'content-type': ['application/json'],
+      },
+    );
+
+class MemoryRefreshStore implements RefreshTokenStore {
+  String? token;
+
+  @override
+  Future<String?> read() async => token;
+
+  @override
+  Future<void> write(String? t) async => token = t;
+}
+
+class FakeNativeSignIn implements NativeSignIn {
+  @override
+  bool googleConfigured = true;
+  bool appleOnDevice = false;
+  String? idToken = 'google-id-token';
+
+  @override
+  Future<bool> appleAvailable() async => appleOnDevice;
+
+  @override
+  Future<String?> googleIdToken() async => idToken;
+
+  @override
+  Future<({String identityToken, String rawNonce, String? name})?> apple() async =>
+      (identityToken: 'apple-token', rawNonce: 'raw-nonce', name: 'سالم');
 }

@@ -50,6 +50,11 @@ dependencies:
   flutter_timezone: ^5.1.1
   share_plus: ^13.3.1
   url_launcher: ^6.3.3
+  dio: ^5.11.1
+  google_sign_in: ^7.2.0
+  sign_in_with_apple: ^8.2.0
+  crypto: ^3.0.7
+  path_drawing: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +76,8 @@ flutter:
   assets:
     # مولَّد من packages/shared (scripts/export-dart.mjs) — ADR-0023
     - assets/content/
+    # شعار سند: frontend/public/favicon.svg مرسوماً بـ 192px (Chrome بلا واجهة) — يُعاد إن تغيّر الشعار
+    - assets/brand/
   # نفس خطوط الويب (رخصة OFL، النص مع الملفات)
   fonts:
     - family: IBMPlexSansArabic

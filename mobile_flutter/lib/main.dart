@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/router.dart';
 import 'content/content_repository.dart';
 import 'core/platform_services.dart';
+import 'core/session.dart';
 import 'features/companion/companion_store.dart';
 import 'features/companion/reminders.dart';
 import 'features/privacy/discreet.dart';
@@ -17,11 +18,20 @@ import 'ui/emergency.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final (prefs, content) = (await SharedPreferences.getInstance(), await ContentRepository.load(rootBundle));
+  // رمز التحديث من Keychain/Keystore قبل أول إطار: الجلسة تُستعاد صامتاً بأول طلب
+  final refreshStore = SecureRefreshTokenStore();
+  final refreshToken = await refreshStore.read();
   final reminders = DeviceReminderScheduler();
   // لمس تذكير «وِرد اليوم» يفتح «يومي»
   DeviceReminderScheduler.onOpen = () => router.go('/today');
   final container = ProviderContainer(
-    overrides: [prefsProvider.overrideWithValue(prefs), contentProvider.overrideWithValue(content), reminderSchedulerProvider.overrideWithValue(reminders)],
+    overrides: [
+      prefsProvider.overrideWithValue(prefs),
+      contentProvider.overrideWithValue(content),
+      reminderSchedulerProvider.overrideWithValue(reminders),
+      refreshTokenStoreProvider.overrideWithValue(refreshStore),
+      initialRefreshTokenProvider.overrideWithValue(refreshToken),
+    ],
   );
   runApp(UncontrolledProviderScope(container: container, child: const SanadApp()));
   // الوضع المتحفّظ محفوظ: نعيد ضبط الأيقونة في المهام الأخيرة بعد كل تشغيل

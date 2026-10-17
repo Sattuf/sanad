@@ -62,6 +62,13 @@ class SanadTokens {
     required this.cardNightSoft,
     required this.cardNightAccent,
     required this.cardHalo,
+    required this.googleSurface,
+    required this.googleBorder,
+    required this.googleText,
+    required this.googleYellow,
+    required this.googleRed,
+    required this.googleGreen,
+    required this.googleBlue,
     required this.dawn,
   });
 
@@ -121,6 +128,13 @@ class SanadTokens {
   final Color cardNightSoft;
   final Color cardNightAccent;
   final Color cardHalo;
+  final Color googleSurface;
+  final Color googleBorder;
+  final Color googleText;
+  final Color googleYellow;
+  final Color googleRed;
+  final Color googleGreen;
+  final Color googleBlue;
   final LinearGradient dawn;
 
   static const light = SanadTokens(
@@ -180,6 +194,13 @@ class SanadTokens {
     cardNightSoft: Color(0xFFA8BCC4),
     cardNightAccent: Color(0xFFF2CF86),
     cardHalo: Color(0xFFFFFFFF),
+    googleSurface: Color(0xFFFFFFFF),
+    googleBorder: Color(0xFFDADCE0),
+    googleText: Color(0xFF1F1F1F),
+    googleYellow: Color(0xFFFFC107),
+    googleRed: Color(0xFFFF3D00),
+    googleGreen: Color(0xFF4CAF50),
+    googleBlue: Color(0xFF1976D2),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFFEAF4F2), Color(0xFFE4EFFA), Color(0xFFF8F1E3)], stops: [0, 0.55, 1]),
   );
 
@@ -240,6 +261,13 @@ class SanadTokens {
     cardNightSoft: Color(0xFFA8BCC4),
     cardNightAccent: Color(0xFFF2CF86),
     cardHalo: Color(0xFFFFFFFF),
+    googleSurface: Color(0xFFFFFFFF),
+    googleBorder: Color(0xFFDADCE0),
+    googleText: Color(0xFF1F1F1F),
+    googleYellow: Color(0xFFFFC107),
+    googleRed: Color(0xFFFF3D00),
+    googleGreen: Color(0xFF4CAF50),
+    googleBlue: Color(0xFF1976D2),
     dawn: LinearGradient(begin: Alignment(-0.342, -0.9397), end: Alignment(0.342, 0.9397), colors: [Color(0xFF142330), Color(0xFF16283A), Color(0xFF1D2A2A)], stops: [0, 0.55, 1]),
   );
 }

@@ -12,6 +12,7 @@ ContentRepository loadContent() => ContentRepository.fromJson(
       quranJson: File('assets/content/quran.json').readAsStringSync(),
       companionJson: File('assets/content/companion.json').readAsStringSync(),
       safetyJson: File('assets/content/safety.json').readAsStringSync(),
+      stringsJson: File('assets/content/strings.json').readAsStringSync(),
     );
 
 void main() {

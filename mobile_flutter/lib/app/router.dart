@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/account/account_screen.dart';
+import '../features/account/login_screen.dart';
 import '../features/companion/awareness_screen.dart';
 import '../features/companion/programs_screen.dart';
 import '../features/companion/sakina_screen.dart';
@@ -36,10 +38,7 @@ final router = GoRouter(
           GoRoute(path: '/awareness', builder: (_, _) => const AwarenessScreen(), routes: [GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen())]),
         ]),
         StatefulShellBranch(routes: [
-          GoRoute(
-            path: '/account',
-            builder: (_, _) => const ComingSoon(title: 'حسابي', phase: 'الأسابيع 5–9', links: [(to: '/journal', label: 'مذكّرتي'), (to: '/privacy-mode', label: 'الخصوصية والتمويه')]),
-          ),
+          GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
         ]),
       ],
     ),
@@ -47,6 +46,12 @@ final router = GoRouter(
     GoRoute(path: '/self-ruqyah', builder: (_, _) => const SelfRuqyahScreen()),
     GoRoute(path: '/journal', builder: (_, _) => const JournalScreen()),
     GoRoute(path: '/privacy-mode', builder: (_, _) => const PrivacyScreen()),
+    GoRoute(
+      path: '/login',
+      builder: (_, _) => const LoginScreen(),
+      routes: [GoRoute(path: 'two-factor', builder: (_, state) => TwoFactorScreen(ticket: state.extra! as String))],
+    ),
+    GoRoute(path: '/consent', builder: (_, _) => const ConsentScreen()),
   ],
 );
 

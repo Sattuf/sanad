@@ -65,6 +65,14 @@
   --card-night-soft: #a8bcc4;
   --card-night-accent: #f2cf86;
   --card-halo: #ffffff;
+  /* زر جوجل بألوان العلامة نفسها في الوضعين (إرشادات Google للعلامة) */
+  --google-surface: #ffffff;
+  --google-border: #dadce0;
+  --google-text: #1f1f1f;
+  --google-yellow: #ffc107;
+  --google-red: #ff3d00;
+  --google-green: #4caf50;
+  --google-blue: #1976d2;
   color-scheme: light;
 }
 
@@ -129,6 +137,14 @@
     --card-night-soft: #a8bcc4;
     --card-night-accent: #f2cf86;
     --card-halo: #ffffff;
+    /* زر جوجل بألوان العلامة نفسها في الوضعين (إرشادات Google للعلامة) */
+    --google-surface: #ffffff;
+    --google-border: #dadce0;
+    --google-text: #1f1f1f;
+    --google-yellow: #ffc107;
+    --google-red: #ff3d00;
+    --google-green: #4caf50;
+    --google-blue: #1976d2;
     color-scheme: dark;
   }
 }
@@ -193,6 +209,14 @@
   --card-night-soft: #a8bcc4;
   --card-night-accent: #f2cf86;
   --card-halo: #ffffff;
+  /* زر جوجل بألوان العلامة نفسها في الوضعين (إرشادات Google للعلامة) */
+  --google-surface: #ffffff;
+  --google-border: #dadce0;
+  --google-text: #1f1f1f;
+  --google-yellow: #ffc107;
+  --google-red: #ff3d00;
+  --google-green: #4caf50;
+  --google-blue: #1976d2;
   color-scheme: dark;
 }
 

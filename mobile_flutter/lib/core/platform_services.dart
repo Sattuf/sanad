@@ -179,6 +179,9 @@ final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) => DeviceRem
 abstract class Outbound {
   Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text});
   Future<void> dial(String phoneNumber);
+
+  /// صفحة على موقع سند (الشروط، الخصوصية) في المتصفح.
+  Future<void> openUrl(Uri url);
 }
 
 class DeviceOutbound implements Outbound {
@@ -188,6 +191,9 @@ class DeviceOutbound implements Outbound {
 
   @override
   Future<void> dial(String phoneNumber) => launchUrl(Uri(scheme: 'tel', path: phoneNumber));
+
+  @override
+  Future<void> openUrl(Uri url) => launchUrl(url, mode: LaunchMode.externalApplication);
 }
 
 final outboundProvider = Provider<Outbound>((ref) => DeviceOutbound());

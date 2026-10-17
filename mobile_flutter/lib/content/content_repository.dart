@@ -37,10 +37,11 @@ class ContentRepository {
     required this.trendMinEntries,
     required this.stableDelta,
     required this.fallbackReferral,
+    required this.strings,
   });
 
   /// من نصوص JSON الثلاثة (تُقرأ من الأصول في التطبيق، ومن الملفات في الاختبارات).
-  factory ContentRepository.fromJson({required String quranJson, required String companionJson, required String safetyJson}) {
+  factory ContentRepository.fromJson({required String quranJson, required String companionJson, required String safetyJson, required String stringsJson}) {
     final q = jsonDecode(quranJson) as Map<String, dynamic>;
     final c = jsonDecode(companionJson) as Map<String, dynamic>;
     final s = jsonDecode(safetyJson) as Map<String, dynamic>;
@@ -107,6 +108,7 @@ class ContentRepository {
       trendDays: journal['trendDays'] as int,
       trendMinEntries: journal['trendMinEntries'] as int,
       stableDelta: (journal['stableDelta'] as num).toDouble(),
+      strings: (jsonDecode(stringsJson) as Map<String, dynamic>)['ar'] as Map<String, dynamic>,
       fallbackReferral: (
         message: referral['message'] as String,
         contacts: (referral['contacts'] as List).map((c) => (label: (c as Map<String, dynamic>)['label'] as String, phoneNumber: c['phoneNumber'] as String)).toList(),
@@ -118,6 +120,7 @@ class ContentRepository {
         quranJson: await bundle.loadString('assets/content/quran.json'),
         companionJson: await bundle.loadString('assets/content/companion.json'),
         safetyJson: await bundle.loadString('assets/content/safety.json'),
+        stringsJson: await bundle.loadString('assets/content/strings.json'),
       );
 
   final Map<String, QuranPassage> quran;
@@ -148,6 +151,18 @@ class ContentRepository {
   final int trendDays;
   final int trendMinEntries;
   final double stableDelta;
+
+  /// تسميات الواجهة المشتركة مع الويب (packages/shared/src/i18n/ar.ts).
+  final Map<String, dynamic> strings;
+
+  /// تسمية بمسارها: label('nav.login') ← «دخول».
+  String label(String path) {
+    Object? v = strings;
+    for (final k in path.split('.')) {
+      v = (v as Map<String, dynamic>)[k];
+    }
+    return v as String? ?? (throw StateError('تسمية غير معروفة: $path'));
+  }
 
   /// الإحالة العاجلة حين يُكتشف خطر على الجهاز (البند 5) — FALLBACK_REFERRAL المشترك.
   final EmergencyReferral fallbackReferral;

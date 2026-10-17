@@ -10,6 +10,23 @@ flutter pub get
 flutter run
 ```
 
+### إعدادات البناء (`--dart-define`)
+
+| المتغيّر | الغرض | الافتراضي |
+|---|---|---|
+| `SANAD_API_BASE` | عنوان خادم سند (الحساب، المكتبة، التلاوات) | `http://localhost:5080` |
+| `SANAD_SITE_HOST` | نطاق الموقع في بطاقات المشاركة وروابط الشروط والخصوصية | `sanad.app` |
+| `GOOGLE_SERVER_CLIENT_ID` | معرّف **عميل الويب** في Google Cloud — جمهور رمز الهوية الذي يقبله الخادم (`Auth:Google:ClientId` أو `Auth:Google:NativeClientIds`). بدونه يظهر «الدخول بجوجل غير مُفعّل» | فارغ |
+| `GOOGLE_IOS_CLIENT_ID` | معرّف عميل iOS | فارغ |
+
+```bash
+flutter run --dart-define=SANAD_API_BASE=https://api.example --dart-define=GOOGLE_SERVER_CLIENT_ID=xxxx.apps.googleusercontent.com
+```
+
+الدخول الأصلي يحتاج أيضاً (خارج المستودع — من حسابات المشروع):
+- **أندرويد:** عميل OAuth من نوع Android في Google Cloud بالحزمة `app.sanad` وبصمة SHA-1 لمفتاح التوقيع (ومفتاح debug للتطوير).
+- **iOS (لم يُبنَ بعد على macOS):** مخطط URL بمعرّف عميل iOS معكوساً (`com.googleusercontent.apps.…`) في `CFBundleURLTypes` بـ `Info.plist`، وقدرة «Sign in with Apple» في Xcode، ومعرّف الحزمة في `Auth:Apple:ClientIds` بالخادم.
+
 ## مصدر واحد — لا يُكتب محتوى أو لون يدوياً هنا
 
 | ما في التطبيق | مصدره | أمر التوليد |
