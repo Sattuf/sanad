@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/account/account_screen.dart';
 import '../features/account/login_screen.dart';
+import '../features/library/library_screens.dart';
 import '../features/companion/awareness_screen.dart';
 import '../features/companion/programs_screen.dart';
 import '../features/companion/sakina_screen.dart';
@@ -71,8 +72,8 @@ final router = GoRouter(
       builder: (_, _) => const HealthHubScreen(),
       routes: [GoRoute(path: ':guideId', builder: (_, state) => GuideScreen(guideId: state.pathParameters['guideId']!))],
     ),
-    // المكتبة الصوتية في الجزء الثالث من الأسابيع 5–7
-    GoRoute(path: '/library', builder: (_, _) => const ComingSoon(title: 'المكتبة الصوتية', phase: 'الأسابيع 5–7', standalone: true)),
+    GoRoute(path: '/library', builder: (_, _) => const LibraryScreen()),
+    GoRoute(path: '/favorites', builder: (_, _) => const FavoritesScreen()),
   ],
 );
 

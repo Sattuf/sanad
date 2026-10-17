@@ -59,6 +59,9 @@ abstract class RecitationAudio {
 }
 
 class DeviceRecitationAudio implements RecitationAudio {
+  /// cacheDir: مجلد الحفظ في الاختبارات بدل مجلد التطبيق.
+  DeviceRecitationAudio({Directory? cacheDir}) : _dir = cacheDir;
+
   AudioPlayer? _player;
   Completer<void>? _current;
   VoidCallback? _owner;
@@ -78,22 +81,42 @@ class DeviceRecitationAudio implements RecitationAudio {
   @override
   Future<void> cache(String url) => _ensure(url);
 
-  Future<File> _ensure(String url) => _inflight[url] ??= _download(url).whenComplete(() => _inflight.remove(url));
+  // جسم بأقواس لا سهم: remove تعيد المستقبل نفسه، وwhenComplete تنتظر ما يُعاد — فينتظر نفسه أبداً
+  Future<File> _ensure(String url) => _inflight[url] ??= _download(url).whenComplete(() {
+        _inflight.remove(url);
+      });
+
+  /// انقطاع عابر لا يُنهي تلاوة طويلة: محاولتان أخريان قبل إظهار الخطأ.
+  static const _attempts = 3;
 
   Future<File> _download(String url) async {
     final file = await _file(url);
     if (await file.exists()) return file;
     await file.parent.create(recursive: true);
+    for (var attempt = 1;; attempt++) {
+      try {
+        return await _fetch(url, file);
+      } on Object {
+        if (attempt >= _attempts) rethrow;
+        await Future<void>.delayed(Duration(seconds: attempt));
+      }
+    }
+  }
+
+  Future<File> _fetch(String url, File file) async {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 15);
     try {
       final res = await (await client.getUrl(Uri.parse(url))).close();
       if (res.statusCode != 200) throw HttpException('${res.statusCode}', uri: Uri.parse(url));
-      // كتابة ثم إعادة تسمية: لا يبقى ملف ناقص يُظن محفوظاً
+      // كتابة ثم إعادة تسمية: لا يبقى ملف ناقص يُظن محفوظاً. والنقل المتوقف يُقطع بدل أن يعلق
       final part = File('${file.path}.part');
-      await res.pipe(part.openWrite());
+      await res.timeout(const Duration(seconds: 20)).pipe(part.openWrite());
+      if (res.contentLength >= 0 && await part.length() != res.contentLength) {
+        throw HttpException('ناقص: ${await part.length()} من ${res.contentLength}', uri: Uri.parse(url));
+      }
       return part.rename(file.path);
     } finally {
-      client.close();
+      client.close(force: true);
     }
   }
 
@@ -104,9 +127,15 @@ class DeviceRecitationAudio implements RecitationAudio {
     // وسم الإشعار: just_audio_background يشترطه على كل مقطع
     final tag = MediaItem(id: url, title: (info ?? neutralNowPlaying).title, album: (info ?? neutralNowPlaying).subtitle);
     final done = _current = Completer<void>();
+    // البث يعيد آخر حالة لكل مستمع جديد: «انتهى» الآية السابقة يصل فوراً. لا نعدّ الانتهاء إلا بعد أن يبدأ هذا المقطع
+    var started = false;
     final sub = player.playerStateStream.listen(
       (s) {
-        if (s.processingState == ProcessingState.completed && !done.isCompleted) done.complete();
+        if (s.processingState != ProcessingState.completed) {
+          started = true;
+        } else if (started && !done.isCompleted) {
+          done.complete();
+        }
       },
       onError: (Object e) {
         if (!done.isCompleted) done.completeError(e);
@@ -205,7 +234,7 @@ class Playlist extends ChangeNotifier {
           _set(loading: false);
           // الآية التالية تُجلب أثناء هذه، فلا فجوة والشاشة مقفلة
           final next = i + 1 < urls.length ? urls[i + 1] : (r < repeat ? urls.first : null);
-          if (next != null) unawaited(_audio.cache(next).catchError((_) {}));
+          if (next != null) unawaited(_audio.cache(next).then((_) {}, onError: (_) {}));
           await _audio.playToEnd(urls[i], info: info);
         } catch (_) {
           if (run != _run) return;

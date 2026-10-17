@@ -5,6 +5,7 @@ import 'tokens.g.dart';
 
 /// مقاسات Tailwind التي يستخدمها الويب، بنفس القيم (rounded-xl / 2xl / 3xl …).
 abstract final class Radii {
+  static const lg = 8.0;
   static const xl = 12.0;
   static const x2l = 16.0;
   static const x3l = 24.0;

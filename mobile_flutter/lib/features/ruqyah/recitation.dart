@@ -91,7 +91,7 @@ class RecitationController extends Notifier<RecitationState> {
         if (run != _run) return;
         state = state.copyWith(status: RecitationStatus.playing);
         final next = _next(at.position, at.ayah);
-        if (next != null) unawaited(_audio.cache(_url(next.position, next.ayah)).catchError((_) {}));
+        if (next != null) unawaited(_audio.cache(_url(next.position, next.ayah)).then((_) {}, onError: (_) {}));
         await _audio.playToEnd(url, info: _info(at.position));
       } catch (_) {
         if (run == _run) state = state.copyWith(status: RecitationStatus.error);

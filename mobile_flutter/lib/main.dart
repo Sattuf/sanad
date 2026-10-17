@@ -19,11 +19,14 @@ import 'ui/emergency.dart';
 /// سند — رفيق السكينة اليومي (ADR-0023). العربية وRTL افتراضياً ووحيدة، كالويب.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // التلاوة تستمر والشاشة مقفلة: خدمة وسائط أمامية بإشعار تحكّم. الأيقونة المحايدة دائماً، والإشعار يُزال عند الإيقاف المؤقت
+  // التلاوة تستمر والشاشة مقفلة: خدمة وسائط أمامية بإشعار تحكّم، والأيقونة المحايدة دائماً.
+  // تبقى الخدمة في المقدّمة عند الإيقاف المؤقت: انتهاء كل آية يُبلَّغ «متوقفاً» حتى تبدأ التالية، ولو خرجت الخدمة
+  // من المقدّمة في هذه الفجوة لقطع النظام الشبكة عن التطبيق والشاشة مقفلة فتعلق الآية التالية. الإيقاف التام يزيل الإشعار.
   await JustAudioBackground.init(
     androidNotificationChannelId: 'app.sanad.playback',
     androidNotificationChannelName: 'التشغيل الصوتي',
     androidNotificationIcon: 'drawable/ic_stat_notes',
+    androidStopForegroundOnPause: false,
   );
   final (prefs, content) = (await SharedPreferences.getInstance(), await ContentRepository.load(rootBundle));
   // رمز التحديث من Keychain/Keystore قبل أول إطار: الجلسة تُستعاد صامتاً بأول طلب
