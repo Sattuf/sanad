@@ -86,7 +86,7 @@ public sealed class Message : BaseEntity
     public Guid ConversationId { get; private set; }
     public Guid SenderUserId { get; private set; }
 
-    /// <summary>نص الرسالة مشفّر (ADR-0007) — قد يحوي تفاصيل صحية/دينية شخصية.</summary>
+    /// <summary>نص الرسالة مشفّر (ADR-0007) — قد يحوي تفاصيل شخصية.</summary>
     public string BodyEncrypted { get; private set; } = null!;
     public MessageStatus Status { get; private set; } = MessageStatus.Sent;
     public DateTimeOffset SentAtUtc { get; private set; }

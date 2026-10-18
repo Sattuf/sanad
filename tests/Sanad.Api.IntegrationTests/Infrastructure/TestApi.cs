@@ -169,7 +169,7 @@ public sealed class TestApi(SanadApiFactory factory)
             category = "استشارة فردية",
             description = "جلسة استشارية عن بعد",
             cancellationPolicy = "الإلغاء قبل 24 ساعة",
-            explicitExclusions = new[] { "لا وصفات دوائية" },
+            explicitExclusions = new[] { "لا وعد بنتيجة" },
             sessionDurationMinutes = 45,
         })));
         var slotIds = new List<Guid>();

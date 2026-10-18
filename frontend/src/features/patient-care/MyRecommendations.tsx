@@ -22,7 +22,7 @@ export function MyRecommendationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="توصياتي" subtitle="توجيهات أرسلها مختصك لك مباشرة. هي توجيه عام ومحتوى للاستماع — لا وصفة علاجية ولا جرعات دوائية." />
+      <PageHeader title="توصياتي" subtitle="توجيهات أرسلها مختصك لك مباشرة. هي توجيه عام ومحتوى للاستماع، والشفاء بيد الله وحده." />
       {!data || data.length === 0 ? (
         <EmptyState title="لا توصيات بعد">بعد تأكيد موعدك، قد يرسل لك مختصك توجيهاً أو مقاطع للاستماع.</EmptyState>
       ) : (

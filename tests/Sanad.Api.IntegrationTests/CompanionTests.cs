@@ -32,7 +32,7 @@ public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<Remi
         day = d,
         items = new object[]
         {
-            new { kind = "Note", text = "اقرأ بتدبّر. والرقية لا تعني ترك العلاج الموصوف لك.", repeat = 1 },
+            new { kind = "Note", text = "اقرأ بتدبّر، والشفاء بيد الله وحده.", repeat = 1 },
             new { kind = "Quran", quranKey = "kursi", title = "آية الكرسي", repeat = 3 },
             new { kind = "Dhikr", title = "بسم الله الذي لا يضر", text = "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ", source = "رواه أبو داود (5088)", repeat = 3 },
         },

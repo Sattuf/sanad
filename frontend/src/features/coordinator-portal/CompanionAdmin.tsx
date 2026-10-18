@@ -214,7 +214,7 @@ const blankItem = (kind: ItemKind): PlanItem =>
   : kind === "Dhikr" ? { kind, title: "", text: "", source: "", note: "", repeat: 1 }
   : { kind, text: "", repeat: 1 };
 
-const defaultNote: PlanItem = { kind: "Note", text: "اقرأ بتدبّر وطمأنينة. والرقية لا تعني ترك العلاج الموصوف لك.", repeat: 1 };
+const defaultNote: PlanItem = { kind: "Note", text: "اقرأ بتدبّر وطمأنينة، والشفاء بيد الله وحده.", repeat: 1 };
 
 function PlansSection() {
   const qc = useQueryClient();

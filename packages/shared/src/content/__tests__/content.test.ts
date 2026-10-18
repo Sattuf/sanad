@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { citedAyat, quran } from "../quran";
 import { awarenessGuides, collections, guides } from "../ruqyah";
 
-// سلامة المحتوى المشترك بين الويب والجوال: نص القرآن مطابق حرفياً، وكل دعاء مخرَّج، ولا جرعات ولا وعود شفاء.
+// سلامة المحتوى المشترك بين الويب والجوال: نص القرآن مطابق حرفياً، وكل دعاء مخرَّج، ولا وعود شفاء.
 describe("content", () => {
   it("every Quran reference resolves to its full ayah range", () => {
     for (const c of collections)

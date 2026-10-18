@@ -4,7 +4,7 @@ using Sanad.Domain.Exceptions;
 namespace Sanad.Domain.Directory;
 
 /// <summary>
-/// خدمة يقدّمها مختص موثّق. تصف الخدمة ونطاقها فقط — لا حالة المستخدم الصحية أو الدينية،
+/// خدمة يقدّمها مختص موثّق. تصف الخدمة ونطاقها فقط — لا حالة المستخدم الشخصية،
 /// ولا أي سعر: سند مجانية بالكامل.
 /// </summary>
 public sealed class ServiceOffering : BaseEntity, IAggregateRoot
@@ -49,7 +49,7 @@ public sealed class ServiceOffering : BaseEntity, IAggregateRoot
         var exclusions = (explicitExclusions ?? []).Where(e => !string.IsNullOrWhiteSpace(e))
             .Select(e => Guard.Required(e, "الاستثناء", 300)).Take(20).ToList();
 
-        // كل نص عام يمر على فلتر العبارات المحظورة قبل الحفظ — لا "شفاء مضمون"، لا جرعة، لا وعد بنتيجة
+        // كل نص عام يمر على فلتر العبارات المحظورة قبل الحفظ — لا "شفاء مضمون"، لا وعد بنتيجة
         ContentPolicy.EnsureAllowed(policyChecker, "وصف الخدمة", [cat, desc, cancel, .. exclusions]);
 
         Category = cat;

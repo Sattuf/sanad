@@ -130,7 +130,7 @@ public sealed class CreateKhatmaCommandHandler(IApplicationDbContext db, AccessC
 {
     public async Task<KhatmaDto> Handle(CreateKhatmaCommand r, CancellationToken cancellationToken)
     {
-        // النيّة نص حر: مؤشر خطر فيها يرفع معلومات الطوارئ فوراً، بصرف النظر عن نجاح الإنشاء
+        // النيّة نص حر مشفّر (ADR-0007): لا يراها إلا أعضاء الختمة
         var me = access.UserId;
         var now = clock.UtcNow;
         if (await db.Khatmas.CountAsync(k => k.OwnerUserId == me, cancellationToken) >= KhatmaTextRules.MaxKhatmasPerUser)

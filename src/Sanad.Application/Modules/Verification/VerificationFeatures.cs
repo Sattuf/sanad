@@ -26,7 +26,7 @@ public sealed record VerificationSummaryDto(Guid Id, string SubjectType, Guid Su
 public sealed record VerificationQueueItemDto(VerificationSummaryDto Verification, string? ApplicantDisplayName, bool DocumentMatchesDeclaredType,
     bool HasDocument, string? OrganizationName);
 
-// ── طلب الترقية: المستخدم يختار نوعه صراحة (طبيب مرخّص / شيخ-راقٍ شرعي) ─────────────
+// ── طلب الترقية: المستخدم يطلبها صراحة (شيخ-راقٍ شرعي) ─────────────
 public sealed record RequestProviderUpgradeCommand(PractitionerType RequestedType, string DeclaredTitle, string DocumentType,
     string IssuingAuthority, Guid UploadedDocumentFileId) : ICommand<VerificationSummaryDto>;
 

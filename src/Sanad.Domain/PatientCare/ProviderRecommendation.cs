@@ -9,8 +9,8 @@ public sealed record ProviderRecommendationSentEvent(Guid RecommendationId, Guid
 
 /// <summary>
 /// توصية المختص للمستفيد — الأداة الوحيدة في النظام التي توجّه المستفيد مباشرة.
-/// تمر على فلتر العبارات المحظورة بنفس صرامة وصف الخدمة، بلا أي استثناء لكون الكاتب طبيباً مرخّصاً:
-/// سند ليست نظام وصفات طبية — لا جرعة ولا وصفة دوائية هنا (references/07-safety-guardrails.md §7.6).
+/// تمر على فلتر العبارات المحظورة بنفس صرامة وصف الخدمة، بلا أي استثناء للكاتب:
+/// لا وعد بشفاء ولا ضمان نتيجة هنا (references/07-safety-guardrails.md §7.6).
 /// </summary>
 public sealed class ProviderRecommendation : BaseEntity, IAggregateRoot
 {

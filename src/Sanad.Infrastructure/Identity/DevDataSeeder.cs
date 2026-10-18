@@ -106,7 +106,7 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
         db.VerificationRecords.Add(verification);
         db.ProviderProfiles.Add(profile);
         db.ServiceOfferings.Add(ServiceOffering.Create(profile, offeringCategory, "جلسة فردية عن بعد أو حضورياً لتنسيق الاحتياج وتوجيه عام، مجانية بالكامل.",
-            "يمكن الإلغاء قبل 24 ساعة من الموعد.", ["لا وصفات دوائية", "لا تشخيص عبر المنصة"], 45, policy));
+            "يمكن الإلغاء قبل 24 ساعة من الموعد.", ["لا وعد بنتيجة", "لا تشخيص عبر المنصة"], 45, policy));
 
         var day = now.UtcDateTime.Date.AddDays(1);
         for (var d = 0; d < 10; d++)

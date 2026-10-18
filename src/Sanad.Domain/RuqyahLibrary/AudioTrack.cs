@@ -13,7 +13,7 @@ public sealed record AudioTrackUnpublishedEvent(Guid AudioTrackId) : IDomainEven
 
 /// <summary>
 /// مقطع في مكتبة الرقية: تلاوة أو دعاء أو ذكر معروف موثوق المصدر، يُدار مركزياً من ContentManager.
-/// لا يُقدَّم كوصفة علاجية — الوصف يمر على فلتر العبارات المحظورة عند الإنشاء وقبل النشر.
+/// لا يُقدَّم كوعد بنتيجة — الوصف يمر على فلتر العبارات المحظورة عند الإنشاء وقبل النشر.
 /// </summary>
 public sealed class AudioTrack : BaseEntity, IAggregateRoot
 {

@@ -67,7 +67,7 @@ export function ProviderProfilePage() {
   return (
     <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
       <Card>
-        <PageHeader title="الملف المهني" subtitle="كل نص هنا يمر على فلتر الادعاءات قبل الحفظ: لا وعد بشفاء، لا جرعات، لا ضمان نتيجة." />
+        <PageHeader title="الملف المهني" subtitle="كل نص هنا يمر على فلتر الادعاءات قبل الحفظ: لا وعد بشفاء، لا ضمان نتيجة." />
         <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); setMsg(null); save.mutate(); }}>
           <Field label="الاسم الظاهر" htmlFor="pdn"><Input id="pdn" value={form.displayName} onChange={set("displayName")} maxLength={150} /></Field>
           <Field label="اللقب المهني" htmlFor="pdt"><Input id="pdt" value={form.declaredTitle} onChange={set("declaredTitle")} maxLength={200} /></Field>
@@ -111,7 +111,7 @@ export function ProviderProfilePage() {
 export function OfferingsPage() {
   const qc = useQueryClient();
   const { data, isLoading } = useProfile();
-  const [form, setForm] = useState({ category: "", description: "", cancellationPolicy: "الإلغاء متاح قبل 24 ساعة من الموعد.", exclusions: "لا وصفات دوائية، لا تشخيص", sessionDurationMinutes: 45 });
+  const [form, setForm] = useState({ category: "", description: "", cancellationPolicy: "الإلغاء متاح قبل 24 ساعة من الموعد.", exclusions: "لا وعد بنتيجة، لا تشخيص", sessionDurationMinutes: 45 });
   const [error, setError] = useState<string | null>(null);
   const create = useMutation({
     mutationFn: () => api.post<ServiceOffering>("/api/v1/me/provider-profile/offerings", {
