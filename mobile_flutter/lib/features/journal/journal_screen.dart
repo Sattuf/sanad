@@ -13,7 +13,6 @@ import '../../core/vault.dart';
 import '../../theme/theme.dart';
 import '../../theme/tokens.g.dart';
 import '../../ui/components.dart';
-import '../../ui/emergency.dart';
 import '../companion/companion_store.dart';
 import 'journal_store.dart';
 
@@ -352,7 +351,6 @@ class _CheckInFormState extends ConsumerState<_CheckInForm> {
   };
   late final _note = TextEditingController(text: widget.existing?.note ?? '');
   bool saved = false;
-  bool risk = false;
   Timer? _savedTimer;
 
   @override
@@ -363,12 +361,6 @@ class _CheckInFormState extends ConsumerState<_CheckInForm> {
   }
 
   Future<void> _submit() async {
-    final content = ref.read(contentProvider);
-    // البند 5: مؤشر خطر في نص المذكرة ← إحالة فورية، حتى لو لم يغادر النص الجهاز
-    if (content.requiresEmergencyReferral(_note.text)) {
-      setState(() => risk = true);
-      ref.read(emergencyProvider.notifier).raise();
-    }
     final note = _note.text.trim();
     await ref.read(journalProvider.notifier).saveCheckIn(day: widget.day, values: v, note: note.isEmpty ? null : note);
     if (!mounted) return;
@@ -430,26 +422,6 @@ class _CheckInFormState extends ConsumerState<_CheckInForm> {
             decoration: _inputDecoration(context, hint: 'ما الذي أثقلك أو أسعدك اليوم؟').copyWith(counterText: ''),
           ),
           Text('لا يقرؤها أحد غيرك.', style: TextStyle(fontSize: 12, color: t.muted)),
-          if (risk)
-            Container(
-              margin: const EdgeInsets.only(top: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(color: t.dangerBg, borderRadius: BorderRadius.circular(Radii.xl)),
-              child: Semantics(
-                liveRegion: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('نحن قلقون عليك', style: TextStyle(fontWeight: FontWeight.w700, color: t.danger)),
-                    const SizedBox(height: 4),
-                    Text(
-                      'ما كتبته يوحي بأنك تمرّ بوقت صعب جداً. لست وحدك — تحدّث الآن مع شخص تثق به، أو اطلب المساعدة العاجلة.',
-                      style: TextStyle(fontSize: 14, height: 1.75, color: t.danger),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -547,26 +519,7 @@ class _Trends extends ConsumerWidget {
               TextSpan(text: _one(tr.committedCalm!.other + 1), style: const TextStyle(fontWeight: FontWeight.w700)),
               const TextSpan(text: ' في غيرها.'),
             ]))),
-          Text('هذه ملاحظات عن أيامك أنت، لا حكم طبي — والتزامن بين أمرين لا يعني بالضرورة أن أحدهما سبب الآخر.', style: TextStyle(fontSize: 12, color: t.muted)),
-          if (tr.low != null)
-            Container(
-              margin: const EdgeInsets.only(top: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(color: t.surface2, borderRadius: BorderRadius.circular(Radii.xl), border: Border.all(color: t.border)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('خذ بالأسباب أيضاً', style: TextStyle(fontWeight: FontWeight.w700, color: t.primary)),
-                  const SizedBox(height: 4),
-                  // دليل المختصين في الأسابيع 7–9 من الخطة؛ حتى ذلك الحين النص بلا رابط
-                  Text(
-                    'لاحظنا أن ${tr.low == 'sleep' ? 'نومك' : 'هدوءك'} منخفض معظم الأيام الماضية. استمر على وِردك، واستشر طبيباً كذلك — أسباب كثيرة للأرق والقلق '
-                    'قابلة للفحص والعلاج، والتداوي لا ينافي الرقية.',
-                    style: TextStyle(fontSize: 14, height: 1.75, color: t.primary),
-                  ),
-                ],
-              ),
-            ),
+          Text('هذه ملاحظات عن أيامك أنت — والتزامن بين أمرين لا يعني بالضرورة أن أحدهما سبب الآخر.', style: TextStyle(fontSize: 12, color: t.muted)),
           Theme(
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(

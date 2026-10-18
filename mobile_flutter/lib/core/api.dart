@@ -3,16 +3,13 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
-import '../content/models.dart';
 
 /*
   عميل الـ API — نظير packages/shared/src/api/core.ts حرفياً (ADR-0014، ADR-0023):
   ProblemDetails ← ApiError بعربية ودّية، تجديد الرمز مرة واحدة عند 401 (طلب تجديد واحد مهما تزامنت الطلبات)،
-  ومسح الجلسة فقط حين يرفض الخادم رمز التحديث صراحة (400/401) لا عند حد المعدل أو عطل مؤقت،
-  والتقاط إشارة الطوارئ من كل استجابة ناجحة أو فاشلة. تحرسه test/api_test.dart بالحالات نفسها في core.test.ts.
+  ومسح الجلسة فقط حين يرفض الخادم رمز التحديث صراحة (400/401) لا عند حد المعدل أو عطل مؤقت.
+  تحرسه test/api_test.dart بالحالات نفسها في core.test.ts.
 */
-
-const emergencyHeader = 'X-Sanad-Emergency-Referral';
 
 /// خطأ موحّد من ProblemDetails الخلفي.
 class ApiError implements Exception {
@@ -45,7 +42,7 @@ abstract class SessionPort {
 }
 
 class ApiClient {
-  ApiClient({required String baseUrl, required this.session, required this.onEmergency, Dio? dio})
+  ApiClient({required String baseUrl, required this.session, Dio? dio})
       : baseUrl = baseUrl.replaceFirst(RegExp(r'/$'), ''),
         _dio = dio ?? Dio() {
     _dio.options
@@ -58,8 +55,6 @@ class ApiClient {
   final String baseUrl;
   final SessionPort session;
 
-  /// يُستدعى عند أي إشارة خطر؛ null تعني أن الخادم لم يرسل تفاصيل فتُعرض الإحالة الاحتياطية.
-  final void Function(EmergencyReferral? referral) onEmergency;
   final Dio _dio;
   Future<bool>? _refreshing;
 
@@ -132,7 +127,6 @@ class ApiClient {
         payload = null;
       }
     }
-    _detectEmergency(res.headers.value(emergencyHeader), payload);
 
     if (status < 200 || status >= 300) {
       final p = payload is Map<String, dynamic> ? payload : const <String, dynamic>{};
@@ -148,21 +142,4 @@ class ApiClient {
     return payload as T;
   }
 
-  /// الترويسة «1» أو emergencyReferral.required في الجسم ← إحالة (بتفاصيل الخادم إن أرسلها).
-  void _detectEmergency(String? header, Object? payload) {
-    final referral = payload is Map<String, dynamic> ? payload['emergencyReferral'] : null;
-    final required = referral is Map<String, dynamic> && referral['required'] == true;
-    if (header != '1' && !required) return;
-    onEmergency(
-      referral is Map<String, dynamic>
-          ? (
-              message: referral['message'] as String,
-              contacts: [
-                for (final c in (referral['contacts'] as List? ?? const []).cast<Map<String, dynamic>>())
-                  (label: c['label'] as String, phoneNumber: c['phoneNumber'] as String),
-              ],
-            )
-          : null,
-    );
-  }
 }

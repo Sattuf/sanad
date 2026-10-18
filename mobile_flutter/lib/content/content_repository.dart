@@ -20,7 +20,6 @@ class ContentRepository {
     required this.quizQuestions,
     required this.quizTiers,
     required this.quizRecommendations,
-    required this.riskPatterns,
     required this.verdictTone,
     required this.mythSuggestions,
     required this.guideModes,
@@ -37,23 +36,20 @@ class ContentRepository {
     required this.trendDays,
     required this.trendMinEntries,
     required this.stableDelta,
-    required this.fallbackReferral,
     required this.strings,
     required this.ruqyah,
   });
 
-  /// من نصوص JSON الثلاثة (تُقرأ من الأصول في التطبيق، ومن الملفات في الاختبارات).
-  factory ContentRepository.fromJson({required String quranJson, required String companionJson, required String safetyJson, required String stringsJson, required String ruqyahJson}) {
+  /// من نصوص JSON (تُقرأ من الأصول في التطبيق، ومن الملفات في الاختبارات).
+  factory ContentRepository.fromJson({required String quranJson, required String companionJson, required String stringsJson, required String ruqyahJson}) {
     final q = jsonDecode(quranJson) as Map<String, dynamic>;
     final c = jsonDecode(companionJson) as Map<String, dynamic>;
-    final s = jsonDecode(safetyJson) as Map<String, dynamic>;
     final quiz = c['quiz'] as Map<String, dynamic>;
     final guide = c['guide'] as Map<String, dynamic>;
     final hand = guide['hand'] as Map<String, dynamic>;
     final sakina = c['sakina'] as Map<String, dynamic>;
     final needs = sakina['needs'] as Map<String, dynamic>;
     final journal = c['journal'] as Map<String, dynamic>;
-    final referral = s['fallbackReferral'] as Map<String, dynamic>;
     return ContentRepository._(
       quran: (q['passages'] as Map<String, dynamic>).map((k, v) => MapEntry(k, QuranPassage.fromJson(v as Map<String, dynamic>))),
       library: (c['library'] as Map<String, dynamic>).map((k, v) => MapEntry(k, LibraryItem.fromJson(v as Map<String, dynamic>))),
@@ -76,9 +72,6 @@ class ContentRepository {
                 programId: r['programId'] as String,
                 reason: r['reason'] as String,
               ))
-          .toList(),
-      riskPatterns: (s['riskPatterns'] as List)
-          .map((p) => RegExp((p as Map<String, dynamic>)['source'] as String, caseSensitive: !(p['caseInsensitive'] as bool)))
           .toList(),
       verdictTone: (c['verdictMeta'] as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as Map<String, dynamic>)['tone'] as String)),
       mythSuggestions: (c['mythSuggestions'] as List).cast<String>(),
@@ -112,17 +105,12 @@ class ContentRepository {
       stableDelta: (journal['stableDelta'] as num).toDouble(),
       strings: (jsonDecode(stringsJson) as Map<String, dynamic>)['ar'] as Map<String, dynamic>,
       ruqyah: RuqyahContent.fromJson(ruqyahJson),
-      fallbackReferral: (
-        message: referral['message'] as String,
-        contacts: (referral['contacts'] as List).map((c) => (label: (c as Map<String, dynamic>)['label'] as String, phoneNumber: c['phoneNumber'] as String)).toList(),
-      ),
     );
   }
 
   static Future<ContentRepository> load(AssetBundle bundle) async => ContentRepository.fromJson(
         quranJson: await bundle.loadString('assets/content/quran.json'),
         companionJson: await bundle.loadString('assets/content/companion.json'),
-        safetyJson: await bundle.loadString('assets/content/safety.json'),
         stringsJson: await bundle.loadString('assets/content/strings.json'),
         ruqyahJson: await bundle.loadString('assets/content/ruqyah.json'),
       );
@@ -136,7 +124,6 @@ class ContentRepository {
   final List<QuizQuestion> quizQuestions;
   final List<QuizTier> quizTiers;
   final List<QuizRecommendation> quizRecommendations;
-  final List<RegExp> riskPatterns;
 
   /// danger | warning | neutral | success — لون شارة الحكم.
   final Map<String, String> verdictTone;
@@ -156,7 +143,7 @@ class ContentRepository {
   final int trendMinEntries;
   final double stableDelta;
 
-  /// «الرقية والتحصين» و«الصحة والطمأنينة» والورد (ruqyah.json).
+  /// «الرقية والتحصين» والورد (ruqyah.json).
   final RuqyahContent ruqyah;
 
   /// تسميات الواجهة المشتركة مع الويب (packages/shared/src/i18n/ar.ts).
@@ -170,9 +157,6 @@ class ContentRepository {
     }
     return v as String? ?? (throw StateError('تسمية غير معروفة: $path'));
   }
-
-  /// الإحالة العاجلة حين يُكتشف خطر على الجهاز (البند 5) — FALLBACK_REFERRAL المشترك.
-  final EmergencyReferral fallbackReferral;
 
   LibraryItem item(String id) => library[id] ?? (throw StateError('عنصر غير معروف: $id'));
 
@@ -193,13 +177,6 @@ class ContentRepository {
   List<Ayah> expandRef(String key) {
     final p = quran[key] ?? (throw StateError('مقطع غير معروف: $key'));
     return [for (var i = 0; i < p.ayat.length; i++) Ayah(surah: p.surah, ayah: p.from + i, text: p.ayat[i])];
-  }
-
-  /// البند 5: مؤشر خطر عاجل في نص يكتبه المستخدم ← إحالة فورية.
-  bool requiresEmergencyReferral(String? text) {
-    if (text == null || text.trim().isEmpty) return false;
-    final n = normalizeArabic(text);
-    return riskPatterns.any((r) => r.hasMatch(n));
   }
 
   /// بحث الميزان: الأقرب أولاً، وترتيب ثابت عند التساوي (كـ Array.sort في JS).

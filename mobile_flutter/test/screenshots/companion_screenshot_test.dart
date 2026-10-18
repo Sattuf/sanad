@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../today_screen_test.dart' show pumpApp, reveal;
+import '../vectors_test.dart' show loadContent;
 import 'today_screenshot_test.dart' show loadFonts, shot, snap;
 
 /// لقطات مراجعة لشاشات الرفيق (الأسبوعان 2–3) — تُقارن جنباً إلى جنب مع صفحات الويب بعرض الجوال.
@@ -88,10 +89,11 @@ void main() {
 
   shot('الاختبار — النتيجة', (tester) async {
     await pumpApp(tester, location: '/awareness/quiz');
-    for (var i = 0; i < 9; i++) {
+    final n = loadContent().quizQuestions.length;
+    for (var i = 0; i < n; i++) {
       await tester.tap(find.byType(InkWell).first);
       await tester.pumpAndSettle();
-      final next = find.text(i == 8 ? 'اعرض نتيجتي' : 'التالي');
+      final next = find.text(i == n - 1 ? 'اعرض نتيجتي' : 'التالي');
       await reveal(tester, next);
       await tester.tap(next);
       await tester.pumpAndSettle();

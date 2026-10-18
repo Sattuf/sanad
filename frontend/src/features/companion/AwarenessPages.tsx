@@ -78,7 +78,7 @@ export function AwarenessPage() {
       <Link to="/awareness/quiz" className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-border bg-dawn px-5 py-4">
         <div>
           <p className="font-bold">اختبر وعيك</p>
-          <p className="text-sm text-muted">هل ممارساتك اليومية صحية أم مدخل للوهم؟ ٩ أسئلة سريعة.</p>
+          <p className="text-sm text-muted">هل ممارساتك اليومية صحية أم مدخل للوهم؟ {arNum(QUIZ.length)} أسئلة سريعة.</p>
         </div>
         <span className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">ابدأ</span>
       </Link>

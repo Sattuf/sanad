@@ -67,11 +67,6 @@ final router = GoRouter(
       routes: [GoRoute(path: 'two-factor', builder: (_, state) => TwoFactorScreen(ticket: state.extra! as String))],
     ),
     GoRoute(path: '/consent', builder: (_, _) => const ConsentScreen()),
-    GoRoute(
-      path: '/health',
-      builder: (_, _) => const HealthHubScreen(),
-      routes: [GoRoute(path: ':guideId', builder: (_, state) => GuideScreen(guideId: state.pathParameters['guideId']!))],
-    ),
     GoRoute(path: '/library', builder: (_, _) => const LibraryScreen()),
     GoRoute(path: '/favorites', builder: (_, _) => const FavoritesScreen()),
   ],

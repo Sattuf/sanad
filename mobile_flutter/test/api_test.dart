@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sanad/content/models.dart';
 import 'package:sanad/core/api.dart';
 
 /// محوّل HTTP وهمي: يردّ بالترتيب، ويسجّل الطلبات.
@@ -54,43 +53,14 @@ class MemorySession implements SessionPort {
   }
 }
 
-({ApiClient client, FakeAdapter adapter, MemorySession session, List<EmergencyReferral?> emergencies}) setup(List<Object> responses, {String? access, String? refresh}) {
+({ApiClient client, FakeAdapter adapter, MemorySession session}) setup(List<Object> responses, {String? access, String? refresh}) {
   final adapter = FakeAdapter([...responses]);
   final session = MemorySession(access, refresh);
-  final emergencies = <EmergencyReferral?>[];
-  final client = ApiClient(baseUrl: 'https://api.test/', session: session, onEmergency: emergencies.add, dio: Dio()..httpClientAdapter = adapter);
-  return (client: client, adapter: adapter, session: session, emergencies: emergencies);
+  final client = ApiClient(baseUrl: 'https://api.test/', session: session, dio: Dio()..httpClientAdapter = adapter);
+  return (client: client, adapter: adapter, session: session);
 }
 
 void main() {
-  group('مسار الإحالة العاجلة', () {
-    test('يبلّغ عن إشارة الترويسة حتى عند فشل الطلب', () async {
-      final t = setup([json({'title': 'تعارض'}, 409, {emergencyHeader: '1'})]);
-      await expectLater(t.client.post<Object?>('/api/v1/bookings', body: {}), throwsA(isA<ApiError>()));
-      expect(t.emergencies, [null]);
-    });
-
-    test('يمرّر تفاصيل الإحالة من جسم الاستجابة', () async {
-      final referral = {
-        'required': true,
-        'message': 'اتصل الآن',
-        'contacts': [
-          {'label': 'طوارئ', 'phoneNumber': '997'},
-        ],
-        'emergencyPagePath': '/emergency',
-      };
-      final t = setup([json({'id': 'x', 'emergencyReferral': referral})]);
-      await t.client.post<Object?>('/api/v1/messages', body: {});
-      expect(t.emergencies.single?.contacts.first.phoneNumber, '997');
-    });
-
-    test('لا يبلّغ لاستجابة عادية', () async {
-      final t = setup([json({'ok': true})]);
-      await t.client.get<Object?>('/api/v1/directory');
-      expect(t.emergencies, isEmpty);
-    });
-  });
-
   group('الجلسة', () {
     test('يرسل رمز الوصول ويزيل الشرطة الأخيرة من العنوان', () async {
       final t = setup([json({})], access: 'a1', refresh: 'r1');

@@ -12,7 +12,6 @@ import 'package:sanad/content/ruqyah.dart';
 ContentRepository loadContent() => ContentRepository.fromJson(
       quranJson: File('assets/content/quran.json').readAsStringSync(),
       companionJson: File('assets/content/companion.json').readAsStringSync(),
-      safetyJson: File('assets/content/safety.json').readAsStringSync(),
       stringsJson: File('assets/content/strings.json').readAsStringSync(),
       ruqyahJson: File('assets/content/ruqyah.json').readAsStringSync(),
     );
@@ -24,16 +23,6 @@ void main() {
   group('توحيد العربية', () {
     for (final pair in (v['normalize'] as List).cast<List>()) {
       test(pair[0] as String, () => expect(normalizeArabic(pair[0] as String), pair[1]));
-    }
-  });
-
-  group('كشف الخطر (البند 5)', () {
-    final risk = v['risk'] as Map<String, dynamic>;
-    for (final t in (risk['positive'] as List).cast<String>()) {
-      test('خطر: $t', () => expect(content.requiresEmergencyReferral(t), isTrue));
-    }
-    for (final t in (risk['negative'] as List).cast<String>()) {
-      test('آمن: $t', () => expect(content.requiresEmergencyReferral(t), isFalse));
     }
   });
 
@@ -135,7 +124,7 @@ void main() {
           }
         }
       }
-      expect(r.guides.map((g) => g.kind).toSet(), {'method', 'awareness', 'health'});
+      expect(r.guides.map((g) => g.kind).toSet(), {'method', 'awareness'});
     });
   });
 

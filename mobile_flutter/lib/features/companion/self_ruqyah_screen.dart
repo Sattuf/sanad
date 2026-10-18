@@ -103,7 +103,7 @@ class _SelfRuqyahScreenState extends ConsumerState<SelfRuqyahScreen> {
           ),
         const SizedBox(height: 20),
         Text(
-          'الرقية عبادة ودعاء، والشفاء بيد الله وحده. إن كان الألم شديداً أو مستمراً فراجع طبيباً — الأخذ بالأسباب لا ينافي الرقية.',
+          'الرقية عبادة ودعاء، والشفاء بيد الله وحده.',
           style: TextStyle(fontSize: 12, height: 2, color: t.muted),
         ),
       ],

@@ -20,12 +20,12 @@ import 'ruqyah_reminders.dart';
 import 'scene.dart';
 
 /*
-  «الرقية والتحصين» و«الصحة والطمأنينة» — نظير RuqyahPages.tsx وHealthPages.tsx قسماً بقسم وبالنصوص نفسها.
+  «الرقية والتحصين» — نظير RuqyahPages.tsx قسماً بقسم وبالنصوص نفسها.
   المحتوى كله من ruqyah.json المولَّد (المجموعات والأدلة والآيات من المصحف المشترك).
 */
 
-/// روابط الأدلة الموجودة في التطبيق؛ الدليل (/directory) في الأسابيع 7–9، وروابط الطوارئ أُزيلت بقرار المالك.
-bool _routeInApp(String to) => to.startsWith('/ruqyah') || to.startsWith('/health') || to == '/self-ruqyah' || to == '/sakina' || to == '/journal';
+/// روابط الأدلة الموجودة في التطبيق؛ الدليل (/directory) في الأسابيع 7–9.
+bool _routeInApp(String to) => to.startsWith('/ruqyah') || to == '/self-ruqyah' || to == '/sakina' || to == '/journal';
 
 class _LampButton extends StatelessWidget {
   const _LampButton({required this.label, required this.onPressed});
@@ -153,39 +153,6 @@ class RuqyahHubScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _sectionTitle(context, 'منهج الوقاية والعلاج الشرعي', 'خطوات عملية مدعومة بالدليل: كيف تتحصّن، وكيف ترقي نفسك، وما الذي تحذره.'),
           GuideGrid(guides: r.guidesOf('method'), action: 'اقرأ المنهج ←'),
-          SanadCard(
-            padding: EdgeInsets.zero,
-            child: InkWell(
-              onTap: () => context.push('/health/treatment-and-ruqyah'),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          const TextSpan(
-                            text: 'الرقية والتداوي معاً',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          TextSpan(
-                            text: ' — «تداووا عباد الله»: كيف تجمع بين الرقية ومراجعة الطبيب.',
-                            style: TextStyle(color: t.muted),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'الصحة والطمأنينة ←',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.primary),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
           const SizedBox(height: 40),
           const Ornament(),
           const SizedBox(height: 24),
@@ -1192,7 +1159,6 @@ class GuideScreen extends ConsumerWidget {
     if (g == null) return const Scaffold(body: NotFound());
     final meta = switch (g.kind) {
       'awareness' => (root: '/ruqyah', label: 'الرقية والتحصين', crumb: 'توعية وتحذير', tag: 'توعية'),
-      'health' => (root: '/health', label: 'الصحة والطمأنينة', crumb: null, tag: 'صحة'),
       _ => (root: '/ruqyah', label: 'الرقية والتحصين', crumb: 'المنهج', tag: 'منهج'),
     };
     final related = r.guidesOf(g.kind).where((x) => x.id != g.id).toList();
@@ -1220,7 +1186,7 @@ class GuideScreen extends ConsumerWidget {
                           style: TextStyle(fontSize: 14, color: t.sceneMuted, decoration: TextDecoration.underline),
                         ),
                       ),
-                      if (meta.crumb != null) Text(' / ${meta.crumb}', style: TextStyle(fontSize: 14, color: t.sceneMuted)),
+                      Text(' / ${meta.crumb}', style: TextStyle(fontSize: 14, color: t.sceneMuted)),
                     ],
                   ),
                 ),
@@ -1321,80 +1287,6 @@ class GuideScreen extends ConsumerWidget {
                 ),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── الصحة والطمأنينة ────────────────────────────────────────────────────────
-
-/// الطبيب والشيخ مساران متكافئان — نظير HealthHubPage.
-class HealthHubScreen extends ConsumerWidget {
-  const HealthHubScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = context.t;
-    final r = ref.watch(contentProvider).ruqyah;
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-        children: [
-          Scene(
-            theme: SceneTheme.dawn,
-            radius: Radii.x3l,
-            padding: const EdgeInsets.fromLTRB(24, 48, 24, 48),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'سند · الصحة والطمأنينة',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.lampGlow),
-                ),
-                const SizedBox(height: 12),
-                Semantics(
-                  header: true,
-                  child: const Text('الصحة والطمأنينة', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700)),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'توعية صحية ونفسية مبسّطة: كيف تجمع بين الرقية والتداوي، ومتى تراجع الطبيب، وكيف تختار مختصاً موثّقاً. معلومات عامة للتوعية، ولا تغني عن الفحص والتشخيص عند المختص.',
-                  style: TextStyle(fontSize: 17, height: 1.85, color: t.sceneSoft),
-                ),
-                const SizedBox(height: 28),
-                // زر «مختصون صحيون موثّقون» في الويب يفتح /directory — يُضاف مع الدليل (الأسابيع 7–9)
-                _LampButton(label: 'متى تراجع الطبيب؟', onPressed: () => context.push('/health/when-to-see-doctor')),
-              ],
-            ),
-          ),
-          const SizedBox(height: 40),
-          _sectionTitle(context, 'أدلة التوعية', 'مكتوبة للقارئ العادي، بلا تشخيص ولا أدوية ولا جرعات.'),
-          GuideGrid(guides: r.guidesOf('health'), action: 'اقرأ ←'),
-          const SizedBox(height: 16),
-          SanadCard(
-            padding: EdgeInsets.zero,
-            child: InkWell(
-              onTap: () => context.go('/ruqyah'),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('الرقية والتحصين', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 4),
-                    Text('آيات الرقية وأدعية السنة وأذكار اليوم — تجمعها مع التداوي، لا بدلاً عنه.', style: TextStyle(color: t.muted)),
-                    const SizedBox(height: 12),
-                    Text(
-                      'افتح القسم ←',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.primary),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

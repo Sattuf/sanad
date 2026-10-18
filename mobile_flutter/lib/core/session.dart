@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../ui/emergency.dart';
 import 'api.dart';
 import 'audio.dart';
 
@@ -86,6 +85,5 @@ final apiProvider = Provider<ApiClient>(
   (ref) => ApiClient(
     baseUrl: apiBase,
     session: ref.read(sessionProvider.notifier),
-    onEmergency: (referral) => ref.read(emergencyProvider.notifier).raise(referral),
   ),
 );

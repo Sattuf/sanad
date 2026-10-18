@@ -167,22 +167,10 @@ void main() {
     for (final s in g.sections) {
       await reveal(tester, find.text(s.heading));
     }
-    final hidden = r.guides.expand((x) => x.sections).where((s) => s.cta != null && (s.cta!.to.startsWith('/directory') || s.cta!.to == '/emergency'));
+    final hidden = r.guides.expand((x) => x.sections).where((s) => s.cta != null && s.cta!.to.startsWith('/directory'));
     for (final s in hidden) {
       expect(find.text(s.cta!.label, skipOffstage: false), findsNothing);
     }
-  });
-
-  testWidgets('الصحة والطمأنينة: الواجهة والأدلة، و«متى تراجع الطبيب؟» تفتح دليلها', (tester) async {
-    await pumpApp(tester, location: '/health');
-    expect(find.text('الصحة والطمأنينة'), findsWidgets);
-    for (final g in r.guidesOf('health')) {
-      await reveal(tester, find.text(g.title));
-    }
-    await toTop(tester);
-    await tester.tap(find.text('متى تراجع الطبيب؟'));
-    await tester.pumpAndSettle();
-    expect(find.text(r.guide('when-to-see-doctor')!.intro), findsOneWidget);
   });
 
   testWidgets('تذكير الأذكار: إشعار محلي باسم الورد يفتحه، ومحايد في الوضع المتحفّظ', (tester) async {
