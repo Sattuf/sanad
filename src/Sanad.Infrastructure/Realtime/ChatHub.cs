@@ -6,7 +6,7 @@ namespace Sanad.Infrastructure.Realtime;
 
 /// <summary>
 /// Hub للبث اللحظي فقط (إشعار بوصول رسالة/تحديث). لا يستقبل أي نص من العميل — الإرسال عبر REST
-/// حتى يمر بكل ضوابط الـ Pipeline (التشفير، كاشف الخطر، التدقيق).
+/// حتى يمر بكل ضوابط الـ Pipeline (التشفير، التدقيق).
 /// </summary>
 [Authorize]
 public sealed class ChatHub : Hub

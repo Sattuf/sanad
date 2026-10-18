@@ -80,7 +80,7 @@ public sealed class BookingRequest : BaseEntity, IAggregateRoot, ISoftDeletable
     public bool BelongsToBeneficiary(Guid userId) => BeneficiaryUserId == userId;
 
     /// <summary>
-    /// يشفّر الملاحظة فوراً، ويفحص مؤشر الخطر. لا يمنع الحفظ أبداً — الإحالة العاجلة مسار مستقل.
+    /// يشفّر الملاحظة فوراً (ADR-0004)؛ لا يراها إلا المختص المُسنَد، أو المنسق عند تصعيد مرتبط بالحجز.
     /// </summary>
     public void SetBeneficiaryNote(string? plainNote, IFieldEncryptor encryptor)
     {

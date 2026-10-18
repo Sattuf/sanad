@@ -9,7 +9,7 @@ import { Banner, Button, Card, ErrorState, Loading, PageHeader, Select, Textarea
 import { cx } from "../../lib/cx";
 import { formatTime } from "@sanad/shared/lib/format";
 
-/** المحادثة الإدارية: نص فقط (لا مرفقات — 12 §12.5)، وكل رسالة تمر على كاشف الخطر في الخادم. */
+/** المحادثة الإدارية: نص فقط (لا مرفقات — 12 §12.5) مشفّر في الخادم (ADR-0007). */
 export function ConversationPage() {
   const { id } = useParams();
   const qc = useQueryClient();

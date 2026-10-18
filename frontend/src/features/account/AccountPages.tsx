@@ -205,7 +205,7 @@ export function AccountPage() {
               checked={quietHoursEnabled}
               onChange={(v) => setQuietHours(v ? { start: currentQuietHours.start ?? 22, end: currentQuietHours.end ?? 7 } : { start: null, end: null })}
               label="ساعات هدوء (بتوقيت UTC)"
-              hint="لا تصلك خلالها إشعارات غير عاجلة عبر القنوات الخارجية — تنبيهات السلامة العاجلة تصل دائماً."
+              hint="لا تصلك خلالها إشعارات غير عاجلة عبر القنوات الخارجية."
             />
             {quietHoursEnabled && (
               <div className="mt-2 flex items-center gap-2 ps-7">
