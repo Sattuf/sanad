@@ -160,7 +160,7 @@ void main() {
     expect(prefs.getDouble('sanad.ruqyah.fontScale'), 1.15);
   }, semanticsEnabled: true);
 
-  testWidgets('الدليل: أقسامه بدليلها، وزر الدليل/الطوارئ مخفي حتى توجد صفحته في التطبيق', (tester) async {
+  testWidgets('الدليل: أقسامه بدليلها، وزر الدليل مخفي حتى توجد صفحته في التطبيق', (tester) async {
     final g = r.guide('treatment')!;
     await pumpApp(tester, location: '/ruqyah/guide/${g.id}');
     expect(find.text(g.title), findsOneWidget);

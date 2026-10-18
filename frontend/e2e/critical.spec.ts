@@ -3,14 +3,14 @@ import { API, acceptedBookingWithSheikh, apiLogin, loginViaUi } from "./helpers"
 
 // references/10-frontend-architecture.md §10.11 — الاختبارات الحرجة
 
-test("1) توصية تحتوي «خذ 500 ملغ» تُرفض برسالة الفلتر ولا تُحفظ", async ({ page, request }) => {
+test("1) توصية تحتوي «نضمن لك الشفاء» تُرفض برسالة الفلتر ولا تُحفظ", async ({ page, request }) => {
   const bookingId = await acceptedBookingWithSheikh(request);
   await loginViaUi(page, "sheikh@sanad.local");
   await page.goto(`/provider/bookings/${bookingId}/recommend`);
   await expect(page.getByText("هذه التوصية سترسَل مباشرة للمستفيد الآن")).toBeVisible();
-  await page.getByLabel("توجيهك للمستفيد").fill("خذ 500 ملغ مرتين يومياً");
+  await page.getByLabel("توجيهك للمستفيد").fill("نضمن لك الشفاء بعد ثلاث جلسات");
   await page.getByRole("button", { name: "إرسال للمستفيد" }).click();
-  await expect(page.getByRole("alert")).toContainText("وصف دواء أو جرعة");
+  await expect(page.getByRole("alert")).toContainText("وعد بشفاء مضمون");
   await expect(page.getByText("لا توصيات مرسلة بعد.")).toBeVisible();
 });
 
@@ -27,8 +27,8 @@ test("2) المستفيد لا يصل لـ CaseNoteEditor حتى بالرابط 
   expect([403, 404]).toContain(res.status());
 });
 
-test("3) طلب «طبيب» بمستند «تزكية شرعية» ← مرفوض لعدم التطابق", async () => {
-  // يتطلب جلسة منسق بتحقق ثنائي؛ مغطّى بالكامل في Api.IntegrationTests (T15_physician_request_with_sharia_endorsement…)
+test("3) طلب ترقية بمستند خارج القائمة المسموحة ← مرفوض", async () => {
+  // يتطلب جلسة منسق بتحقق ثنائي؛ مغطّى بالكامل في Api.IntegrationTests (T15_upgrade_request_with_document_outside_the_allowed_list…)
   test.skip(true, "مغطّى في اختبار التكامل T15 — يتطلب منسقاً بجلسة 2FA");
 });
 
