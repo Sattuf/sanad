@@ -6,14 +6,6 @@ export function localDay(d = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
-export function daysBetween(fromDay: string, toDay: string): number {
-  const [a, b] = [fromDay, toDay].map((s) => {
-    const [y, m, d] = s.split("-").map(Number);
-    return Date.UTC(y, m - 1, d);
-  });
-  return Math.round((b - a) / 86_400_000);
-}
-
 export function addDays(day: string, n: number): string {
   const [y, m, d] = day.split("-").map(Number);
   return localDay(new Date(y, m - 1, d + n));

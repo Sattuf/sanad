@@ -16,7 +16,7 @@ const client = createApiClient({
   },
 });
 
-export const { request, api, mediaUrl } = client;
+export const { api, mediaUrl } = client;
 
 /** مفتاح تكرار آمن لكل محاولة إرسال نموذج (يبقى ثابتاً عند إعادة المحاولة من نفس النموذج). */
 export function newIdempotencyKey(): string {
