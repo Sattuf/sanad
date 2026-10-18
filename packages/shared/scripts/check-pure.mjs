@@ -2,6 +2,7 @@
 // كل استيراد خارج الاختبارات يجب أن يكون نسبياً.
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const bad = [];
 const walk = (dir) => {
@@ -15,7 +16,7 @@ const walk = (dir) => {
     }
   }
 };
-walk(new URL("../src", import.meta.url).pathname);
+walk(fileURLToPath(new URL("../src", import.meta.url)));
 if (bad.length) {
   console.error("استيراد خارجي ممنوع في packages/shared:\n" + bad.join("\n"));
   process.exit(1);

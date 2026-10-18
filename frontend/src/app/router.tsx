@@ -1,7 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AccountPage, ConsentOnboardingPage, DashboardPage, NotificationsPage, ReportPage } from "../features/account/AccountPages";
-import { LoginScreen } from "../features/auth/LoginScreen";
-import { GoogleCallbackPage, RegisterPage } from "../features/auth/RegisterPage";
+import { LoginScreen, StaffLoginScreen } from "../features/auth/LoginScreen";
+import { GoogleCallbackPage } from "../features/auth/GoogleCallbackPage";
 import { BookPage } from "../features/booking/BookPage";
 import { BookingDetailPage, MyBookingsPage } from "../features/booking/BookingPages";
 import { ConversationPage } from "../features/chat/ConversationPage";
@@ -22,6 +22,7 @@ import {
 } from "../features/provider-portal/ProviderPortal";
 import { ProviderUpgradePage } from "../features/provider-upgrade/ProviderUpgradePage";
 import { HomePage } from "../features/public/HomePage";
+import { SakinaPage } from "../features/companion/SakinaPage";
 import { AboutVerificationPage, EmergencyPage, PrivacyPage, TermsPage } from "../features/public/StaticPages";
 import { RequireAuth, RequireRole } from "./guards";
 import { AppLayout, PublicShareLayout } from "./layout/AppLayout";
@@ -32,6 +33,11 @@ const auth = (el: React.ReactNode) => <RequireAuth>{el}</RequireAuth>;
 export const router = createBrowserRouter([
   // شاشة الدخول بتخطيط مستقل (المصباح)
   { path: "/login", element: <LoginScreen /> },
+  // فريق العمل: بريد + تحقق ثنائي (ADR-0010) — غير مربوطة بأي واجهة عامة
+  { path: "/staff/login", element: <StaffLoginScreen /> },
+
+  // وضع السكينة: شاشة مستقلة خافتة بلا أي عنصر واجهة آخر — تعمل دون إنترنت (docs/adr/0022)
+  { path: "/sakina", element: <SakinaPage /> },
 
   // صفحة المشاركة العامة: خارج أي حارس، بلا عناصر الواجهة المصادَقة (10 §10.7)
   { element: <PublicShareLayout />, children: [{ path: "/public/shared/:shortCode", element: <PublicSharePage /> }] },
@@ -40,7 +46,8 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: "/", element: <HomePage /> },
-      { path: "/register", element: <RegisterPage /> },
+      // الويب يدخل بجوجل فقط؛ روابط التسجيل القديمة تذهب لشاشة الدخول
+      { path: "/register", element: <Navigate to="/login" replace /> },
       { path: "/auth/callback", element: <GoogleCallbackPage /> },
       { path: "/directory", element: <DirectoryPage /> },
       { path: "/providers/:id", element: <ProviderPage /> },
@@ -53,6 +60,17 @@ export const router = createBrowserRouter([
       // الصحة والطمأنينة: توعية عامة، عامة بلا تسجيل؛ صفحة الدليل نفسها بمسار القسم
       { path: "/health", element: <HealthHubPage /> },
       { path: "/health/:guideId", element: <RuqyahGuidePage /> },
+
+      // رفيق السكينة اليومي — بلا تسجيل دخول، محلي على الجهاز (docs/adr/0022)
+      // تُحمَّل عند الطلب؛ السكينة وحدها محمّلة مسبقاً لتعمل فوراً ودون إنترنت
+      { path: "/today", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.TodayPage })) },
+      { path: "/programs", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramsPage })) },
+      { path: "/programs/:id", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.ProgramDetailPage })) },
+      { path: "/self-ruqyah", lazy: () => import("../features/companion/SelfRuqyahPage").then((m) => ({ Component: m.SelfRuqyahPage })) },
+      { path: "/journal", lazy: () => import("../features/companion/JournalPage").then((m) => ({ Component: m.JournalPage })) },
+      { path: "/awareness", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.AwarenessPage })) },
+      { path: "/awareness/quiz", lazy: () => import("../features/companion/AwarenessPages").then((m) => ({ Component: m.QuizPage })) },
+      { path: "/privacy-mode", lazy: () => import("../features/companion/PrivacyModePage").then((m) => ({ Component: m.PrivacyModePage })) },
       { path: "/about-verification", element: <AboutVerificationPage /> },
       { path: "/terms", element: <TermsPage /> },
       { path: "/privacy", element: <PrivacyPage /> },

@@ -4,8 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import { useMe } from "../../api/hooks";
 import { cx } from "../../lib/cx";
 import { NotFoundPage } from "../../app/NotFoundPage";
-import { awarenessGuides, collections, findCollection, findGuide, groups, guidePath, healthGuides, methodGuides, type Collection, type CollectionGroup, type Guide, type Item, type SceneTheme } from "@sanad/shared/content/ruqyah";
-import { quran, type QuranKey } from "@sanad/shared/content/quran";
+import { GROUP_ORDER, HERO_VERSES as heroVerses, awarenessGuides, collections, findCollection, findGuide, groups, guidePath, healthGuides, methodGuides, suggestedWird, type Collection, type Guide, type Item, type SceneTheme } from "@sanad/shared/content/ruqyah";
+import { quran } from "@sanad/shared/content/quran";
 import { useDailyProgress, useCollectionEntries, useMyWird, type MyWird } from "./progress";
 import { DueWirdNudge, ReminderCard } from "./ReminderWidgets";
 import { renderShareCard, shareOrDownload } from "./shareImage";
@@ -17,27 +17,11 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 // ── الصفحة الرئيسية ─────────────────────────────────────────────────────────
 
-/** آيات قصيرة تتناوب في واجهة القسم — نصها من quran.ts نفسه. */
-const heroVerses: Array<{ ref: QuranKey; index: number }> = [
-  { ref: "isra-82", index: 0 },
-  { ref: "yunus-57", index: 0 },
-  { ref: "shuara-80", index: 0 },
-  { ref: "falaq", index: 0 },
-  { ref: "kahf-39", index: 0 },
-];
-
-function suggestedWird(hour: number): { id: string; label: string } {
-  if (hour >= 4 && hour < 12) return { id: "morning-evening", label: "أذكار الصباح" };
-  if (hour >= 15 && hour < 21) return { id: "morning-evening", label: "أذكار المساء" };
-  if (hour >= 21 || hour < 4) return { id: "sleep", label: "أذكار النوم" };
-  return { id: "ruqyah-quran", label: "آيات الرقية" };
-}
-
 export function RuqyahHubPage() {
   const { data: me } = useMe();
   const myWird = useMyWird(Boolean(me));
   const wird = useMemo(() => suggestedWird(new Date().getHours()), []);
-  const order: CollectionGroup[] = ["treatment", "prevention", "relief"];
+  const order = GROUP_ORDER;
 
   return (
     <div className="flex flex-col gap-14">
@@ -45,13 +29,13 @@ export function RuqyahHubPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease }} className="max-w-2xl">
           <p className="text-sm font-semibold tracking-wide text-lamp-glow">سند · الرقية والتحصين</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">الرقية الشرعية والتحصين</h1>
-          <p className="mt-4 text-lg leading-8 text-[#e6dfd0]">
+          <p className="mt-4 text-lg leading-8 text-[var(--scene-soft)]">
             آيات الرقية، وأدعية السنة الثابتة بتخريجها، وأذكار اليوم والليلة، ومنهج عملي للوقاية والرقية على النفس — مكتوبة بخط المصحف ومرتّبة لتقرأها بقلب حاضر.
           </p>
         </motion.div>
         <VerseCarousel />
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to={`/ruqyah/${wird.id}`} className="rounded-xl bg-lamp-glow px-5 py-3 font-bold text-[#1d1a12] shadow-[0_0_30px_rgba(242,198,117,.35)] transition-transform hover:-translate-y-0.5">
+          <Link to={`/ruqyah/${wird.id}`} className="rounded-xl bg-lamp-glow px-5 py-3 font-bold text-[var(--scene-on-gold)] shadow-[0_0_30px_color-mix(in_srgb,var(--scene-gold)_35%,transparent)] transition-transform hover:-translate-y-0.5">
             ابدأ {wird.label}
           </Link>
           <Link to="/ruqyah/guide/treatment" className="rounded-xl border border-white/25 bg-white/10 px-5 py-3 font-semibold backdrop-blur transition-colors hover:bg-white/20">
@@ -159,7 +143,7 @@ export function GuideGrid({ items, action }: { items: Guide[]; action: string })
           <Link to={guidePath(g)} className="group block h-full">
             <Scene theme={g.theme} className="flex h-full min-h-44 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:ring-lamp-glow/60">
               <h3 className="text-lg font-bold">{g.title}</h3>
-              <p className="mt-1 text-sm text-[#d9d2c3]">{g.subtitle}</p>
+              <p className="mt-1 text-sm text-[var(--scene-muted)]">{g.subtitle}</p>
               <span className="mt-3 text-sm font-semibold text-lamp-glow">{action}</span>
             </Scene>
           </Link>
@@ -192,7 +176,7 @@ function VerseCarousel() {
             exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
             transition={{ duration: 0.8, ease }}
           >
-            <p className="font-quran text-2xl leading-[2.3] text-[#fbf6ea] md:text-3xl">﴿{p.ayat[v.index]}﴾</p>
+            <p className="font-quran text-2xl leading-[2.3] text-[var(--scene-verse)] md:text-3xl">﴿{p.ayat[v.index]}﴾</p>
             <figcaption className="mt-1 text-sm text-lamp-glow">[{p.surahName}: {arNum(p.from + v.index)}]</figcaption>
           </motion.blockquote>
         </AnimatePresence>
@@ -217,10 +201,10 @@ function VerseCarousel() {
 function CollectionCard({ collection: c }: { collection: Collection }) {
   return (
     <Link to={`/ruqyah/${c.id}`} className="group block h-full">
-      <Scene theme={c.theme} className="flex h-full min-h-52 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_-18px_rgba(242,198,117,.45)] group-hover:ring-lamp-glow/60">
-        <span className="absolute end-4 top-4 rounded-full bg-black/30 px-2.5 py-0.5 text-xs text-[#e6dfd0] backdrop-blur">{arNum(c.items.length)} {c.items.length > 10 ? "مقطعاً" : "مقاطع"}</span>
+      <Scene theme={c.theme} className="flex h-full min-h-52 flex-col justify-end rounded-2xl p-5 ring-1 ring-white/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--scene-gold)_45%,transparent)] group-hover:ring-lamp-glow/60">
+        <span className="absolute end-4 top-4 rounded-full bg-black/30 px-2.5 py-0.5 text-xs text-[var(--scene-soft)] backdrop-blur">{arNum(c.items.length)} {c.items.length > 10 ? "مقطعاً" : "مقاطع"}</span>
         <h3 className="text-xl font-bold">{c.title}</h3>
-        <p className="mt-1 text-sm text-[#d9d2c3]">{c.subtitle}</p>
+        <p className="mt-1 text-sm text-[var(--scene-muted)]">{c.subtitle}</p>
         <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-lamp-glow">
           اقرأ الآن
           <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span>
@@ -277,17 +261,17 @@ function CollectionReader({ collection: c }: { collection: Collection }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <Scene theme={c.theme} pan className="rounded-3xl px-6 py-10 md:px-12 md:py-14">
-        <nav aria-label="مسار التنقل" className="text-sm text-[#d9d2c3]">
+        <nav aria-label="مسار التنقل" className="text-sm text-[var(--scene-muted)]">
           <Link to="/ruqyah" className="hover:text-lamp-glow">الرقية والتحصين</Link> <span aria-hidden>/</span> {groups[c.group].title}
         </nav>
         <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-3 text-3xl font-bold md:text-4xl">
           {c.title}
         </motion.h1>
-        <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease }} className="mt-3 max-w-2xl leading-8 text-[#e6dfd0]">
+        <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease }} className="mt-3 max-w-2xl leading-8 text-[var(--scene-soft)]">
           {c.intro}
         </motion.p>
         <div className="mt-6 max-w-md">
-          <div className="flex justify-between text-xs text-[#d9d2c3]">
+          <div className="flex justify-between text-xs text-[var(--scene-muted)]">
             <span>ورد اليوم{synced ? " · محفوظ في حسابك" : ""}</span>
             <span className="num">{arNum(done)} / {arNum(entries.length)}</span>
           </div>
@@ -328,7 +312,7 @@ function CollectionReader({ collection: c }: { collection: Collection }) {
       <Link to={`/ruqyah/${next.id}`} className="group mt-8 block">
         <Scene theme={next.theme} className="flex items-center justify-between rounded-2xl p-5 ring-1 ring-white/10 transition-all group-hover:ring-lamp-glow/60">
           <div>
-            <p className="text-xs text-[#d9d2c3]">التالي</p>
+            <p className="text-xs text-[var(--scene-muted)]">التالي</p>
             <p className="text-lg font-bold">{next.title}</p>
           </div>
           <span className="text-2xl text-lamp-glow transition-transform duration-300 group-hover:-translate-x-1.5">←</span>
@@ -563,12 +547,12 @@ export function RuqyahGuidePage() {
   return (
     <motion.div key={g.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
       <Scene theme={g.theme} pan className="rounded-3xl px-6 py-10 md:px-12 md:py-14">
-        <nav aria-label="مسار التنقل" className="text-sm text-[#d9d2c3]">
+        <nav aria-label="مسار التنقل" className="text-sm text-[var(--scene-muted)]">
           <Link to={meta.root.to} className="hover:text-lamp-glow">{meta.root.label}</Link>
           {meta.crumb && <> <span aria-hidden>/</span> {meta.crumb}</>}
         </nav>
         <h1 className="mt-3 text-3xl font-bold md:text-4xl">{g.title}</h1>
-        <p className="mt-3 max-w-2xl leading-8 text-[#e6dfd0]">{g.intro}</p>
+        <p className="mt-3 max-w-2xl leading-8 text-[var(--scene-soft)]">{g.intro}</p>
       </Scene>
 
 
@@ -613,7 +597,7 @@ export function RuqyahGuidePage() {
         {related.map((x) => (
           <Link key={x.id} to={guidePath(x)} className="group">
             <Scene theme={x.theme} className="rounded-2xl p-5 ring-1 ring-white/10 transition-all group-hover:ring-lamp-glow/60">
-              <p className="text-xs text-[#d9d2c3]">{meta.tag}</p>
+              <p className="text-xs text-[var(--scene-muted)]">{meta.tag}</p>
               <p className="font-bold">{x.title}</p>
             </Scene>
           </Link>

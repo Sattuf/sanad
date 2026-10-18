@@ -31,6 +31,9 @@ PASSAGES = [
     ("qalam-51-52", 68, 51, 52), ("mulk-3-4", 67, 3, 4),
     ("tawbah-14", 9, 14, 14), ("yunus-57", 10, 57, 57), ("nahl-69", 16, 68, 69), ("isra-82", 17, 82, 82), ("shuara-80", 26, 80, 80),
     ("fussilat-44", 41, 44, 44), ("kahf-39", 18, 39, 39), ("anbiya-87", 21, 87, 88),
+    # رفيق السكينة اليومي (ADR-0022): آيات السكينة والطمأنينة وسورة الشرح
+    ("baqarah-248", 2, 248, 248), ("tawbah-26", 9, 26, 26), ("tawbah-40", 9, 40, 40), ("fath-4", 48, 4, 4),
+    ("fath-18", 48, 18, 18), ("fath-26", 48, 26, 26), ("raad-28", 13, 28, 28), ("sharh", 94, 1, 8),
 ]
 
 CITATION = re.compile(r"﴿[^﴾]+﴾\s*\[([^:\]]+):\s*(\d+)\]")
@@ -69,7 +72,7 @@ def main(path: str) -> None:
     out += ["};", ""]
 
     OUT.write_text("\n".join(out), encoding="utf-8")
-    print(f"{OUT.relative_to(ROOT)}: {len(PASSAGES)} مقطعاً، {len(cited)} آية مستشهداً بها")
+    print(f"{OUT.relative_to(ROOT.parent)}: {len(PASSAGES)} مقطعاً، {len(cited)} آية مستشهداً بها")
 
 
 if __name__ == "__main__":

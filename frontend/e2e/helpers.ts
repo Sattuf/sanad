@@ -5,8 +5,7 @@ export const DEMO_PASSWORD = "Demo-Pass-123";
 
 /** دخول بالبريد عبر الواجهة الحقيقية (شاشة المصباح). */
 export async function loginViaUi(page: Page, email: string, password = DEMO_PASSWORD) {
-  await page.goto("/login");
-  await page.getByRole("button", { name: /البريد الإلكتروني/ }).click();
+  await page.goto("/staff/login");
   await page.getByLabel("البريد الإلكتروني").fill(email);
   await page.getByLabel("كلمة المرور").fill(password);
   await page.getByRole("button", { name: "دخول", exact: true }).click();

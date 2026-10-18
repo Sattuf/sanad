@@ -9,31 +9,34 @@ import type { SceneTheme } from "@sanad/shared/content/ruqyah";
   النص القرآني لا يُرسم داخل الصور أبداً: يُكتب فوقها بخط حقيقي حتى لا يُشوَّه حرف من كتاب الله.
 */
 
+/** لون رمز بشفافية — الألوان كلها من رموز --scene-* في index.css (ومنها تُولَّد لتطبيق Flutter). */
+const mix = (token: string, alpha: number) => `color-mix(in srgb, var(--scene-${token}) ${alpha * 100}%, transparent)`;
+
 /** overlay يضمن تباين النص فوق الصورة، وbase يحلّ محلّها إن لم تتوفر. */
 const tints: Record<SceneTheme, { overlay: string; base: string }> = {
   lantern: {
-    overlay: "linear-gradient(115deg, rgba(6,24,28,.35) 0%, rgba(6,24,28,.78) 55%, rgba(4,14,18,.92) 100%), radial-gradient(circle at 18% 40%, rgba(242,198,117,.35), transparent 45%)",
-    base: "linear-gradient(160deg, #0b2e33, #07151c)",
+    overlay: `linear-gradient(115deg, ${mix("lantern-a", 0.35)} 0%, ${mix("lantern-a", 0.78)} 55%, ${mix("lantern-b", 0.92)} 100%), radial-gradient(circle at 18% 40%, ${mix("gold", 0.35)}, transparent 45%)`,
+    base: "linear-gradient(160deg, var(--scene-lantern-base-1), var(--scene-lantern-base-2))",
   },
   dawn: {
-    overlay: "linear-gradient(to left, rgba(8,20,26,.72) 0%, rgba(8,20,26,.35) 55%, transparent 100%), linear-gradient(180deg, rgba(20,34,40,.25) 0%, rgba(14,30,36,.6) 55%, rgba(8,20,26,.9) 100%)",
-    base: "linear-gradient(180deg, #f0c98c 0%, #c98f5a 40%, #28515a 100%)",
+    overlay: `linear-gradient(to left, ${mix("dawn-a", 0.72)} 0%, ${mix("dawn-a", 0.35)} 55%, transparent 100%), linear-gradient(180deg, ${mix("dawn-b", 0.25)} 0%, ${mix("dawn-c", 0.6)} 55%, ${mix("dawn-a", 0.9)} 100%)`,
+    base: "linear-gradient(180deg, var(--scene-dawn-base-1) 0%, var(--scene-dawn-base-2) 40%, var(--scene-dawn-base-3) 100%)",
   },
   dusk: {
-    overlay: "linear-gradient(180deg, rgba(10,14,34,.2) 0%, rgba(10,14,34,.65) 60%, rgba(6,9,22,.92) 100%), radial-gradient(circle at 75% 20%, rgba(242,198,117,.3), transparent 30%)",
-    base: "linear-gradient(180deg, #1c2452 0%, #0e3a45 100%)",
+    overlay: `linear-gradient(180deg, ${mix("dusk-a", 0.2)} 0%, ${mix("dusk-a", 0.65)} 60%, ${mix("dusk-b", 0.92)} 100%), radial-gradient(circle at 75% 20%, ${mix("gold", 0.3)}, transparent 30%)`,
+    base: "linear-gradient(180deg, var(--scene-dusk-base-1) 0%, var(--scene-dusk-base-2) 100%)",
   },
   night: {
-    overlay: "linear-gradient(180deg, rgba(4,8,20,.3) 0%, rgba(4,8,20,.75) 60%, rgba(3,6,14,.94) 100%), radial-gradient(circle at 70% 25%, rgba(236,233,226,.22), transparent 25%)",
-    base: "linear-gradient(180deg, #0a1030 0%, #050814 100%)",
+    overlay: `linear-gradient(180deg, ${mix("night-a", 0.3)} 0%, ${mix("night-a", 0.75)} 60%, ${mix("night-b", 0.94)} 100%), radial-gradient(circle at 70% 25%, ${mix("moon", 0.22)}, transparent 25%)`,
+    base: "linear-gradient(180deg, var(--scene-night-base-1) 0%, var(--scene-night-base-2) 100%)",
   },
   mihrab: {
-    overlay: "linear-gradient(to left, rgba(5,16,16,.75) 0%, rgba(5,16,16,.4) 55%, transparent 100%), linear-gradient(180deg, rgba(10,30,30,.35) 0%, rgba(8,26,26,.7) 60%, rgba(5,16,16,.93) 100%), radial-gradient(ellipse at 50% 30%, rgba(242,198,117,.2), transparent 50%)",
-    base: "linear-gradient(180deg, #2c4f4a 0%, #0c1f1e 100%)",
+    overlay: `linear-gradient(to left, ${mix("mihrab-a", 0.75)} 0%, ${mix("mihrab-a", 0.4)} 55%, transparent 100%), linear-gradient(180deg, ${mix("mihrab-b", 0.35)} 0%, ${mix("mihrab-c", 0.7)} 60%, ${mix("mihrab-a", 0.93)} 100%), radial-gradient(ellipse at 50% 30%, ${mix("gold", 0.2)}, transparent 50%)`,
+    base: "linear-gradient(180deg, var(--scene-mihrab-base-1) 0%, var(--scene-mihrab-base-2) 100%)",
   },
   manuscript: {
-    overlay: "linear-gradient(90deg, rgba(6,20,22,.35) 0%, rgba(6,20,22,.8) 60%, rgba(4,14,16,.94) 100%), radial-gradient(circle at 25% 50%, rgba(242,198,117,.28), transparent 45%)",
-    base: "linear-gradient(160deg, #203c3a, #081614)",
+    overlay: `linear-gradient(90deg, ${mix("manuscript-a", 0.35)} 0%, ${mix("manuscript-a", 0.8)} 60%, ${mix("manuscript-b", 0.94)} 100%), radial-gradient(circle at 25% 50%, ${mix("gold", 0.28)}, transparent 45%)`,
+    base: "linear-gradient(160deg, var(--scene-manuscript-base-1), var(--scene-manuscript-base-2))",
   },
 };
 
@@ -52,7 +55,7 @@ function sceneStyle(theme: SceneTheme): CSSProperties {
 export function Scene({ theme, className, children, pan = false }: { theme: SceneTheme; className?: string; children: ReactNode; pan?: boolean }) {
   const reduce = useReducedMotion();
   return (
-    <div className={cx("relative isolate overflow-hidden text-[#f4efe4]", className)}>
+    <div className={cx("relative isolate overflow-hidden text-[var(--scene-text)]", className)}>
       {/* الصورة + التدرّج: حركة «كين برنز» بطيئة جداً تمنح المشهد حياة دون تشتيت */}
       <motion.div
         className="absolute inset-0 -z-10"

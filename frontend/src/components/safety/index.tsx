@@ -60,30 +60,22 @@ export function VerificationBadge({ verification }: { verification: Badge }) {
 export function UnmonitoredChatWarning() {
   return (
     <p className="rounded-xl bg-warning-bg px-4 py-2.5 text-sm leading-7 text-warning">
-      هذه محادثة إدارية لتنسيق الموعد، <strong>وليست مراقَبة لحظياً</strong>. لا تشارك بيانات حساسة غير لازمة. إن كنت في خطر،{" "}
-      <Link to="/emergency" className="font-bold underline">
-        اذهب لصفحة الطوارئ
-      </Link>
-      .
+      هذه محادثة إدارية لتنسيق الموعد، <strong>وليست مراقَبة لحظياً</strong>. لا تشارك بيانات حساسة غير لازمة.
     </p>
   );
 }
 
 export function AdministrativeDisclaimerFooter() {
-  const { t } = useTranslation();
   return (
     <footer className="mt-16 border-t border-border bg-surface">
-      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-8 text-sm text-muted md:grid-cols-3">
-        <p className="leading-7 md:col-span-2">
-          سند طبقة توثيق إداري ووساطة وحجز وإحالة، ومكتبة محتوى ديني محايد. <strong className="text-text">لا تشخّص ولا تعالج ولا تعد بنتيجة</strong>،
-          والتوثيق إداري لا حكم مهني. {t("common.free")}
-        </p>
-        <div className="flex flex-col gap-1 md:items-end">
-          <Link to="/emergency" className="font-bold text-danger">
-            في خطر الآن؟ صفحة الطوارئ
-          </Link>
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-muted">
+        <p className="font-semibold text-text">سند</p>
+        <div className="flex flex-wrap gap-x-5 gap-y-1">
           <Link to="/about-verification" className="hover:text-text">
             كيف نوثّق مقدّمي الخدمة
+          </Link>
+          <Link to="/privacy-mode" className="hover:text-text">
+            الخصوصية والتمويه
           </Link>
         </div>
       </div>

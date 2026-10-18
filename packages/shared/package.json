@@ -8,7 +8,9 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check:pure": "node scripts/check-pure.mjs"
+    "check:pure": "node scripts/check-pure.mjs",
+    "export:dart": "node scripts/export-dart.mjs",
+    "check:dart": "node scripts/export-dart.mjs --check"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

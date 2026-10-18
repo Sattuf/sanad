@@ -26,6 +26,7 @@ public static class QuranPassageKeys
         "araf-117-122", "yunus-79-82", "taha-65-69", "muminun-115-118", "saffat-1-10", "ahqaf-29-32", "rahman-33-36",
         "hashr-21-24", "jinn-1-9", "ikhlas", "falaq", "nas", "qalam-51-52", "mulk-3-4", "tawbah-14", "yunus-57", "nahl-69",
         "isra-82", "shuara-80", "fussilat-44", "kahf-39", "anbiya-87",
+        "baqarah-248", "tawbah-26", "tawbah-40", "fath-4", "fath-18", "fath-26", "raad-28", "sharh",
     };
 }
 

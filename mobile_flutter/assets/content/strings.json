@@ -1,0 +1,129 @@
+{
+ "$generated": "مولَّد من packages/shared بـ scripts/export-dart.mjs — لا يُعدَّل يدوياً (ADR-0023)",
+ "ar": {
+  "app": {
+   "name": "سند",
+   "tagline": "دليل موثّق إدارياً — مجاني بالكامل"
+  },
+  "nav": {
+   "directory": "الدليل",
+   "ruqyah": "الرقية والتحصين",
+   "health": "الصحة والطمأنينة",
+   "library": "المكتبة الصوتية",
+   "bookings": "حجوزاتي",
+   "recommendations": "توصياتي",
+   "favorites": "المفضلة",
+   "account": "حسابي",
+   "notifications": "الإشعارات",
+   "providerPortal": "بوابة المختص",
+   "staff": "الإدارة",
+   "login": "دخول",
+   "logout": "خروج",
+   "emergency": "طوارئ",
+   "becomeProvider": "كن مقدّم خدمة"
+  },
+  "practitionerType": {
+   "LicensedPhysician": "طبيب مرخّص",
+   "ReligiousPractitioner": "شيخ / راقٍ شرعي"
+  },
+  "track": {
+   "WaqfFree": "وقفي مجاني",
+   "DawahGuidance": "دعوي وإرشادي",
+   "LicensedHealth": "صحي مرخّص",
+   "IndependentConsultant": "مستشار مستقل"
+  },
+  "deliveryMode": {
+   "InPerson": "حضوري",
+   "Remote": "عن بعد",
+   "Both": "حضوري وعن بعد"
+  },
+  "audioCategory": {
+   "QuranRecitation": "تلاوات",
+   "Dua": "أدعية",
+   "Adhkar": "أذكار"
+  },
+  "bookingStatus": {
+   "Draft": "مسودة",
+   "Submitted": "مُرسَل",
+   "UnderReview": "قيد مراجعة المختص",
+   "Accepted": "مؤكَّد",
+   "AlternativeProposed": "موعد بديل مقترح",
+   "Rejected": "مرفوض إدارياً",
+   "Cancelled": "ملغى",
+   "AdministrativelyCompleted": "مكتمل إدارياً",
+   "UnderDispute": "قيد النزاع"
+  },
+  "verificationStatus": {
+   "PendingReview": "قيد المراجعة",
+   "ConditionallyApproved": "معتمد مشروطاً",
+   "Approved": "معتمد",
+   "RequiresCompletion": "يحتاج استكمال",
+   "Rejected": "مرفوض",
+   "Suspended": "معلَّق",
+   "Expired": "منتهي",
+   "Unknown": "غير معروف"
+  },
+  "rejectionReason": {
+   "DocumentTypeMismatch": "عدم تطابق نوع المستند مع نوع الممارسة",
+   "DocumentUnreadable": "المستند غير مقروء",
+   "IssuerNotRecognized": "جهة الإصدار غير معروفة",
+   "InformationInconsistent": "المعلومات غير متسقة",
+   "Other": "سبب آخر"
+  },
+  "publication": {
+   "Draft": "مسودة",
+   "ConditionallyApproved": "معتمد مشروطاً",
+   "Published": "منشور",
+   "Suspended": "معلَّق",
+   "Rejected": "مرفوض"
+  },
+  "documentType": {
+   "MedicalPracticeLicense": "رخصة مزاولة مهنة طبية",
+   "MedicalBoardRegistration": "تسجيل لدى هيئة/نقابة طبية",
+   "ShariaIjazah": "إجازة شرعية",
+   "ShariaEndorsement": "تزكية من جهة شرعية معروفة",
+   "OrganizationRegistration": "سجل/ترخيص جهة"
+  },
+  "reportCategory": {
+   "Impersonation": "انتحال صفة",
+   "FinancialExploitation": "استغلال مالي",
+   "Harassment": "مضايقة",
+   "UnauthorizedClaim": "ادعاء غير مصرّح",
+   "PrivacyViolation": "انتهاك خصوصية",
+   "Other": "أخرى"
+  },
+  "reportSeverity": {
+   "Low": "منخفضة",
+   "Medium": "متوسطة",
+   "High": "عالية",
+   "Critical": "حرجة"
+  },
+  "role": {
+   "Beneficiary": "مستفيد",
+   "OrganizationRepresentative": "ممثل جهة",
+   "Practitioner": "مقدّم خدمة",
+   "Coordinator": "منسق",
+   "ContentManager": "مدير محتوى",
+   "PrivacySecurityOfficer": "مسؤول الخصوصية والأمن",
+   "ClinicalSupervisor": "مشرف سريري",
+   "SystemAdmin": "مدير النظام"
+  },
+  "consent": {
+   "TermsOfService": "شروط الاستخدام",
+   "PrivacyPolicy": "سياسة الخصوصية",
+   "SensitiveDataProcessing": "معالجة البيانات الحساسة (ملاحظاتك للمختص)",
+   "MarketingCommunication": "تذكير يومي اختياري (دعاء/آية اليوم)"
+  },
+  "common": {
+   "loading": "جارٍ التحميل…",
+   "retry": "إعادة المحاولة",
+   "save": "حفظ",
+   "cancel": "إلغاء",
+   "back": "رجوع",
+   "send": "إرسال",
+   "error": "حدث خطأ",
+   "empty": "لا شيء هنا بعد",
+   "free": "سند مجانية بالكامل، لا اشتراكات ولا خدمات مدفوعة."
+  }
+ }
+}
