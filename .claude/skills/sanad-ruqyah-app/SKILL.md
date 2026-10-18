@@ -1,11 +1,11 @@
 ---
 name: sanad-ruqyah-app
-description: Build, extend, or redesign «سند» (Sanad), a free Arabic self-ruqyah companion app for the beneficiary only — structured ruqyah plans prepared by several sheikhs, daily progress tracking, Quran khatma tracking (solo and family/group), an optional support/donation page, and a minimal safety layer. Use this skill whenever the user mentions سند، الرقية الشرعية، رقية النفس، خطط الرقية، الورد اليومي، الختمة، ختمة جماعية، الأذكار، التحصين، or asks for any screen, component, data model, copy, notification, or feature for this app — even if they only say "build the plans screen" or "make a component" without naming the app. It carries the product scope, the content guardrails, and a distinctive illuminated-manuscript design language («المخطوطة المُذهَّبة») that replaces generic Islamic-app, SaaS-card, or dashboard styling.
+description: Build, extend, or redesign «سند» (Sanad), a free Arabic self-ruqyah companion app for the beneficiary only — structured ruqyah plans prepared by several sheikhs, daily progress tracking, Quran khatma tracking (solo and family/group), and an optional support/donation page. Sharia-only scope: no medical content, emergency page or automatic referral. Use this skill whenever the user mentions سند، الرقية الشرعية، رقية النفس، خطط الرقية، الورد اليومي، الختمة، ختمة جماعية، الأذكار، التحصين، or asks for any screen, component, data model, copy, notification, or feature for this app — even if they only say "build the plans screen" or "make a component" without naming the app. It carries the product scope, the content guardrails, and a distinctive illuminated-manuscript design language («المخطوطة المُذهَّبة») that replaces generic Islamic-app, SaaS-card, or dashboard styling.
 ---
 
 # سند — دليل البناء
 
-سند رفيق يومي مجاني يساعد المسلم على أن يرقي نفسه بنفسه: يختار خطة رقية أعدّها شيخ معروف، يقرأ وردها كل يوم، يتابع أيامه، ويختم القرآن وحده أو مع أسرته. لا يوجد في سند راقٍ ولا طبيب ولا حجز. المستخدم وحده مع كتاب الله.
+سند رفيق يومي مجاني يساعد المسلم على أن يرقي نفسه بنفسه: يختار خطة رقية أعدّها شيخ معروف، يقرأ وردها كل يوم، يتابع أيامه، ويختم القرآن وحده أو مع أسرته. لا يوجد في سند راقٍ ولا حجز. المستخدم وحده مع كتاب الله.
 
 هذا الملف يكفي لأغلب المهام. اقرأ ملفات `references/` عند الحاجة فقط:
 
@@ -26,18 +26,18 @@ description: Build, extend, or redesign «سند» (Sanad), a free Arabic self-r
 4. **الختمة** — ختمة فردية أو جماعية (أسرة/أصدقاء) بثلاثين جزءاً، مع رابط دعوة.
 5. **ادعم** — دعم مالي اختياري لا يفتح أي ميزة.
 
-ويلازمها في كل مكان: رابط «متى تحتاج مع الرقية إلى طبيب؟» وزر طوارئ.
+سند تطبيق شرعي فقط: لا محتوى طبي ولا صفحة طوارئ ولا إحالة تلقائية (ADR-0024).
 
 ## حدود لا تُكسر، ولماذا
 
 هذه الحدود هي ما يجعل سند موثوقاً في سوق مليء بالاستغلال. سوق الرقية الإلكتروني يبيع «التشخيص» و«فك السحر» بباقات مدفوعة؛ تميّز سند هو أنه لا يفعل ذلك.
 
-- **لا تشخيص.** لا تسأل المستخدم عن «نوع إصابته» ولا تقل له إنه مسحور أو معيون أو ممسوس، ولا تبنِ اختبار أعراض. اختيار الخطة يكون بالمدة والمعدّ والأسلوب، لا بالحالة. التشخيص الغيبي باب الاستغلال الأول، ويدفع المريض النفسي بعيداً عن العلاج.
+- **لا تشخيص.** لا تسأل المستخدم عن «نوع إصابته» ولا تقل له إنه مسحور أو معيون أو ممسوس، ولا تبنِ اختبار أعراض. اختيار الخطة يكون بالمدة والمعدّ والأسلوب، لا بالحالة. التشخيص الغيبي باب الاستغلال الأول.
 - **لا وعد بالشفاء.** الشفاء من الله. لا «نسبة نجاح» ولا «ضمان» ولا عدّاد «حالات شُفيت».
-- **لا مقدّمي خدمة.** لا رقاة ولا أطباء ولا حجوزات ولا محادثات. هذا قرار المنتج، وهو يزيل مخاطر الترخيص والخلوة والاحتيال.
+- **لا مقدّمي خدمة.** لا رقاة ولا حجوزات ولا محادثات. هذا قرار المنتج، وهو يزيل مخاطر الترخيص والخلوة والاحتيال.
 - **لا بيع.** لا ماء ولا زيت ولا عسل ولا روابط لمن يبيعها. الدعم المالي لا يفتح شيئاً.
 - **لا تفسير أحلام** ولا قراءة «علامات».
-- **طبقة الأمان دائمة.** صفحة «متى تحتاج مع الرقية إلى طبيب؟» وزر الطوارئ لا يُحذفان، ونص «الرقية لا تعني ترك العلاج الموصوف لك» يظهر في تعريف كل خطة. قد يستخدم سند شخص يعاني اكتئاباً شديداً وهو مقتنع أنها عين؛ هذه الطبقة تحميه.
+- **نطاق شرعي فقط.** لا ذكر لطبيب أو دواء، ولا صفحة طوارئ، ولا إحالة تلقائية (قرار صاحب المنتج، ADR-0024). يكفي التذكير بأن الشفاء بيد الله وحده.
 - **لا نص قرآني من الذاكرة.** نصوص الآيات تأتي من مصدر مدقّق (مثل نص تنزيل Tanzil بترخيصه)، والأحاديث والأذكار من مصادر محققة مع ذكر التخريج. في النماذج الأولية ضع علامة «نص تجريبي» بوضوح.
 
 ## سير العمل عند أي طلب
@@ -88,7 +88,7 @@ description: Build, extend, or redesign «سند» (Sanad), a free Arabic self-r
 ## قائمة الفحص قبل التسليم
 
 - [ ] لا يوجد سؤال عن الحالة أو الأعراض في أي مكان.
-- [ ] رابط «متى تحتاج إلى طبيب؟» وزر الطوارئ ظاهران.
+- [ ] لا ذكر لطبيب أو دواء أو طوارئ في أي شاشة.
 - [ ] كل نص قرآني من مصدر مدقّق أو موسوم «نص تجريبي».
 - [ ] كل خطة تحمل اسم معدّها وتاريخ إذنه، أو عنصراً نائباً واضحاً.
 - [ ] الأرقام عربية مشرقية والتاريخ هجري.
