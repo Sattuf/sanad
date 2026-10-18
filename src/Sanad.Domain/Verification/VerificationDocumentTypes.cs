@@ -8,10 +8,6 @@ namespace Sanad.Domain.Verification;
 /// </summary>
 public static class VerificationDocumentTypes
 {
-    // مستندات الطبيب المرخّص
-    public const string MedicalPracticeLicense = "MedicalPracticeLicense";
-    public const string MedicalBoardRegistration = "MedicalBoardRegistration";
-
     // مستندات الشيخ/الراقي الشرعي
     public const string ShariaIjazah = "ShariaIjazah";
     public const string ShariaEndorsement = "ShariaEndorsement";
@@ -21,7 +17,6 @@ public static class VerificationDocumentTypes
 
     private static readonly Dictionary<PractitionerType, string[]> AllowedByType = new()
     {
-        [PractitionerType.LicensedPhysician] = [MedicalPracticeLicense, MedicalBoardRegistration],
         [PractitionerType.ReligiousPractitioner] = [ShariaIjazah, ShariaEndorsement],
     };
 

@@ -82,17 +82,14 @@ public sealed class BookingRequest : BaseEntity, IAggregateRoot, ISoftDeletable
     /// <summary>
     /// يشفّر الملاحظة فوراً، ويفحص مؤشر الخطر. لا يمنع الحفظ أبداً — الإحالة العاجلة مسار مستقل.
     /// </summary>
-    public void SetBeneficiaryNote(string? plainNote, IFieldEncryptor encryptor, ISafeReferralEvaluator riskEvaluator)
+    public void SetBeneficiaryNote(string? plainNote, IFieldEncryptor encryptor)
     {
         ArgumentNullException.ThrowIfNull(encryptor);
-        ArgumentNullException.ThrowIfNull(riskEvaluator);
         if (string.IsNullOrWhiteSpace(plainNote)) { BeneficiaryNoteEncrypted = null; return; }
         var trimmed = plainNote.Trim();
         if (trimmed.Length > MaxBeneficiaryNoteLength) throw new DomainException($"الملاحظة أطول من {MaxBeneficiaryNoteLength} حرف.");
 
         BeneficiaryNoteEncrypted = encryptor.Encrypt(trimmed);
-        if (riskEvaluator.RequiresImmediateEmergencyReferral(new SafetySignal(trimmed)))
-            Raise(new EmergencyReferralTriggeredEvent(BeneficiaryUserId, EmergencySignalSource.BookingBeneficiaryNote, Id));
     }
 
     public void AcceptByProvider(Guid providerProfileId, AvailabilitySlot slot)

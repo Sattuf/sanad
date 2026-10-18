@@ -48,21 +48,3 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
     }
 }
 
-/// <summary>
-/// مسار الإحالة العاجلة على مستوى HTTP: أي استجابة رُصد فيها مؤشر خطر تحمل رأساً صريحاً،
-/// فيعرض العميل شاشة الطوارئ فوراً بصرف النظر عن شكل جسم الاستجابة أو نجاحها.
-/// </summary>
-public sealed class EmergencySignalShortCircuitMiddleware(RequestDelegate next)
-{
-    public const string Header = "X-Sanad-Emergency-Referral";
-
-    public Task InvokeAsync(HttpContext ctx, ISafetySignalContext safety)
-    {
-        ctx.Response.OnStarting(() =>
-        {
-            if (safety.EmergencyReferralTriggered) ctx.Response.Headers[Header] = "1";
-            return Task.CompletedTask;
-        });
-        return next(ctx);
-    }
-}

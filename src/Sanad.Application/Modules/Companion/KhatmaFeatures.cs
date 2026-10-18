@@ -7,7 +7,6 @@ using Sanad.Application.Common.Access;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Domain.Common;
 using Sanad.Domain.Companion;
 
@@ -127,14 +126,11 @@ public sealed class CreateKhatmaCommandValidator : AbstractValidator<CreateKhatm
     }
 }
 
-public sealed class CreateKhatmaCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock,
-    ISafeReferralEvaluator risk, ISafetySignalContext safety) : IRequestHandler<CreateKhatmaCommand, KhatmaDto>
+public sealed class CreateKhatmaCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock) : IRequestHandler<CreateKhatmaCommand, KhatmaDto>
 {
     public async Task<KhatmaDto> Handle(CreateKhatmaCommand r, CancellationToken cancellationToken)
     {
         // النيّة نص حر: مؤشر خطر فيها يرفع معلومات الطوارئ فوراً، بصرف النظر عن نجاح الإنشاء
-        SafetySignals.EvaluateEarly(risk, safety, r.Intention);
-        SafetySignals.EvaluateEarly(risk, safety, r.Title);
         var me = access.UserId;
         var now = clock.UtcNow;
         if (await db.Khatmas.CountAsync(k => k.OwnerUserId == me, cancellationToken) >= KhatmaTextRules.MaxKhatmasPerUser)
@@ -159,13 +155,10 @@ public sealed class UpdateKhatmaCommandValidator : AbstractValidator<UpdateKhatm
     public UpdateKhatmaCommandValidator(IDateTime clock) => KhatmaTextRules.Apply(this, x => x.Title, x => x.Intention, x => x.TargetDate, clock);
 }
 
-public sealed class UpdateKhatmaCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock,
-    ISafeReferralEvaluator risk, ISafetySignalContext safety) : IRequestHandler<UpdateKhatmaCommand, KhatmaDto>
+public sealed class UpdateKhatmaCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock) : IRequestHandler<UpdateKhatmaCommand, KhatmaDto>
 {
     public async Task<KhatmaDto> Handle(UpdateKhatmaCommand r, CancellationToken cancellationToken)
     {
-        SafetySignals.EvaluateEarly(risk, safety, r.Intention);
-        SafetySignals.EvaluateEarly(risk, safety, r.Title);
         var me = access.UserId;
         var k = await KhatmaProjection.LoadAsMemberAsync(db, r.Id, me, cancellationToken);
         k.UpdateDetails(me, r.Title, string.IsNullOrWhiteSpace(r.Intention) ? null : encryptor.Encrypt(r.Intention.Trim()), r.TargetDate, clock.UtcNow);

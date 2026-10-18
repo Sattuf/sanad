@@ -5,7 +5,6 @@ using Sanad.Application.Common.Access;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Domain.Common;
 using Sanad.Domain.Messaging;
 using Sanad.Domain.Safety;
@@ -16,10 +15,7 @@ public sealed record ConversationDto(Guid Id, Guid BookingRequestId, string Stat
 
 public sealed record MessageDto(Guid Id, Guid ConversationId, Guid SenderUserId, bool IsMine, string Body, string Status, DateTimeOffset SentAtUtc);
 
-public sealed record PostedMessageDto(Guid Id, Guid ConversationId, DateTimeOffset SentAtUtc, EmergencyReferralDto? EmergencyReferral) : ISafetyAwareResponse
-{
-    public ISafetyAwareResponse WithEmergencyReferral(EmergencyReferralDto referral) => this with { EmergencyReferral = referral };
-}
+public sealed record PostedMessageDto(Guid Id, Guid ConversationId, DateTimeOffset SentAtUtc);
 
 /// <summary>فتح محادثة إدارية لحجز قائم (أو إعادة المحادثة الموجودة).</summary>
 public sealed record OpenConversationCommand(Guid BookingId) : ICommand<ConversationDto>;
@@ -86,19 +82,16 @@ public sealed class PostMessageCommandValidator : AbstractValidator<PostMessageC
     }
 }
 
-public sealed class PostMessageCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor,
-    ISafeReferralEvaluator riskEvaluator, ISafetySignalContext safety, IDateTime clock)
+public sealed class PostMessageCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock)
     : IRequestHandler<PostMessageCommand, PostedMessageDto>
 {
     public async Task<PostedMessageDto> Handle(PostMessageCommand request, CancellationToken cancellationToken)
     {
-        SafetySignals.EvaluateEarly(riskEvaluator, safety, request.Body);
         var conversation = await ConversationProjection.LoadAsMemberAsync(db, request.ConversationId, access.UserId, cancellationToken);
-        var message = conversation.PostMessage(access.UserId, request.Body, encryptor, riskEvaluator, clock.UtcNow);
-        SafetySignals.CollectFrom(safety, conversation);
+        var message = conversation.PostMessage(access.UserId, request.Body, encryptor, clock.UtcNow);
         db.Messages.Add(message);
         await db.SaveChangesAsync(cancellationToken);
-        return new PostedMessageDto(message.Id, conversation.Id, message.SentAtUtc, null);
+        return new PostedMessageDto(message.Id, conversation.Id, message.SentAtUtc);
     }
 }
 
@@ -124,10 +117,7 @@ public sealed class GetConversationMessagesQueryHandler(IApplicationDbContext db
     }
 }
 
-public sealed record ReportCreatedDto(Guid Id, string Status, EmergencyReferralDto? EmergencyReferral) : ISafetyAwareResponse
-{
-    public ISafetyAwareResponse WithEmergencyReferral(EmergencyReferralDto referral) => this with { EmergencyReferral = referral };
-}
+public sealed record ReportCreatedDto(Guid Id, string Status);
 
 /// <summary>الإبلاغ عن محادثة (أو رسالة بعينها) — ينشئ بلاغاً على الطرف الآخر في المحادثة.</summary>
 public sealed record ReportConversationCommand(Guid ConversationId, Guid? MessageId, ReportCategory Category, ReportSeverity Severity, string? Description)
@@ -143,13 +133,11 @@ public sealed class ReportConversationCommandValidator : AbstractValidator<Repor
     }
 }
 
-public sealed class ReportConversationCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor,
-    ISafeReferralEvaluator riskEvaluator, ISafetySignalContext safety, IDateTime clock)
+public sealed class ReportConversationCommandHandler(IApplicationDbContext db, AccessContext access, IFieldEncryptor encryptor, IDateTime clock)
     : IRequestHandler<ReportConversationCommand, ReportCreatedDto>
 {
     public async Task<ReportCreatedDto> Handle(ReportConversationCommand request, CancellationToken cancellationToken)
     {
-        SafetySignals.EvaluateEarly(riskEvaluator, safety, request.Description);
         var userId = access.UserId;
         var conversation = await ConversationProjection.LoadAsMemberAsync(db, request.ConversationId, userId, cancellationToken);
         var other = conversation.Members.Select(m => m.UserId).FirstOrDefault(id => id != userId);
@@ -163,10 +151,9 @@ public sealed class ReportConversationCommandHandler(IApplicationDbContext db, A
         }
 
         var report = Report.Submit(userId, conversation.Id, ReportTargetType.Conversation, other, request.Category, request.Severity,
-            request.Description, encryptor, riskEvaluator, clock.UtcNow);
-        SafetySignals.CollectFrom(safety, report);
+            request.Description, encryptor, clock.UtcNow);
         db.Reports.Add(report);
         await db.SaveChangesAsync(cancellationToken);
-        return new ReportCreatedDto(report.Id, report.Status.ToString(), null);
+        return new ReportCreatedDto(report.Id, report.Status.ToString());
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
-using Sanad.Application.Common.Safety;
 using Sanad.Domain.Exceptions;
 
 namespace Sanad.Api.Middleware;
@@ -31,10 +30,6 @@ public sealed class SanadExceptionHandler(IProblemDetailsService problemDetails,
                 problem.Extensions["policyCategory"] = c.Category;
                 break;
         }
-
-        var safety = httpContext.RequestServices.GetService<ISafetySignalContext>();
-        if (safety?.EmergencyReferralTriggered == true)
-            problem.Extensions["emergencyReferral"] = httpContext.RequestServices.GetRequiredService<IEmergencyReferralInfoProvider>().Get();
 
         httpContext.Response.StatusCode = status;
         return await problemDetails.TryWriteAsync(new ProblemDetailsContext { HttpContext = httpContext, ProblemDetails = problem, Exception = exception });

@@ -41,7 +41,6 @@ public interface IApplicationDbContext
     DbSet<RuqyahPlan> RuqyahPlans { get; }
     DbSet<PlanEnrollment> PlanEnrollments { get; }
     DbSet<Khatma> Khatmas { get; }
-    DbSet<EmergencyContact> EmergencyContacts { get; }
     DbSet<CompanionEventCounter> CompanionEventCounters { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

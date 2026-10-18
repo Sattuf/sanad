@@ -116,13 +116,12 @@ public sealed record SafetyAttestation(
     bool NoSymptomQuestions,
     bool NoConditionLabels,
     bool NoHealingPromise,
-    bool NoLeavingMedicalCare,
     bool NoSales,
     bool NoExhaustingPractices,
     bool NoWorseningAsProof,
     bool NoDreamInterpretation)
 {
-    public bool IsComplete => NoSymptomQuestions && NoConditionLabels && NoHealingPromise && NoLeavingMedicalCare && NoSales
+    public bool IsComplete => NoSymptomQuestions && NoConditionLabels && NoHealingPromise && NoSales
                               && NoExhaustingPractices && NoWorseningAsProof && NoDreamInterpretation;
 }
 

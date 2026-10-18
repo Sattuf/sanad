@@ -10,7 +10,7 @@ namespace Sanad.Api.IntegrationTests;
 
 /// <summary>
 /// تطبيق «سند» للرقية الذاتية (ADR-0021) على الـ API الحقيقي: نشر الخطط بإذن المعدّ ومراجعة ثانية وفحص أمان،
-/// مزامنة الخطة، الختمة الجماعية بخصوصية النيّة، أرقام الطوارئ بعينين، والعدّادات المجهولة.
+/// مزامنة الخطة، الختمة الجماعية بخصوصية النيّة، والعدّادات المجهولة.
 /// </summary>
 public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<ReminderFixture>
 {
@@ -21,7 +21,6 @@ public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<Remi
         noSymptomQuestions = true,
         noConditionLabels = true,
         noHealingPromise = true,
-        noLeavingMedicalCare = true,
         noSales = true,
         noExhaustingPractices = true,
         noWorseningAsProof = true,
@@ -105,7 +104,6 @@ public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<Remi
                 noSymptomQuestions = true,
                 noConditionLabels = true,
                 noHealingPromise = true,
-                noLeavingMedicalCare = true,
                 noSales = true,
                 noExhaustingPractices = true,
                 noWorseningAsProof = true,
@@ -161,7 +159,6 @@ public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<Remi
 
         var beneficiary = _api.Client(await _api.RegisterBeneficiaryAsync());
         (await beneficiary.GetAsync("/api/v1/admin/companion/plans")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        (await beneficiary.GetAsync("/api/v1/admin/companion/emergency")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
         (await _api.Client().GetAsync("/api/v1/admin/companion/authors")).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
@@ -270,49 +267,6 @@ public sealed class CompanionTests(ReminderFixture fixture) : IClassFixture<Remi
         var after = await Ok(await member.GetAsync($"/api/v1/me/companion/khatmas/{id}"));
         after["isOwner"]!.GetValue<bool>().Should().BeTrue();
         after["members"]!.AsArray().Should().ContainSingle();
-    }
-
-    [Fact]
-    public async Task Self_harm_signal_in_intention_raises_emergency_referral()
-    {
-        var me = _api.Client(await _api.RegisterBeneficiaryAsync());
-        var res = await me.PostAsync("/api/v1/me/companion/khatmas", Body(new { mode = "Solo", title = "ختمتي", intention = "أفكر في الانتحار", displayName = "أنا" }));
-        res.Headers.TryGetValues("X-Sanad-Emergency-Referral", out var values).Should().BeTrue();
-        values!.Should().Contain("1");
-    }
-
-    [Fact]
-    public async Task Emergency_numbers_are_shown_only_after_verification_by_a_second_staff_member()
-    {
-        var coordinator = _api.Client(await _api.CoordinatorAsync());
-        var supervisor = _api.Client(await _api.StaffAsync("ClinicalSupervisor"));
-        var country = "Q" + (char)('A' + Random.Shared.Next(26));
-
-        var c = await Ok(await coordinator.PostAsync("/api/v1/admin/companion/emergency", Body(new
-        {
-            countryCode = country,
-            label = "الإسعاف",
-            phoneNumber = "997",
-            sourceRef = "الموقع الرسمي للجهة",
-            sortOrder = 0,
-        })));
-        var id = c["id"]!.GetValue<string>();
-        var before = await Ok(await _api.Client().GetAsync($"/api/v1/public/companion/emergency?country={country}"));
-        before["isFallback"]!.GetValue<bool>().Should().BeTrue("غير المعتمد لا يُعرض");
-
-        var self = await coordinator.PostAsync($"/api/v1/admin/companion/emergency/{id}/verify", null);
-        self.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await ReadJson(self))["code"]!.GetValue<string>().Should().Be("self_review");
-
-        await Ok(await supervisor.PostAsync($"/api/v1/admin/companion/emergency/{id}/verify", null));
-        var after = await Ok(await _api.Client().GetAsync($"/api/v1/public/companion/emergency?country={country.ToLowerInvariant()}"));
-        after["isFallback"]!.GetValue<bool>().Should().BeFalse();
-        after["contacts"]!.AsArray().Should().Contain(x => x!["phoneNumber"]!.GetValue<string>() == "997");
-
-        (await coordinator.PostAsync("/api/v1/admin/companion/emergency", Body(new { countryCode = country, label = "رقم", phoneNumber = "tel:997", sourceRef = "x", sortOrder = 0 })))
-            .StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var cm = _api.Client(await _api.ContentManagerAsync());
-        (await cm.GetAsync("/api/v1/admin/companion/emergency")).StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]

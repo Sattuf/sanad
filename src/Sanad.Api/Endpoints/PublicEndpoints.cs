@@ -105,10 +105,6 @@ public static class PublicEndpoints
             })
             .WithTags("Files").AllowAnonymous().RequireRateLimiting("public");
 
-        // ── الطوارئ (عام بالكامل) ──
-        app.MapGet("/api/v1/safety/emergency-info", async (ISender s) => Results.Ok(await s.Send(new GetEmergencyReferralInfoQuery())))
-            .WithTags("Safety").AllowAnonymous();
-
         return app;
     }
 }

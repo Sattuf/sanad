@@ -24,14 +24,12 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     private static readonly JsonSerializerOptions EventJson = new(JsonSerializerDefaults.Web);
 
     private readonly IDateTime? _clock;
-    private readonly ISafetySignalContext? _safety;
 
     public SanadDbContext(DbContextOptions<SanadDbContext> options) : base(options) { }
 
-    public SanadDbContext(DbContextOptions<SanadDbContext> options, IDateTime clock, ISafetySignalContext safety) : base(options)
+    public SanadDbContext(DbContextOptions<SanadDbContext> options, IDateTime clock) : base(options)
     {
         _clock = clock;
-        _safety = safety;
     }
 
     public DbSet<Organization> Organizations => Set<Organization>();
@@ -59,7 +57,6 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
     public DbSet<RuqyahPlan> RuqyahPlans => Set<RuqyahPlan>();
     public DbSet<PlanEnrollment> PlanEnrollments => Set<PlanEnrollment>();
     public DbSet<Khatma> Khatmas => Set<Khatma>();
-    public DbSet<EmergencyContact> EmergencyContacts => Set<EmergencyContact>();
     public DbSet<CompanionEventCounter> CompanionEventCounters => Set<CompanionEventCounter>();
 
     // بنية تحتية بحتة
@@ -127,7 +124,6 @@ public sealed class SanadDbContext : IdentityDbContext<ApplicationUser, Applicat
         {
             foreach (var domainEvent in entity.DomainEvents)
             {
-                if (domainEvent is EmergencyReferralTriggeredEvent) _safety?.Flag();
                 OutboxMessages.Add(new OutboxMessage
                 {
                     Type = domainEvent.GetType().FullName!,

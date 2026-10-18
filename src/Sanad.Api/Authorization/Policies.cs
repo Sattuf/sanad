@@ -31,12 +31,12 @@ public static class Policies
         options.AddPolicy(ActOnOwnServiceOffering, p => p.RequireRole(SanadRoles.Practitioner));
         options.AddPolicy(ReadCaseNoteWithSupervisionOnly, p => p.RequireAssertion(ctx =>
             ctx.User.IsInRole(SanadRoles.Practitioner) ||
-            ((ctx.User.IsInRole(SanadRoles.ClinicalSupervisor) || ctx.User.IsInRole(SanadRoles.Coordinator)) &&
+            (ctx.User.IsInRole(SanadRoles.Coordinator) &&
              ctx.User.HasClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa))));
         options.AddPolicy(ManageContentLibrary, p => p.RequireRole(SanadRoles.ContentManager).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
         options.AddPolicy(AssignSystemRoles, p => p.RequireRole(SanadRoles.SystemAdmin).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
         options.AddPolicy(ViewCompanionInsights, p => p.RequireRole(SanadRoles.ContentManager, SanadRoles.Coordinator).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
-        options.AddPolicy(ReviewSafety, p => p.RequireRole(SanadRoles.Coordinator, SanadRoles.ClinicalSupervisor).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
+        options.AddPolicy(ReviewSafety, p => p.RequireRole(SanadRoles.Coordinator).RequireClaim(SanadClaims.AuthMethod, SanadClaims.MethodMfa));
 
         // سياسات "المالك فقط": الدور غير كافٍ بذاته — التحقق الفعلي من الملكية داخل الـ Handler
         options.AddPolicy(ManageOwnAccountOnly, p => p.RequireAuthenticatedUser());

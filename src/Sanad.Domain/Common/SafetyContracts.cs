@@ -9,16 +9,6 @@ public interface IContentPolicyChecker
     string? FindProhibitedClaim(string text);
 }
 
-/// <summary>
-/// كاشف مؤشرات الخطر العاجل (إيذاء نفس، تهديد...). لا يمنع الحفظ أبداً؛ فقط يطلق مسار الإحالة.
-/// </summary>
-public interface ISafeReferralEvaluator
-{
-    bool RequiresImmediateEmergencyReferral(SafetySignal signal);
-}
-
-public sealed record SafetySignal(string Text);
-
 public static class ContentPolicy
 {
     /// <summary>يرمي DomainException إن احتوى أيٌّ من النصوص ادعاءً محظوراً.</summary>

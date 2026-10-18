@@ -49,10 +49,9 @@ public sealed class Conversation : BaseEntity, IAggregateRoot
 
     public bool IsMember(Guid userId) => _members.Any(m => m.UserId == userId);
 
-    public Message PostMessage(Guid senderId, string plainBody, IFieldEncryptor encryptor, ISafeReferralEvaluator riskEvaluator, DateTimeOffset nowUtc)
+    public Message PostMessage(Guid senderId, string plainBody, IFieldEncryptor encryptor, DateTimeOffset nowUtc)
     {
         ArgumentNullException.ThrowIfNull(encryptor);
-        ArgumentNullException.ThrowIfNull(riskEvaluator);
         if (!IsMember(senderId)) throw new DomainException("المرسل ليس عضواً في هذه المحادثة.", "forbidden");
         if (Status != ConversationStatus.Active) throw new DomainException("لا يمكن الإرسال في محادثة غير نشطة.");
         var body = Guard.Required(plainBody, "نص الرسالة", MaxMessageLength);
@@ -60,10 +59,6 @@ public sealed class Conversation : BaseEntity, IAggregateRoot
         var message = Message.Create(Id, senderId, encryptor.Encrypt(body), nowUtc);
         LastMessageAtUtc = nowUtc;
         Raise(new MessagePostedEvent(Id, message.Id, senderId));
-
-        // الفحص على كل رسالة، بصرف النظر عن المرسل — الرسالة تُحفظ دائماً، والإحالة مسار مستقل
-        if (riskEvaluator.RequiresImmediateEmergencyReferral(new SafetySignal(body)))
-            Raise(new EmergencyReferralTriggeredEvent(senderId, EmergencySignalSource.ConversationMessage, message.Id));
         return message;
     }
 

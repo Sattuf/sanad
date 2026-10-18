@@ -80,31 +80,19 @@ public class BeneficiaryNoteTests
     public void Note_is_encrypted_never_stored_as_plain_text()
     {
         var (booking, _, _) = Booking();
-        booking.SetBeneficiaryNote("أعاني من أرق منذ شهر", new ReversingEncryptor(), new KeywordRiskEvaluator());
-        booking.BeneficiaryNoteEncrypted.Should().NotBeNull().And.NotContain("أعاني");
-    }
-
-    [Fact]
-    public void Risky_note_raises_emergency_referral_but_is_still_saved()
-    {
-        var (booking, _, _) = Booking();
-        booking.SetBeneficiaryNote("أفكر في الانتحار", new ReversingEncryptor(), new KeywordRiskEvaluator());
-        booking.BeneficiaryNoteEncrypted.Should().NotBeNull();
-        booking.DomainEvents.OfType<EmergencyReferralTriggeredEvent>().Should().ContainSingle()
-            .Which.Source.Should().Be(EmergencySignalSource.BookingBeneficiaryNote);
+        booking.SetBeneficiaryNote("أرغب بموعد مسائي إن أمكن", new ReversingEncryptor());
+        booking.BeneficiaryNoteEncrypted.Should().NotBeNull().And.NotContain("أرغب");
     }
 }
 
 public class VerificationTests
 {
     [Fact]
-    public void Approving_mismatched_document_type_is_refused()
+    public void Document_outside_the_allowed_list_is_refused_at_request()
     {
-        var v = VerificationRecord.RequestProviderUpgrade(Guid.NewGuid(), PractitionerType.LicensedPhysician, "طبيب",
-            VerificationDocumentTypes.ShariaEndorsement, "جهة شرعية", Guid.NewGuid(), Now);
-        v.DocumentMatchesDeclaredType().Should().BeFalse();
-        var act = () => v.Approve(Guid.NewGuid(), true, Now.AddYears(1), Now);
-        act.Should().Throw<DomainException>().Which.Code.Should().Be("document_type_mismatch");
+        var act = () => VerificationRecord.RequestProviderUpgrade(Guid.NewGuid(), PractitionerType.ReligiousPractitioner, "راقٍ شرعي",
+            VerificationDocumentTypes.OrganizationRegistration, "جهة", Guid.NewGuid(), Now);
+        act.Should().Throw<DomainException>();
     }
 
     [Fact]
@@ -189,16 +177,6 @@ public class PatientCareTests
         var (booking, _, provider) = Booking();
         var act = () => ProviderRecommendation.Create(booking, provider.Id, "استمع يومياً", [], new ReversingEncryptor(), Policy, Now);
         act.Should().Throw<DomainException>();
-    }
-
-    [Fact]
-    public void Recommendation_rejects_dose_even_from_licensed_physician()
-    {
-        var (booking, slot, provider) = Booking();
-        booking.AcceptByProvider(provider.Id, slot);
-        provider.Type.Should().Be(PractitionerType.LicensedPhysician);
-        var act = () => ProviderRecommendation.Create(booking, provider.Id, "خذ 500 ملغ", [], new ReversingEncryptor(), Policy, Now);
-        act.Should().Throw<ContentPolicyViolationException>();
     }
 
     [Fact]

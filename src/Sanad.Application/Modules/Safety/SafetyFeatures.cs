@@ -5,7 +5,6 @@ using Sanad.Application.Common.Access;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Application.Modules.Messaging;
 using Sanad.Domain.Common;
 using Sanad.Domain.Directory;
@@ -48,13 +47,11 @@ public sealed class SubmitReportCommandValidator : AbstractValidator<SubmitRepor
     }
 }
 
-public sealed class SubmitReportCommandHandler(IApplicationDbContext db, AccessContext access, IIdentityService identity, IFieldEncryptor encryptor,
-    ISafeReferralEvaluator riskEvaluator, ISafetySignalContext safety, IDateTime clock)
+public sealed class SubmitReportCommandHandler(IApplicationDbContext db, AccessContext access, IIdentityService identity, IFieldEncryptor encryptor, IDateTime clock)
     : IRequestHandler<SubmitReportCommand, ReportCreatedDto>
 {
     public async Task<ReportCreatedDto> Handle(SubmitReportCommand request, CancellationToken cancellationToken)
     {
-        SafetySignals.EvaluateEarly(riskEvaluator, safety, request.Description);
 
         var escalationSubject = request.TargetType switch
         {
@@ -65,11 +62,10 @@ public sealed class SubmitReportCommandHandler(IApplicationDbContext db, AccessC
         } ?? throw new NotFoundException("الجهة المُبلَّغ عنها", request.TargetId);
 
         var report = Report.Submit(access.UserId, request.TargetId, request.TargetType, escalationSubject, request.Category, request.Severity,
-            request.Description, encryptor, riskEvaluator, clock.UtcNow);
-        SafetySignals.CollectFrom(safety, report);
+            request.Description, encryptor, clock.UtcNow);
         db.Reports.Add(report);
         await db.SaveChangesAsync(cancellationToken);
-        return new ReportCreatedDto(report.Id, report.Status.ToString(), null);
+        return new ReportCreatedDto(report.Id, report.Status.ToString());
     }
 }
 
@@ -186,34 +182,6 @@ public sealed class GetEscalationCasesQueryHandler(IApplicationDbContext db) : I
         if (request.OpenOnly) q = q.Where(e => e.IsOpen);
         return (await q.ToListAsync(cancellationToken)).OrderByDescending(e => e.Level).Select(ReportMapping.ToDto).ToList();
     }
-}
-
-/// <summary>إشارات الخطر العاجل المرصودة — مصدرها ونوعها فقط، بلا أي نص. للمنسق والمشرف السريري.</summary>
-public sealed record SafetyAlertDto(Guid AuditEntryId, Guid? UserId, string Source, Guid? SourceEntityId, DateTimeOffset OccurredAtUtc);
-
-[RequireRoles(SanadRoles.Coordinator, SanadRoles.ClinicalSupervisor, RequireMfa = true)]
-public sealed record GetSafetyAlertsQuery : IQuery<IReadOnlyList<SafetyAlertDto>>;
-
-public sealed class GetSafetyAlertsQueryHandler(IApplicationDbContext db) : IRequestHandler<GetSafetyAlertsQuery, IReadOnlyList<SafetyAlertDto>>
-{
-    public async Task<IReadOnlyList<SafetyAlertDto>> Handle(GetSafetyAlertsQuery request, CancellationToken cancellationToken) =>
-        (await db.AuditLogEntries.AsNoTracking().Where(a => a.Action == SafetyAuditActions.EmergencyReferralTriggered).ToListAsync(cancellationToken))
-            .OrderByDescending(a => a.OccurredAtUtc).Take(200)
-            .Select(a => new SafetyAlertDto(a.Id, a.ActorUserId, a.EntityType, a.EntityId, a.OccurredAtUtc)).ToList();
-}
-
-public static class SafetyAuditActions
-{
-    public const string EmergencyReferralTriggered = "Safety.EmergencyReferralTriggered";
-}
-
-// ── معلومات الطوارئ (عام بالكامل) ─────────────────────────────────────────────────
-[AllowAnonymousRequest]
-public sealed record GetEmergencyReferralInfoQuery : IQuery<EmergencyReferralDto>;
-
-public sealed class GetEmergencyReferralInfoQueryHandler(IEmergencyReferralInfoProvider provider) : IRequestHandler<GetEmergencyReferralInfoQuery, EmergencyReferralDto>
-{
-    public Task<EmergencyReferralDto> Handle(GetEmergencyReferralInfoQuery request, CancellationToken cancellationToken) => Task.FromResult(provider.Get());
 }
 
 /// <summary>

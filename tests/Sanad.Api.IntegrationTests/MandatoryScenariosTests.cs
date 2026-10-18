@@ -101,47 +101,6 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         cases.AsArray().Should().Contain(c => c!["subjectAccountId"]!.GetValue<string>() == target.UserId.ToString() && c["level"]!.GetValue<string>() == "Suspension");
     }
 
-    // 4 ──────────────────────────────────────────────────────────────────────
-    [Fact]
-    public async Task T04_risky_beneficiary_note_returns_emergency_referral_even_when_booking_fails()
-    {
-        var p = await _api.PublishedPractitionerAsync();
-        var first = await _api.RegisterBeneficiaryAsync();
-        await _api.CreateBookingAsync(first, p, 0);
-
-        var second = await _api.RegisterBeneficiaryAsync();
-        var res = await _api.Client(second, Guid.NewGuid().ToString()).PostAsync("/api/v1/bookings", Body(new
-        {
-            serviceOfferingId = p.OfferingId,
-            availabilitySlotId = p.SlotIds[0],
-            beneficiaryNote = "لم أعد أحتمل وأفكر في الانتحار",
-            consentToSensitiveNoteProcessing = true,
-        }));
-
-        res.StatusCode.Should().Be(HttpStatusCode.Conflict, "الفترة محجوزة مسبقاً");
-        res.Headers.GetValues("X-Sanad-Emergency-Referral").Should().Contain("1");
-        var body = await ReadJson(res);
-        body["emergencyReferral"]!["required"]!.GetValue<bool>().Should().BeTrue();
-        body["emergencyReferral"]!["contacts"]!.AsArray().Should().NotBeEmpty();
-    }
-
-    [Fact]
-    public async Task T04b_risky_note_on_successful_booking_is_saved_and_referral_returned()
-    {
-        var p = await _api.PublishedPractitionerAsync();
-        var beneficiary = await _api.RegisterBeneficiaryAsync();
-        var res = await _api.Client(beneficiary, Guid.NewGuid().ToString()).PostAsync("/api/v1/bookings", Body(new
-        {
-            serviceOfferingId = p.OfferingId,
-            availabilitySlotId = p.SlotIds[1],
-            beneficiaryNote = "أريد أن أؤذي نفسي",
-            consentToSensitiveNoteProcessing = true,
-        }));
-        var body = await Ok(res);
-        body["emergencyReferral"]!["required"]!.GetValue<bool>().Should().BeTrue();
-        res.Headers.Contains("X-Sanad-Emergency-Referral").Should().BeTrue();
-    }
-
     // 5 ──────────────────────────────────────────────────────────────────────
     [Fact]
     public async Task T05_prohibited_claims_are_rejected_with_400_never_saved_silently()
@@ -161,7 +120,7 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
         var beneficiary = await _api.RegisterBeneficiaryAsync();
         var booking = await _api.AcceptedBookingAsync(beneficiary, p, 0);
-        var note = await practitioner.PostAsync($"/api/v1/bookings/{booking}/provider-note", Body(new { text = "أعطيته وصفة دوائية بجرعة 20 ملغ" }));
+        var note = await practitioner.PostAsync($"/api/v1/bookings/{booking}/provider-note", Body(new { text = "نضمن لك الشفاء من العين" }));
         note.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var cm = _api.Client(await _api.ContentManagerAsync());
@@ -196,7 +155,7 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
     }
 
     [Fact]
-    public async Task T06b_coordinator_without_open_escalation_cannot_read_case_note_but_supervisor_can()
+    public async Task T06b_coordinator_without_open_escalation_cannot_read_case_note()
     {
         var p = await _api.PublishedPractitionerAsync();
         var beneficiary = await _api.RegisterBeneficiaryAsync();
@@ -205,10 +164,6 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
         var coordinatorRes = await _api.Client(await _api.CoordinatorAsync()).GetAsync($"/api/v1/bookings/{booking}/provider-note");
         coordinatorRes.StatusCode.Should().Be(HttpStatusCode.NotFound);
-
-        var supervisor = await _api.StaffAsync("ClinicalSupervisor");
-        var notes = await Ok(await _api.Client(supervisor).GetAsync($"/api/v1/bookings/{booking}/provider-note"));
-        notes.AsArray().Should().ContainSingle();
     }
 
     // 7 ──────────────────────────────────────────────────────────────────────
@@ -398,20 +353,20 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
     // 13 ─────────────────────────────────────────────────────────────────────
     [Fact]
-    public async Task T13_recommendation_with_medication_dose_is_rejected_like_service_description()
+    public async Task T13_recommendation_with_prohibited_claim_is_rejected_like_service_description()
     {
-        var p = await _api.PublishedPractitionerAsync("LicensedPhysician");
+        var p = await _api.PublishedPractitionerAsync();
         var beneficiary = await _api.RegisterBeneficiaryAsync();
         var booking = await _api.AcceptedBookingAsync(beneficiary, p, 0);
 
-        var rec = await _api.Client(p.Session).PostAsync($"/api/v1/bookings/{booking}/recommendations", Body(new { guidanceText = "خذ 500 ملغ مرتين يومياً" }));
+        var rec = await _api.Client(p.Session).PostAsync($"/api/v1/bookings/{booking}/recommendations", Body(new { guidanceText = "نضمن لك الشفاء من السحر" }));
         rec.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var recBody = await ReadJson(rec);
 
         var offering = await _api.Client(p.Session).PostAsync("/api/v1/me/provider-profile/offerings", Body(new
         {
-            category = "استشارة",
-            description = "خذ 500 ملغ مرتين يومياً",
+            category = "رقية",
+            description = "نضمن لك الشفاء من السحر",
             cancellationPolicy = "مرن",
             sessionDurationMinutes = 30,
         }));
@@ -443,7 +398,7 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
         var beneficiary = await _api.RegisterBeneficiaryAsync();
         var booking = await _api.AcceptedBookingAsync(beneficiary, p, 0);
         var track = await _api.TrackAsync();
-        const string guidance = "خصص وقتاً هادئاً للاستماع، وتابع مع طبيبك المعالج";
+        const string guidance = "خصص وقتاً هادئاً للاستماع، وحافظ على الأذكار";
 
         await Ok(await _api.Client(p.Session).PostAsync($"/api/v1/bookings/{booking}/recommendations",
             Body(new { guidanceText = guidance, recommendedAudioTrackIds = new[] { track } })));
@@ -473,25 +428,19 @@ public sealed class MandatoryScenariosTests(ApiFixture fixture)
 
     // 15 ─────────────────────────────────────────────────────────────────────
     [Fact]
-    public async Task T15_physician_request_with_sharia_endorsement_is_rejected_for_document_mismatch()
+    public async Task T15_upgrade_request_with_document_outside_the_allowed_list_is_rejected()
     {
-        var email = $"{Guid.NewGuid():N}@sanad.test";
-        var user = await _api.RegisterBeneficiaryAsync(email);
-        var request = await _api.RequestUpgradeAsync(user, "LicensedPhysician", "ShariaEndorsement");
-
-        var queue = await Ok(await _api.Client(await _api.CoordinatorAsync()).GetAsync("/api/v1/admin/verifications"));
-        queue.AsArray().Single(i => i!["verification"]!["id"]!.GetValue<string>() == request["id"]!.GetValue<string>())!
-            ["documentMatchesDeclaredType"]!.GetValue<bool>().Should().BeFalse();
-
-        var review = await Ok(await _api.Client(await _api.CoordinatorAsync()).PostAsync($"/api/v1/admin/verifications/{request["id"]}/review",
-            Body(new { decision = "ConditionallyApprove", expiresAtUtc = DateTimeOffset.UtcNow.AddYears(1) })));
-        review["autoRejectedForDocumentMismatch"]!.GetValue<bool>().Should().BeTrue();
-        review["verification"]!["status"]!.GetValue<string>().Should().Be("Rejected");
-        review["verification"]!["rejectionReason"]!.GetValue<string>().Should().Be("DocumentTypeMismatch");
-
-        var fresh = ToSession(await Ok(await _api.Client().PostAsync("/api/v1/auth/login/email", Body(new { email, password = "Strong-Pass-123" }))));
-        var me = await Ok(await _api.Client(fresh).GetAsync("/api/v1/me"));
-        me["roles"]!.AsArray().Select(r => r!.GetValue<string>()).Should().Equal("Beneficiary");
+        var user = await _api.RegisterBeneficiaryAsync();
+        var fileId = await _api.UploadDocumentAsync(user);
+        var res = await _api.Client(user).PostAsync("/api/v1/me/provider-upgrade-request", Body(new
+        {
+            requestedType = "ReligiousPractitioner",
+            declaredTitle = "راقٍ شرعي مجاز",
+            documentType = "OrganizationRegistration",
+            issuingAuthority = "جهة إصدار تجريبية",
+            uploadedDocumentFileId = fileId,
+        }));
+        res.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     // 16 ─────────────────────────────────────────────────────────────────────

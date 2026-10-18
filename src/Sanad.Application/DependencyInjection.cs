@@ -22,7 +22,6 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
             cfg.AddOpenBehavior(typeof(IdempotencyBehavior<,>));
             cfg.AddOpenBehavior(typeof(AuditLoggingBehavior<,>));
-            cfg.AddOpenBehavior(typeof(SafetySignalBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);

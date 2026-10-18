@@ -108,21 +108,6 @@ public sealed class KhatmaConfiguration : IEntityTypeConfiguration<Khatma>
     }
 }
 
-public sealed class EmergencyContactConfiguration : IEntityTypeConfiguration<EmergencyContact>
-{
-    public void Configure(EntityTypeBuilder<EmergencyContact> b)
-    {
-        b.ToTable("EmergencyContacts");
-        b.HasKey(x => x.Id);
-        b.Property(x => x.CountryCode).HasMaxLength(2).IsRequired();
-        b.Property(x => x.Label).HasMaxLength(80).IsRequired();
-        b.Property(x => x.PhoneNumber).HasMaxLength(16).IsRequired();
-        b.Property(x => x.SourceRef).HasMaxLength(300).IsRequired();
-        b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
-        b.HasIndex(x => new { x.Status, x.CountryCode });
-    }
-}
-
 public sealed class CompanionEventCounterConfiguration : IEntityTypeConfiguration<CompanionEventCounter>
 {
     public void Configure(EntityTypeBuilder<CompanionEventCounter> b)

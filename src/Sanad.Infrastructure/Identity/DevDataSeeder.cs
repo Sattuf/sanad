@@ -47,30 +47,25 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
 
         await CreateUserAsync(users, db, "beneficiary@sanad.local", "مستفيد تجريبي", SanadRoles.Beneficiary, now);
 
-        var doctor = await CreateUserAsync(users, db, "doctor@sanad.local", "د. سلمى (تجريبي)", SanadRoles.Beneficiary, now);
         var sheikh = await CreateUserAsync(users, db, "sheikh@sanad.local", "الشيخ عبدالله (تجريبي)", SanadRoles.Beneficiary, now);
 
         var org = Organization.Create("جمعية الطمأنينة الوقفية (تجريبية)", "الطمأنينة", OrganizationTrack.WaqfFree, "DEMO-0001", "جهة تنظيمية تجريبية",
-            null, "جهة وقفية تجريبية تقدّم جلسات إرشاد إداري مجانية وتنسيقاً مع مختصين موثّقين. بيانات اصطناعية للعرض فقط.", "الرياض", policy);
+            null, "جهة وقفية تجريبية تقدّم جلسات رقية وإرشاد ديني مجانية مع مشايخ موثّقين. بيانات اصطناعية للعرض فقط.", "الرياض", policy);
         var orgVerification = VerificationRecord.RequestForOrganization(org.Id, VerificationDocumentTypes.OrganizationRegistration, "جهة تنظيمية تجريبية", null, null, now);
         orgVerification.Approve(coordinatorStandIn, false, now.AddYears(1), now);
         org.Publish(orgVerification, now);
         db.Organizations.Add(org);
         db.VerificationRecords.Add(orgVerification);
 
-        await SeedPractitionerAsync(users, db, policy, doctor, PractitionerType.LicensedPhysician, VerificationDocumentTypes.MedicalPracticeLicense,
-            "أخصائية نفسية مرخّصة", "استشارات نفسية أولية عن بعد، وإرشاد لإدارة التوتر والقلق اليومي، مع إحالة للجهة المختصة عند الحاجة.",
-            "لا تشخيص نهائي ولا وصف أدوية عبر المنصة. الحالات العاجلة تُحال للطوارئ فوراً.", "جلسة استشارة نفسية أولية",
-            null, coordinatorStandIn, now);
         await SeedPractitionerAsync(users, db, policy, sheikh, PractitionerType.ReligiousPractitioner, VerificationDocumentTypes.ShariaIjazah,
-            "راقٍ شرعي مجاز", "رقية شرعية بالقرآن والأدعية المأثورة، وإرشاد ديني عام، بالتنسيق مع الطبيب المعالج عند وجود حالة صحية.",
-            "لا ادعاء بعلاج قطعي ولا بديل عن الطب. أشجع على مراجعة الطبيب دائماً.", "جلسة رقية شرعية وإرشاد",
+            "راقٍ شرعي مجاز", "رقية شرعية بالقرآن والأدعية المأثورة، وإرشاد ديني عام.",
+            "الرقية دعاء وسبب، والشفاء بيد الله وحده.", "جلسة رقية شرعية وإرشاد",
             org.Id, coordinatorStandIn, now);
 
-        await SeedTracksAsync(db, storage, policy, doctor.Id, now);
+        await SeedTracksAsync(db, storage, policy, sheikh.Id, now);
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
-        logger.LogWarning("DEV SEED: synthetic demo data created. Accounts (password {Password}): beneficiary@ / doctor@ / sheikh@sanad.local", DemoPassword);
+        logger.LogWarning("DEV SEED: synthetic demo data created. Accounts (password {Password}): beneficiary@ / sheikh@sanad.local", DemoPassword);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
