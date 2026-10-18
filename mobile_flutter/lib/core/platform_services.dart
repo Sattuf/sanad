@@ -178,10 +178,9 @@ class DeviceReminderScheduler implements ReminderScheduler {
 
 final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) => DeviceReminderScheduler());
 
-/// المشاركة وفتح الهاتف — خلف واجهة للاختبارات.
+/// المشاركة وفتح الروابط — خلف واجهة للاختبارات.
 abstract class Outbound {
   Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text});
-  Future<void> dial(String phoneNumber);
 
   /// صفحة على موقع سند (الشروط، الخصوصية) في المتصفح.
   Future<void> openUrl(Uri url);
@@ -191,9 +190,6 @@ class DeviceOutbound implements Outbound {
   @override
   Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text}) =>
       SharePlus.instance.share(ShareParams(files: [XFile.fromData(bytes, mimeType: mimeType, name: name)], fileNameOverrides: [name], text: text));
-
-  @override
-  Future<void> dial(String phoneNumber) => launchUrl(Uri(scheme: 'tel', path: phoneNumber));
 
   @override
   Future<void> openUrl(Uri url) => launchUrl(url, mode: LaunchMode.externalApplication);

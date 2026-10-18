@@ -37,6 +37,7 @@ class ContentRepository {
     required this.trendMinEntries,
     required this.stableDelta,
     required this.strings,
+    required this.account,
     required this.ruqyah,
   });
 
@@ -104,6 +105,7 @@ class ContentRepository {
       trendMinEntries: journal['trendMinEntries'] as int,
       stableDelta: (journal['stableDelta'] as num).toDouble(),
       strings: (jsonDecode(stringsJson) as Map<String, dynamic>)['ar'] as Map<String, dynamic>,
+      account: AccountStrings.fromJson((jsonDecode(stringsJson) as Map<String, dynamic>)['account'] as Map<String, dynamic>),
       ruqyah: RuqyahContent.fromJson(ruqyahJson),
     );
   }
@@ -148,6 +150,9 @@ class ContentRepository {
 
   /// تسميات الواجهة المشتركة مع الويب (packages/shared/src/i18n/ar.ts).
   final Map<String, dynamic> strings;
+
+  /// تسميات الحساب (packages/shared/src/api/account.ts).
+  final AccountStrings account;
 
   /// تسمية بمسارها: label('nav.login') ← «دخول».
   String label(String path) {
@@ -221,4 +226,19 @@ int daysBetween(String fromDay, String toDay) {
 int currentProgramDay(String? startedOn, int length, String today) {
   if (startedOn == null) return 1;
   return (daysBetween(startedOn, today) + 1).clamp(1, length);
+}
+
+/// سجل «من اطّلع على بياناتك؟» وعبارة تأكيد حذف الحساب — من packages/shared/src/api/account.ts.
+class AccountStrings {
+  const AccountStrings({required this.accessLogActions, required this.accessLogRoles, required this.deleteConfirmation});
+
+  factory AccountStrings.fromJson(Map<String, dynamic> j) => AccountStrings(
+        accessLogActions: (j['accessLogActions'] as Map<String, dynamic>).cast<String, String>(),
+        accessLogRoles: (j['accessLogRoles'] as Map<String, dynamic>).cast<String, String>(),
+        deleteConfirmation: j['deleteConfirmation'] as String,
+      );
+
+  final Map<String, String> accessLogActions;
+  final Map<String, String> accessLogRoles;
+  final String deleteConfirmation;
 }

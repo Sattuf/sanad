@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../features/account/account_screen.dart';
 import '../features/account/login_screen.dart';
+import '../features/care/booking_screens.dart';
+import '../features/care/chat_screens.dart';
+import '../features/care/directory_screens.dart';
+import '../features/care/sign_in_gate.dart';
 import '../features/library/library_screens.dart';
 import '../features/companion/awareness_screen.dart';
 import '../features/companion/programs_screen.dart';
@@ -18,8 +22,7 @@ import '../theme/theme.dart';
 
 /*
   المسارات نفسها في الويب (docs/flutter-app-plan.md §4)، فتعمل الروابط العميقة بالشكل نفسه.
-  الأسابيع 1–3: الرفيق بلا حساب كاملاً (يومي، البرامج، المرشد، الميزان والاختبار، السكينة)،
-  والباقي شاشات «قيد البناء» بنفس الهوية حتى تصل مراحلها.
+  الرفيق بلا حساب كاملاً، والرقية والمكتبة، والدليل والحجز والمحادثة والتوصيات والإشعارات (الأسابيع 7–9).
 */
 final router = GoRouter(
   initialLocation: '/today',
@@ -69,6 +72,26 @@ final router = GoRouter(
     GoRoute(path: '/consent', builder: (_, _) => const ConsentScreen()),
     GoRoute(path: '/library', builder: (_, _) => const LibraryScreen()),
     GoRoute(path: '/favorites', builder: (_, _) => const FavoritesScreen()),
+    // الدليل عام؛ الحجز والمحادثة والتوصيات والإشعارات والبلاغ تطلب الدخول (الأسابيع 7–9)
+    GoRoute(path: '/directory', builder: (_, state) => DirectoryScreen(initialTrack: state.uri.queryParameters['track'] ?? '')),
+    GoRoute(path: '/providers/:id', builder: (_, state) => ProviderScreen(id: state.pathParameters['id']!)),
+    GoRoute(path: '/organizations/:id', builder: (_, state) => OrganizationScreen(id: state.pathParameters['id']!)),
+    GoRoute(
+      path: '/book/:providerId',
+      builder: (_, state) => SignInGate(child: BookScreen(providerId: state.pathParameters['providerId']!, offeringId: state.uri.queryParameters['offering'])),
+    ),
+    GoRoute(
+      path: '/bookings',
+      builder: (_, _) => const SignInGate(child: MyBookingsScreen()),
+      routes: [GoRoute(path: ':id', builder: (_, state) => SignInGate(child: BookingDetailScreen(id: state.pathParameters['id']!)))],
+    ),
+    GoRoute(path: '/conversations/:id', builder: (_, state) => SignInGate(child: ConversationScreen(id: state.pathParameters['id']!))),
+    GoRoute(path: '/recommendations', builder: (_, _) => const SignInGate(child: RecommendationsScreen())),
+    GoRoute(path: '/notifications', builder: (_, _) => const SignInGate(child: NotificationsScreen())),
+    GoRoute(
+      path: '/report',
+      builder: (_, state) => SignInGate(child: ReportScreen(targetType: state.uri.queryParameters['targetType'], targetId: state.uri.queryParameters['targetId'])),
+    ),
   ],
 );
 
@@ -132,43 +155,5 @@ class AppShell extends ConsumerWidget {
         ),
       ),
     );
-  }
-}
-
-/// شاشة مؤقتة بنفس الهوية لما لم تصله مرحلته بعد.
-class ComingSoon extends StatelessWidget {
-  const ComingSoon({super.key, required this.title, required this.phase, this.standalone = false, this.links = const []});
-  final String title;
-  final String phase;
-  final bool standalone;
-
-  /// ما بُني من صفحات هذا القسم حتى الآن.
-  final List<({String to, String label})> links;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    final body = Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(gradient: t.dawn, borderRadius: BorderRadius.circular(Radii.x3l), border: Border.all(color: t.border)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-              const SizedBox(height: 8),
-              Text('قيد البناء — $phase من الخطة', style: TextStyle(color: t.muted)),
-              for (final l in links) ...[
-                const SizedBox(height: 12),
-                OutlinedButton(onPressed: () => context.push(l.to), child: Text(l.label)),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-    return standalone ? Scaffold(appBar: AppBar(), body: body) : SafeArea(child: body);
   }
 }
