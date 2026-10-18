@@ -17,7 +17,6 @@ const web = [
   ["ruqyah", "/ruqyah"],
   ["sakina", "/sakina"],
   ["awareness", "/awareness"],
-  ["health", "/health"],
 ];
 
 const app = [

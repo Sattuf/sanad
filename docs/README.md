@@ -21,9 +21,8 @@
 | `src/`، `tests/` | الخادم: ‎.NET 9، Clean Architecture داخل Modular Monolith | فعّال | [README الرئيسي](../README.md)، [ADR-0001](adr/0001-architecture-and-adr-process.md)، `references/01`–`06` |
 | `frontend/` | الويب: React 18 + TypeScript + Vite، عربي RTL، ورفيق السكينة اليومي | فعّال | [README الرئيسي](../README.md#رفيق-السكينة-اليومي-على-الويب)، [ADR-0014](adr/0014-frontend-client-and-session.md)، [ADR-0022](adr/0022-local-first-daily-companion.md) |
 | `mobile_flutter/` | تطبيق الجوال بـ Flutter (Android وiOS) بواجهة الويب نفسها | قيد البناء (الأسابيع 1–7 منجزة) | [mobile_flutter/README.md](../mobile_flutter/README.md) |
-| `packages/shared/` | المحتوى والمنطق المشترك: المصحف والأذكار والبرامج وكشف الخطر وعميل الـ API، ومولّدات Dart ومتجهات التطابق | فعّال | [ADR-0023](adr/0023-mobile-app-flutter.md) §3–4 |
+| `packages/shared/` | المحتوى والمنطق المشترك: المصحف والأذكار والبرامج وعميل الـ API، ومولّدات Dart ومتجهات التطابق | فعّال | [ADR-0023](adr/0023-mobile-app-flutter.md) §3–4 |
 | `ruqyah-app/` | «سند» للرقية الذاتية: PWA محلية أولاً بخطط يعدّها شيوخ | فعّال | [ruqyah-app/README.md](../ruqyah-app/README.md)، [ADR-0021](adr/0021-self-ruqyah-companion-app.md) |
-| `mobile/` | تطبيق React Native (Expo) القديم | **مُستبدَل** — يُحذف عند إطلاق Flutter | [mobile/README.md](../mobile/README.md)، [ADR-0018](adr/0018-mobile-app-react-native.md) |
 | `tools/Sanad.LibraryImport/` | أداة سطر أوامر لاستيراد مقاطع المكتبة الصوتية دفعة واحدة | فعّال | [README الأداة](../tools/Sanad.LibraryImport/README.md) |
 
 ## سجلّ القرارات (ADR)
@@ -37,22 +36,23 @@
 | [0005](adr/0005-account-deletion-anonymize.md) | حذف الحساب: تجريد لا حذف للسجلات المرتبطة | مقبول |
 | [0006](adr/0006-booking-withdrawal.md) | سحب طلب الحجز قبل القبول | مقبول |
 | [0007](adr/0007-encrypt-messages-and-reports.md) | تشفير نص الرسائل ووصف البلاغات أيضاً | مقبول |
-| [0008](adr/0008-document-mismatch-rejection.md) | رفض فوري عند عدم تطابق نوع المستند مع نوع الممارسة | مقبول |
+| [0008](adr/0008-document-mismatch-rejection.md) | رفض فوري عند عدم تطابق نوع المستند مع نوع الممارسة | مقبول — عُدِّل جزئياً بـ 0024 |
 | [0009](adr/0009-notifications.md) | الإشعارات: داخل التطبيق أولاً، والقنوات الخارجية خلف Feature Flags | مقبول |
-| [0010](adr/0010-staff-mfa-and-signin-tickets.md) | 2FA إلزامي للأدوار الإدارية، ومراحل دخول بتذاكر قصيرة الأجل | مقبول |
+| [0010](adr/0010-staff-mfa-and-signin-tickets.md) | 2FA إلزامي للأدوار الإدارية، ومراحل دخول بتذاكر قصيرة الأجل | مقبول — عُدِّل جزئياً بـ 0024 |
 | [0011](adr/0011-rate-limiting-and-captcha.md) | محدِّد المعدل المدمج في ASP.NET Core، وCAPTCHA | مقبول |
-| [0012](adr/0012-sensitive-access-rules.md) | قواعد الوصول للنصوص الحساسة والموافقة عليها | مقبول |
-| [0013](adr/0013-safety-filters.md) | فلتر العبارات المحظورة وكاشف الخطر بعد توحيد النص العربي | مقبول — يتطلب مراجعة مشرف سريري ومراجع شرعي قبل الإطلاق |
-| [0014](adr/0014-frontend-client-and-session.md) | الواجهة: عميل API يدوي، وتخزين الجلسة، وتقليم الأدوات | مقبول |
+| [0012](adr/0012-sensitive-access-rules.md) | قواعد الوصول للنصوص الحساسة والموافقة عليها | مقبول — عُدِّل جزئياً بـ 0024 |
+| [0013](adr/0013-safety-filters.md) | فلتر العبارات المحظورة وكاشف الخطر بعد توحيد النص العربي | مقبول — يتطلب مراجعة مراجع شرعي قبل الإطلاق — عُدِّل جزئياً بـ 0024 |
+| [0014](adr/0014-frontend-client-and-session.md) | الواجهة: عميل API يدوي، وتخزين الجلسة، وتقليم الأدوات | مقبول — عُدِّل جزئياً بـ 0024 |
 | [0015](adr/0015-trusted-library-sources.md) | محتوى المكتبة من مصادر قرآنية معتمدة وقناة YouTube معتمدة | مقبول — القوائم تتطلب مراجعة مراجع شرعي قبل الإطلاق |
-| [0016](adr/0016-ruqyah-written-content.md) | «الرقية والتحصين»: النص الثابت، التلاوة، الورد، والأدعية المراجَعة | مقبول |
+| [0016](adr/0016-ruqyah-written-content.md) | «الرقية والتحصين»: النص الثابت، التلاوة، الورد، والأدعية المراجَعة | مقبول — عُدِّل جزئياً بـ 0024 |
 | [0017](adr/0017-pwa-and-adhkar-push-reminders.md) | PWA وتذكير الأذكار بإشعارات Web Push | مقبول |
 | [0018](adr/0018-mobile-app-react-native.md) | تطبيق الجوال بـ React Native (Expo) | **مُستبدَل بـ 0023** |
 | [0019](adr/0019-native-mobile-sign-in.md) | الدخول الأصلي من الجوال (جوجل، أبل) والحد الأدنى للإصدار | مقبول |
 | [0020](adr/0020-horizontal-scaling.md) | جاهزية التوسّع الأفقي لـ 100 ألف مستخدم | مقبول |
-| [0021](adr/0021-self-ruqyah-companion-app.md) | تطبيق «سند» للرقية الذاتية وخلفيته | مقبول |
-| [0022](adr/0022-local-first-daily-companion.md) | «رفيق السكينة اليومي»: ميزات محلية أولاً على الويب | مقبول |
+| [0021](adr/0021-self-ruqyah-companion-app.md) | تطبيق «سند» للرقية الذاتية وخلفيته | مقبول — عُدِّل جزئياً بـ 0024 |
+| [0022](adr/0022-local-first-daily-companion.md) | «رفيق السكينة اليومي»: ميزات محلية أولاً على الويب | مقبول — عُدِّل جزئياً بـ 0024 |
 | [0023](adr/0023-mobile-app-flutter.md) | تطبيق الجوال بـ Flutter بدل React Native | مقبول — يحلّ محلّ 0018 |
+| [0024](adr/0024-sharia-only-scope.md) | نطاق شرعي فقط: حذف الطبيب والمحتوى الطبي والإحالة العاجلة | مقبول — يعدّل 0008 و0010 و0012 و0013 و0014 و0016 و0021 و0022 |
 
 قرار جديد؟ انسخ بنية أي ADR (السياق، القرار، البدائل، الأثر)، وأعطه الرقم التالي، وأضفه إلى هذا الجدول.
 
@@ -62,11 +62,11 @@
 |---|---|---|
 | [flutter-app-plan.md](flutter-app-plan.md) | خطة تطبيق Flutter: النطاق، الجدول بالأسابيع، معايير القبول | فعّالة — الأسابيع 1–7 منجزة |
 | [growth/positioning.md](growth/positioning.md) | التموضع والرسالة والتسويق | فعّالة |
-| [mobile-app-plan.md](mobile-app-plan.md) | خطة تطبيق React Native | **مُستبدَلة** بخطة Flutter |
+| [production-readiness.md](production-readiness.md) | جاهزية الخادم للإنتاج (100 ألف مستخدم): المشاكل المحلولة وما بقي قبل الإطلاق | فعّالة |
 
 ## الحزمة المرجعية الأصلية (`references/`)
 
-وثائق التصميم الأولى للمنصة (2026-09-27): المعمارية، نموذج النطاق، الطبقات، الأمان، الاختبار والنشر، الواجهة، والأخلاقيات. ما زالت أساس الخادم وضوابطه، لكن **قرارات ADR اللاحقة تعدّلها** حيث تتعارض. مثلاً: §10.1 في `10-frontend-architecture.md` عدّلته ADR-0017 ثم 0018 ثم 0023.
+وثائق التصميم الأولى للمنصة (2026-09-27): المعمارية، نموذج النطاق، الطبقات، الأمان، الاختبار والنشر، الواجهة، والأخلاقيات. ما زالت أساس الخادم وضوابطه، لكن **قرارات ADR اللاحقة تعدّلها** حيث تتعارض. مثلاً: §10.1 في `10-frontend-architecture.md` عدّلته ADR-0017 ثم 0018 ثم 0023، والجانب الطبي والإحالة العاجلة في `07-safety-guardrails.md` ألغتهما ADR-0024.
 
 | الملف | الموضوع |
 |---|---|
@@ -87,16 +87,15 @@
 |---|---|---|
 | `README.md` | ✅ | أعيدت كتابته في هذا التحديث: الصور، خريطة المكوّنات، Flutter، الدخول عبر Google |
 | `docs/README.md` | ✅ | هذه الخريطة |
-| `docs/adr/0001`–`0023` | ✅ | سجلّ تاريخي؛ لا يُعدَّل القرار القديم بل يُستبدل بجديد |
+| `docs/adr/0001`–`0024` | ✅ | سجلّ تاريخي؛ لا يُعدَّل القرار القديم بل يُستبدل بجديد |
 | `docs/flutter-app-plan.md` | ⚠️ | الخطة صحيحة؛ ينقصها تسجيل ما أُنجز من الأسابيع 1–7 |
-| `docs/mobile-app-plan.md` | ⛔ | خطة React Native، استبدلتها خطة Flutter |
+| `docs/production-readiness.md` | ✅ | نُقلت من خطة React Native المحذوفة |
 | `docs/growth/positioning.md` | ✅ | |
 | `mobile_flutter/README.md` | ⚠️ | التشغيل وإعدادات البناء صحيحة؛ ينقصها شرح البنية والاختبارات واللقطات والتحقق على المحاكي |
-| `mobile/README.md`، `mobile/AGENTS.md` | ⛔ | تطبيق Expo المُستبدَل (ADR-0023) |
 | `ruqyah-app/README.md` | ✅ | |
 | `frontend/public/library/README.md` | ✅ | مصدر صور المشاهد وأحجامها |
 | `tools/Sanad.LibraryImport/README.md` | ✅ | |
-| `references/*` | ⚠️ | المرجع الأصلي؛ لم يُراجَع سطراً سطراً، وADRs تحكمه عند التعارض |
+| `references/*` | ⚠️ | المرجع الأصلي؛ لم يُراجَع سطراً سطراً، وADRs تحكمه عند التعارض. ما فيه عن الطبيب والإحالة العاجلة ملغى بـ ADR-0024 |
 | `.claude/skills/sanad-ruqyah-app/*` | ✅ | خاص بـ `ruqyah-app/` |
 
 **فجوات تُسدّ في المرحلة التالية:** لا README لكلٍّ من `frontend/` و`packages/shared/` والخادم في `src/`، ولا دليل واحد للاختبارات وCI.
