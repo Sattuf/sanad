@@ -269,15 +269,11 @@ class FakeReminders implements ReminderScheduler {
 
 class FakeOutbound implements Outbound {
   final shared = <({String name, String mimeType, Uint8List bytes})>[];
-  final dialed = <String>[];
   final opened = <Uri>[];
 
   @override
   Future<void> shareFile(Uint8List bytes, {required String name, required String mimeType, String? text}) async =>
       shared.add((name: name, mimeType: mimeType, bytes: bytes));
-
-  @override
-  Future<void> dial(String phoneNumber) async => dialed.add(phoneNumber);
 
   @override
   Future<void> openUrl(Uri url) async => opened.add(url);

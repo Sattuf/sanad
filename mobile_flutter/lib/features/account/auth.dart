@@ -27,19 +27,42 @@ const webOnlyMessage = 'هذا الحساب إداري ويحتاج إكمال �
 typedef AuthProviders = ({bool googleNative, bool apple});
 
 class MyProfile {
-  const MyProfile({required this.id, required this.displayName, this.email, this.activeConsents = const []});
+  const MyProfile({
+    required this.id,
+    required this.displayName,
+    this.email,
+    this.emailConfirmed = false,
+    this.phoneNumber,
+    this.roles = const [],
+    this.activeConsents = const [],
+    this.hideIdentityUntilBookingConfirmed = false,
+    this.quietHoursStartHourUtc,
+    this.quietHoursEndHourUtc,
+  });
 
   factory MyProfile.fromJson(Map<String, dynamic> j) => MyProfile(
         id: j['id'] as String,
         displayName: j['displayName'] as String,
         email: j['email'] as String?,
+        emailConfirmed: j['emailConfirmed'] as bool? ?? false,
+        phoneNumber: j['phoneNumber'] as String?,
+        roles: ((j['roles'] as List?) ?? const []).cast<String>(),
         activeConsents: ((j['activeConsents'] as List?) ?? const []).cast<String>(),
+        hideIdentityUntilBookingConfirmed: j['hideIdentityUntilBookingConfirmed'] as bool? ?? false,
+        quietHoursStartHourUtc: (j['quietHoursStartHourUtc'] as num?)?.toInt(),
+        quietHoursEndHourUtc: (j['quietHoursEndHourUtc'] as num?)?.toInt(),
       );
 
   final String id;
   final String displayName;
   final String? email;
+  final bool emailConfirmed;
+  final String? phoneNumber;
+  final List<String> roles;
   final List<String> activeConsents;
+  final bool hideIdentityUntilBookingConfirmed;
+  final int? quietHoursStartHourUtc;
+  final int? quietHoursEndHourUtc;
 
   /// الشروط والخصوصية إلزاميتان قبل أي شاشة مصادَقة (needsConsent في account.ts).
   bool get needsConsent => !activeConsents.contains('TermsOfService') || !activeConsents.contains('PrivacyPolicy');

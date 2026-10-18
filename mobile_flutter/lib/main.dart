@@ -9,6 +9,7 @@ import 'app/router.dart';
 import 'content/content_repository.dart';
 import 'core/platform_services.dart';
 import 'core/session.dart';
+import 'features/care/realtime.dart';
 import 'features/companion/companion_store.dart';
 import 'features/companion/reminders.dart';
 import 'features/ruqyah/ruqyah_reminders.dart';
@@ -56,7 +57,10 @@ class SanadApp extends ConsumerWidget {
   const SanadApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // الوقت الفعلي ما دامت الجلسة قائمة (يُغلق عند الخروج)
+    ref.watch(realtimeProvider);
+    return MaterialApp.router(
         // اسم التطبيق في المهام الأخيرة — محايد في الوضع المتحفّظ
         title: ref.watch(discreetProvider) ? 'ملاحظاتي' : 'سند',
         debugShowCheckedModeBanner: false,
@@ -67,4 +71,5 @@ class SanadApp extends ConsumerWidget {
         darkTheme: buildTheme(Brightness.dark),
         routerConfig: router,
       );
+  }
 }

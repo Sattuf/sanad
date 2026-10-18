@@ -29,6 +29,7 @@ const { GUIDE_MODES, GUIDE_NAFTH_ITEM, HAND_STEP, INTENTION_TIPS, guideSteps } =
 const { PACED_DHIKR, PULSE_SECONDS, SAKINA_NEEDS, SAKINA_NEED_ORDER, SAKINA_REPEAT } = await import(src("content/companion/sakina.ts"));
 const { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES } = await import(src("content/companion/journal.ts"));
 const { ar } = await import(src("i18n/ar.ts"));
+const { ACCESS_LOG_ACTION_LABELS, ACCESS_LOG_ROLE_LABELS, DELETE_CONFIRMATION } = await import(src("api/account.ts"));
 const { GROUP_ORDER, HERO_VERSES, collections, groups, guides, suggestedWird } = await import(src("content/ruqyah.ts"));
 const { MAX_COUNT, slotForHour, slots } = await import(src("content/wird.ts"));
 const { RECITERS } = await import(src("content/recitation.ts"));
@@ -71,7 +72,12 @@ const files = {
     wird: { slots, maxCount: MAX_COUNT, slotByHour: HOURS.map((h) => slotForHour(h)?.id ?? null) },
   },
   // تسميات الواجهة المشتركة (التنقل، فئات المكتبة…) — الويب يقرؤها من i18n/ar.ts
-  "strings.json": { $generated: GENERATED, ar },
+  // وتسميات الحساب: سجل الاطلاع، وعبارة تأكيد الحذف التي يطلبها الخادم حرفياً
+  "strings.json": {
+    $generated: GENERATED,
+    ar,
+    account: { accessLogActions: ACCESS_LOG_ACTION_LABELS, accessLogRoles: ACCESS_LOG_ROLE_LABELS, deleteConfirmation: DELETE_CONFIRMATION },
+  },
 };
 
 const outDir = fileURLToPath(new URL("../../../mobile_flutter/assets/content/", import.meta.url));

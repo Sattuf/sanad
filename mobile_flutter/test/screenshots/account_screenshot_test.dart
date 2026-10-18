@@ -4,10 +4,11 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../account_settings_test.dart' show accountServer;
 import '../today_screen_test.dart' show FakeServer, pumpApp;
 import 'today_screenshot_test.dart' show loadFonts, shot, snap;
 
-/// لقطات مراجعة للأسابيع 5–7: الدخول والموافقات وحسابي — تُقارن بـ /login في الويب.
+/// لقطات مراجعة: الدخول والموافقات (الأسابيع 5–7) وحسابي كاملاً (7–9) — تُقارن بـ /login و/account في الويب.
 void main() {
   setUpAll(loadFonts);
   FakeServer server() => FakeServer()
@@ -45,7 +46,8 @@ void main() {
   });
 
   shot('حسابي — بجلسة', (tester) async {
-    await pumpApp(tester, location: '/account', server: server(), refreshToken: 'r', realVault: false);
+    // مواعيد وتوصيات وأقسام الحساب كلها (accountServer)
+    await pumpApp(tester, location: '/account', server: accountServer(), refreshToken: 'r1');
     await snap('account_signed_in.png');
   });
 }

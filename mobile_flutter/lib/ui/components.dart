@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../content/arabic.dart';
 import '../content/content_repository.dart';
 import '../content/models.dart';
+import '../core/api.dart';
 import '../core/audio.dart';
 import '../theme/theme.dart';
 import '../theme/tokens.g.dart';
@@ -867,4 +868,154 @@ class ProgramArt extends StatelessWidget {
       ),
     );
   }
+}
+
+class EmptyState extends StatelessWidget {
+  const EmptyState({super.key, required this.title, this.child});
+  final String title;
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 56),
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: BorderRadius.circular(Radii.x2l),
+        border: Border.all(color: t.border),
+        gradient: RadialGradient(center: const Alignment(0, -0.6), radius: 0.6, colors: [t.lampGlow.withValues(alpha: 0.2), t.surface]),
+      ),
+      child: Column(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          if (child != null) ...[
+            const SizedBox(height: 8),
+            DefaultTextStyle.merge(
+              style: TextStyle(color: t.muted),
+              textAlign: TextAlign.center,
+              child: child!,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class ErrorState extends StatelessWidget {
+  const ErrorState({super.key, required this.error, required this.onRetry});
+  final Object error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.t;
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(Radii.xl),
+          border: Border.all(color: t.warning),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('تعذّر عرض هذه الصفحة', style: TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(error is ApiError ? (error as ApiError).friendly : 'حدث خطأ غير متوقع.', style: TextStyle(color: t.muted)),
+            const SizedBox(height: 8),
+            OutlinedButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// حقل إدخال بنمط Input/Select في الويب: سطح، حدّ خفيف، وحلقة تركيز — نفس حقل البحث في المكتبة.
+InputDecoration sanadInput(BuildContext context, {String? hint, String? label}) {
+  final t = context.t;
+  OutlineInputBorder border(Color c, [double w = 1]) =>
+      OutlineInputBorder(borderRadius: BorderRadius.circular(Radii.xl), borderSide: BorderSide(color: c, width: w));
+  return InputDecoration(
+    hintText: hint,
+    labelText: label,
+    hintStyle: TextStyle(color: t.muted),
+    isDense: true,
+    filled: true,
+    fillColor: t.surface,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    enabledBorder: border(t.border),
+    disabledBorder: border(t.border),
+    focusedBorder: border(t.focus, 2),
+    border: border(t.border),
+  );
+}
+
+/// شريط تنبيه — نظير Banner في الويب (danger / success / warning / lamp).
+class SanadBanner extends StatelessWidget {
+  const SanadBanner({super.key, required this.tone, this.title, required this.child});
+  final String tone;
+  final String? title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = toneColors(context.t, tone);
+    return Semantics(
+      liveRegion: tone == 'danger',
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(color: c.bg, borderRadius: BorderRadius.circular(Radii.xl)),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(fontSize: 14, height: 1.75, color: c.fg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (title != null) Text(title!, style: const TextStyle(fontWeight: FontWeight.w700)),
+              child,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// مؤشر تحميل في وسط القسم.
+class Loading extends StatelessWidget {
+  const Loading({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()));
+}
+
+/// خانة اختيار بتسميتها وتلميحها — Checkbox في الويب. Material شفاف خاص بها فيظهر أثر اللمس فوق البطاقات الملوّنة.
+class SanadCheck extends StatelessWidget {
+  const SanadCheck({super.key, required this.value, required this.onChanged, required this.label, this.hint});
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final String label;
+  final String? hint;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        type: MaterialType.transparency,
+        child: CheckboxListTile(
+          value: value,
+          onChanged: (v) => onChanged(v ?? false),
+          contentPadding: EdgeInsets.zero,
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Text(label, style: const TextStyle(fontSize: 14, height: 1.75)),
+          subtitle: hint == null ? null : Text(hint!, style: TextStyle(fontSize: 12, color: context.t.muted)),
+        ),
+      );
 }

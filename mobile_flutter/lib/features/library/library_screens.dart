@@ -291,9 +291,9 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 loading: () => const Center(
                   child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
                 ),
-                error: (e, _) => _ErrorState(error: e, onRetry: () => ref.invalidate(libraryTracksProvider(query))),
+                error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(libraryTracksProvider(query))),
                 data: (list) => list.isEmpty
-                    ? const _EmptyState(title: 'لا مقاطع هنا بعد', child: Text('يضيف فريق المحتوى مقاطع جديدة بعد مراجعتها.'))
+                    ? const EmptyState(title: 'لا مقاطع هنا بعد', child: Text('يضيف فريق المحتوى مقاطع جديدة بعد مراجعتها.'))
                     : Column(
                         children: [
                           for (final track in list)
@@ -333,9 +333,9 @@ class FavoritesScreen extends ConsumerWidget {
               loading: () => const Center(
                 child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
               ),
-              error: (e, _) => _ErrorState(error: e, onRetry: () => ref.invalidate(favoritesProvider)),
+              error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(favoritesProvider)),
               data: (list) => list.isEmpty
-                  ? _EmptyState(
+                  ? EmptyState(
                       title: 'لم تضف مقاطع بعد',
                       child: TextButton(
                         onPressed: () => context.canPop() ? context.pop() : context.go('/library'),
@@ -640,75 +640,6 @@ class _YouTubeLink extends ConsumerWidget {
             child: Text('يُشغَّل من YouTube عند الضغط.', style: TextStyle(fontSize: 12, color: t.muted)),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.title, this.child});
-  final String title;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 56),
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(Radii.x2l),
-        border: Border.all(color: t.border),
-        gradient: RadialGradient(center: const Alignment(0, -0.6), radius: 0.6, colors: [t.lampGlow.withValues(alpha: 0.2), t.surface]),
-      ),
-      child: Column(
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          if (child != null) ...[
-            const SizedBox(height: 8),
-            DefaultTextStyle.merge(
-              style: TextStyle(color: t.muted),
-              textAlign: TextAlign.center,
-              child: child!,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.error, required this.onRetry});
-  final Object error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.t;
-    return Semantics(
-      liveRegion: true,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: t.surface,
-          borderRadius: BorderRadius.circular(Radii.xl),
-          border: Border.all(color: t.warning),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('تعذّر عرض هذه الصفحة', style: TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 4),
-            Text(error is ApiError ? (error as ApiError).friendly : 'حدث خطأ غير متوقع.', style: TextStyle(color: t.muted)),
-            const SizedBox(height: 8),
-            OutlinedButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
-          ],
-        ),
       ),
     );
   }

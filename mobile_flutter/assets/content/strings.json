@@ -118,5 +118,16 @@
    "empty": "لا شيء هنا بعد",
    "free": "سند مجانية بالكامل، لا اشتراكات ولا خدمات مدفوعة."
   }
+ },
+ "account": {
+  "accessLogActions": {
+   "Scheduling.BeneficiaryNoteRead": "اطّلع على ملاحظتك للمختص المرفقة بحجز",
+   "PatientCare.CaseNoteSupervisoryRead": "مراجعة إشرافية لملف حجزك"
+  },
+  "accessLogRoles": {
+   "AssignedProvider": "المختص المكلّف",
+   "CoordinatorEscalation": "منسق (تصعيد موثّق)"
+  },
+  "deleteConfirmation": "احذف حسابي"
  }
 }
