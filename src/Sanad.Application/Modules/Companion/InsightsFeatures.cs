@@ -27,7 +27,8 @@ public sealed record RecordCompanionEventsCommand(List<CompanionEventInput> Even
 public sealed class RecordCompanionEventsCommandValidator : AbstractValidator<RecordCompanionEventsCommand>
 {
     public RecordCompanionEventsCommandValidator() =>
-        RuleFor(x => x.Events).NotNull().Must(e => e.Count is >= 1 and <= 20).WithMessage("بين حدث و20 حدثاً.");
+        // نمط واحد يغطي الغياب: NotNull وحده لا يوقف القاعدة التالية، فكان Count على null يرمي (500)
+        RuleFor(x => x.Events).Must(e => e is { Count: >= 1 and <= 20 }).WithMessage("بين حدث و20 حدثاً.");
 }
 
 public sealed class RecordCompanionEventsCommandHandler(IApplicationDbContext db, IDateTime clock) : IRequestHandler<RecordCompanionEventsCommand, Unit>

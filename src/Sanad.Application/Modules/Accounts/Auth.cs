@@ -155,6 +155,11 @@ public sealed class ChangeRequiredPasswordCommandHandler(IIdentityService identi
 [AllowAnonymousRequest]
 public sealed record BeginTwoFactorSetupCommand(string Ticket) : ICommand<TwoFactorSetupInfo>;
 
+public sealed class BeginTwoFactorSetupValidator : AbstractValidator<BeginTwoFactorSetupCommand>
+{
+    public BeginTwoFactorSetupValidator() => RuleFor(x => x.Ticket).NotEmpty().MaximumLength(200);
+}
+
 public sealed class BeginTwoFactorSetupCommandHandler(IIdentityService identity) : IRequestHandler<BeginTwoFactorSetupCommand, TwoFactorSetupInfo>
 {
     public Task<TwoFactorSetupInfo> Handle(BeginTwoFactorSetupCommand request, CancellationToken cancellationToken) =>
@@ -200,6 +205,11 @@ public sealed class TwoFactorSetupCodeValidator : AbstractValidator<CompleteTwoF
 // ── الرموز ─────────────────────────────────────────────────────────────────────
 [AllowAnonymousRequest]
 public sealed record RefreshTokenCommand(string RefreshToken) : ICommand<AuthTokens>, ISensitiveRequest;
+
+public sealed class RefreshTokenValidator : AbstractValidator<RefreshTokenCommand>
+{
+    public RefreshTokenValidator() => RuleFor(x => x.RefreshToken).NotEmpty().MaximumLength(500);
+}
 
 public sealed class RefreshTokenCommandHandler(IIdentityService identity) : IRequestHandler<RefreshTokenCommand, AuthTokens>
 {

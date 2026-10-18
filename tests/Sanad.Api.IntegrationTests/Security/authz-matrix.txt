@@ -1,0 +1,156 @@
+GET    /api/v1/admin/companion/authors  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/authors  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/admin/companion/authors/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/authors/{id:guid}/consent  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/authors/{id:guid}/consent/revoke  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/admin/companion/plans  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/plans  anon=401 beneficiary=403 coordinator=403 admin=403
+DELETE /api/v1/admin/companion/plans/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/admin/companion/plans/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/plans/{id:guid}/review  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/plans/{id:guid}/versions  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/companion/plans/{id:guid}/withdraw  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/admin/companion/stats  anon=401 beneficiary=403 coordinator=2xx admin=403
+GET    /api/v1/admin/escalations  anon=401 beneficiary=403 coordinator=2xx admin=403
+POST   /api/v1/admin/escalations/recompute  anon=401 beneficiary=403 coordinator=400 admin=403
+POST   /api/v1/admin/escalations/{id:guid}/close  anon=401 beneficiary=403 coordinator=404 admin=403
+GET    /api/v1/admin/library/catalog  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/library/catalog/import  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/admin/library/tracks  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/library/tracks  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/admin/library/tracks/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/library/tracks/{id:guid}/publish  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/library/tracks/{id:guid}/unpublish  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/library/uploads  anon=401 beneficiary=415 coordinator=415 admin=415
+POST   /api/v1/admin/library/youtube  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/admin/organizations  anon=401 beneficiary=403 coordinator=2xx admin=403
+POST   /api/v1/admin/organizations  anon=401 beneficiary=403 coordinator=400 admin=403
+POST   /api/v1/admin/organizations/{id:guid}/publish  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/organizations/{id:guid}/suspend  anon=401 beneficiary=403 coordinator=400 admin=403
+POST   /api/v1/admin/profiles/{id:guid}/lift-suspension  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/profiles/{id:guid}/organization  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/profiles/{id:guid}/suspend  anon=401 beneficiary=403 coordinator=400 admin=403
+GET    /api/v1/admin/providers  anon=401 beneficiary=403 coordinator=2xx admin=403
+GET    /api/v1/admin/reports  anon=401 beneficiary=403 coordinator=2xx admin=403
+GET    /api/v1/admin/reports/{id:guid}  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/reports/{id:guid}/investigate  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/reports/{id:guid}/review  anon=401 beneficiary=403 coordinator=404 admin=403
+GET    /api/v1/admin/ruqyah/duas/  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/ruqyah/duas/  anon=401 beneficiary=403 coordinator=403 admin=403
+DELETE /api/v1/admin/ruqyah/duas/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/admin/ruqyah/duas/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/admin/ruqyah/duas/{id:guid}/review  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/admin/users/  anon=401 beneficiary=403 coordinator=403 admin=2xx
+POST   /api/v1/admin/users/{id:guid}/roles  anon=401 beneficiary=403 coordinator=403 admin=400
+DELETE /api/v1/admin/users/{id:guid}/roles/{role}  anon=401 beneficiary=403 coordinator=403 admin=400
+GET    /api/v1/admin/verifications  anon=401 beneficiary=403 coordinator=2xx admin=403
+GET    /api/v1/admin/verifications/history/{subjectId:guid}  anon=401 beneficiary=403 coordinator=2xx admin=403
+GET    /api/v1/admin/verifications/{id:guid}/document-link  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/verifications/{id:guid}/recheck  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/admin/verifications/{id:guid}/review  anon=401 beneficiary=403 coordinator=400 admin=403
+POST   /api/v1/auth/apple  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/auth/google/callback  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/auth/google/challenge  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+POST   /api/v1/auth/google/exchange  anon=401 beneficiary=401 coordinator=401 admin=401  [public]
+POST   /api/v1/auth/google/native  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+POST   /api/v1/auth/login/2fa/enable  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/login/2fa/setup  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/login/2fa/verify  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/login/change-password  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/login/email  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/phone/request-otp  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/phone/verify-otp  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+GET    /api/v1/auth/providers  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+POST   /api/v1/auth/refresh  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/auth/register/email  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/bookings/  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/bookings/{id:guid}  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/bookings/{id:guid}/accept  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/bookings/{id:guid}/cancel  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/bookings/{id:guid}/complete  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/bookings/{id:guid}/conversation  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/bookings/{id:guid}/dispute  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/bookings/{id:guid}/note  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/bookings/{id:guid}/propose-alternative  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/bookings/{id:guid}/provider-note  anon=401 beneficiary=403 coordinator=404 admin=403
+POST   /api/v1/bookings/{id:guid}/provider-note  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/bookings/{id:guid}/recommendations  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/bookings/{id:guid}/recommendations  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/bookings/{id:guid}/reject  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/conversations/{id:guid}/messages  anon=401 beneficiary=404 coordinator=404 admin=404
+POST   /api/v1/conversations/{id:guid}/messages  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/conversations/{id:guid}/report  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/directory  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/directory/transparency  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/files/signed  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+GET    /api/v1/library/  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/library/tracks/{id:guid}/share-link  anon=401 beneficiary=404 coordinator=404 admin=404
+DELETE /api/v1/me/  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+PATCH  /api/v1/me/  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/access-log  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/bookings  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+DELETE /api/v1/me/companion/enrollment  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/companion/enrollment  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/companion/enrollment  anon=401 beneficiary=400 coordinator=400 admin=400
+PATCH  /api/v1/me/companion/enrollment/reminder  anon=401 beneficiary=404 coordinator=404 admin=404
+PUT    /api/v1/me/companion/enrollment/{id:guid}/progress  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/companion/invites/{code}  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/me/companion/invites/{code}/join  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/companion/khatmas  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/companion/khatmas  anon=401 beneficiary=400 coordinator=400 admin=400
+DELETE /api/v1/me/companion/khatmas/{id:guid}  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/me/companion/khatmas/{id:guid}  anon=401 beneficiary=404 coordinator=404 admin=404
+PUT    /api/v1/me/companion/khatmas/{id:guid}  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/me/companion/khatmas/{id:guid}/actions  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/consent  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/consent  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/consent/history  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+DELETE /api/v1/me/consent/{type}  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/conversations  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/documents  anon=401 beneficiary=415 coordinator=415 admin=415
+POST   /api/v1/me/export  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/favorites  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/favorites  anon=401 beneficiary=404 coordinator=404 admin=404
+DELETE /api/v1/me/favorites/{trackId:guid}  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/notifications  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/notifications/read-all  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+PATCH  /api/v1/me/privacy-preferences  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/provider-profile/  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/me/provider-profile/  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/me/provider-profile/bookings  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/me/provider-profile/offerings  anon=401 beneficiary=403 coordinator=403 admin=403
+PUT    /api/v1/me/provider-profile/offerings/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/me/provider-profile/publish  anon=401 beneficiary=403 coordinator=403 admin=403
+GET    /api/v1/me/provider-profile/slots  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/me/provider-profile/slots  anon=401 beneficiary=403 coordinator=403 admin=403
+DELETE /api/v1/me/provider-profile/slots/{id:guid}  anon=401 beneficiary=403 coordinator=403 admin=403
+POST   /api/v1/me/provider-upgrade-request  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/me/provider-upgrade-requests  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/provider-upgrade-requests/{id:guid}/resubmit  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/me/recommendations  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/recommendations/{id:guid}/acknowledge  anon=401 beneficiary=404 coordinator=404 admin=404
+PUT    /api/v1/me/reminders/device  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/me/reminders/device/remove  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+POST   /api/v1/me/reminders/device/test  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/me/reminders/devices  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/reports  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
+GET    /api/v1/me/wird  anon=401 beneficiary=400 coordinator=400 admin=400
+PUT    /api/v1/me/wird  anon=401 beneficiary=400 coordinator=400 admin=400
+GET    /api/v1/media/tracks/{id:guid}  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/organizations/{id:guid}  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/providers/compare  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+GET    /api/v1/providers/{id:guid}  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/providers/{id:guid}/availability  anon=401 beneficiary=404 coordinator=404 admin=404
+GET    /api/v1/public/app/min-version  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/public/companion/config  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+POST   /api/v1/public/companion/events  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+GET    /api/v1/public/companion/plans  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/public/companion/plans/{id:guid}  anon=404 beneficiary=404 coordinator=404 admin=404  [public]
+GET    /api/v1/public/recitation/reciters  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/public/recitation/{reciter}/{surah:int}/{ayah:int}  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+GET    /api/v1/public/reminders/push-config  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/public/ruqyah/duas  anon=2xx beneficiary=2xx coordinator=2xx admin=2xx  [public]
+GET    /api/v1/public/shared/{shortCode}  anon=400 beneficiary=400 coordinator=400 admin=400  [public]
+POST   /api/v1/reports  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/auth/revoke  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
