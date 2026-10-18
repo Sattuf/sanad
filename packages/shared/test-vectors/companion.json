@@ -3,14 +3,10 @@
   "normalize": [
     ["الطّاقةُ السلبيّة", "الطاقه السلبيه"],
     ["أإآٱ", "اااا"],
-    ["مستشفى", "مستشفي"],
+    ["مصطفى", "مصطفي"],
     ["رقم ١٣ والـــرقية!", "رقم 13 والرقيه"],
     ["  مسافات   كثيرة  ", "مسافات كثيره"]
   ],
-  "risk": {
-    "positive": ["صرت أفكر إني أبي أموت", "فقدتُ الأمل في الحياة", "I want to die", "أفكر في الانتحار", "راح اقتل نفسي"],
-    "negative": ["نمت جيداً والحمد لله", "أشعر بضيق خفيف اليوم", "قرأت آية الكرسي قبل النوم", ""]
-  },
   "mythSearch": [
     { "query": "التبخير بملح الهملايا لطرد الطاقة السلبية", "first": "himalayan-salt" },
     { "query": "الخرزة الزرقاء", "first": "amulets" },
@@ -20,11 +16,10 @@
     { "query": "كلمة لا علاقة لها إطلاقاً xyz", "first": null }
   ],
   "quiz": [
-    { "answers": "all-2", "score": 18, "tier": "وعيٌ راسخ", "programId": "self-ruqyah-21" },
+    { "answers": "all-2", "score": 16, "tier": "وعيٌ راسخ", "programId": "self-ruqyah-21" },
     { "answers": "all-0", "score": 0, "tier": "بداية جديدة", "programId": "quiet-nights-14" },
-    { "answers": "all-1", "score": 9, "tier": "على الطريق الصحيح", "programId": "foundation-7" },
-    { "answers": { "base": 1, "q-self": 0 }, "score": 8, "tier": "بداية جديدة", "programId": "self-ruqyah-21" },
-    { "answers": { "base": 2, "q-symptoms": 0 }, "score": 16, "tier": "وعيٌ راسخ", "programId": "calm-heart-10" }
+    { "answers": "all-1", "score": 8, "tier": "على الطريق الصحيح", "programId": "foundation-7" },
+    { "answers": { "base": 1, "q-self": 0 }, "score": 7, "tier": "بداية جديدة", "programId": "self-ruqyah-21" }
   ],
   "programDay": [
     { "startedOn": "2026-10-01", "length": 7, "today": "2026-10-01", "day": 1 },

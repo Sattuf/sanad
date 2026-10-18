@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import type { EmergencyReferral } from "../types";
 import { ApiError, createApiClient, type SessionPort } from "../core";
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
@@ -15,31 +14,9 @@ function setup(responses: Response[], tokens: { access: string | null; refresh: 
     setTokens: (a, r) => Object.assign(state, { access: a, refresh: r }),
     clear: () => Object.assign(state, { access: null, refresh: null }),
   };
-  const emergencies: (EmergencyReferral | null)[] = [];
-  const client = createApiClient({ baseUrl: "https://api.test/", session, onEmergency: (r) => emergencies.push(r), fetch });
-  return { client, fetch, state, emergencies };
+  const client = createApiClient({ baseUrl: "https://api.test/", session, fetch });
+  return { client, fetch, state };
 }
-
-describe("createApiClient — مسار الإحالة العاجلة", () => {
-  it("يبلّغ عن إشارة الترويسة حتى عند فشل الطلب", async () => {
-    const { client, emergencies } = setup([json({ title: "تعارض" }, 409, { "X-Sanad-Emergency-Referral": "1" })]);
-    await expect(client.api.post("/api/v1/bookings", {})).rejects.toBeInstanceOf(ApiError);
-    expect(emergencies).toEqual([null]);
-  });
-
-  it("يمرّر تفاصيل الإحالة من جسم الاستجابة", async () => {
-    const referral = { required: true, message: "اتصل الآن", contacts: [{ label: "طوارئ", phoneNumber: "997" }], emergencyPagePath: "/emergency" };
-    const { client, emergencies } = setup([json({ id: "x", emergencyReferral: referral })]);
-    await client.api.post("/api/v1/messages", {});
-    expect(emergencies[0]?.contacts[0].phoneNumber).toBe("997");
-  });
-
-  it("لا يبلّغ لاستجابة عادية", async () => {
-    const { client, emergencies } = setup([json({ ok: true })]);
-    await client.api.get("/api/v1/directory");
-    expect(emergencies).toHaveLength(0);
-  });
-});
 
 describe("createApiClient — الجلسة", () => {
   it("يرسل رمز الوصول ويزيل الشرطة الأخيرة من العنوان", async () => {

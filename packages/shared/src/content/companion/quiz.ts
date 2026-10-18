@@ -3,7 +3,7 @@
   لا يسأل عن أعراض ولا يستنتج تصنيفاً (references/SKILL.md البند 2)؛ نتيجته اقتراح برنامج يختاره المستخدم بنفسه.
 */
 
-export type QuizArea = "habits" | "awareness" | "selfReliance" | "sleep" | "balance";
+export type QuizArea = "habits" | "awareness" | "selfReliance" | "sleep";
 
 export interface QuizQuestion {
   id: string;
@@ -29,14 +29,6 @@ export const QUIZ: QuizQuestion[] = [
       { label: "أعلّقها احتياطاً، لن تضر", score: 0 },
       { label: "لا أعلّقها، لكن لا أرى بها بأساً", score: 1 },
       { label: "أتجنّبها وأتحصّن بالأذكار", score: 2 },
-    ],
-  },
-  {
-    id: "q-symptoms", area: "balance", question: "شعرت بإرهاق وأرق أسبوعين متتاليين. ما أول ما تفعله؟", mythId: "every-symptom",
-    options: [
-      { label: "إنها عين بالتأكيد — أبحث عن راقٍ", score: 0 },
-      { label: "أتجاهل الأمر حتى يزول", score: 1 },
-      { label: "أرقي نفسي وأراجع طبيباً معاً", score: 2 },
     ],
   },
   {
@@ -112,7 +104,6 @@ export const QUIZ_TIERS: Array<{ minRatio: number; title: string; message: strin
 export const QUIZ_RECOMMENDATIONS: Array<{ zeroArea?: QuizArea; minRatio?: number; programId: string; reason: string }> = [
   { zeroArea: "sleep", programId: "quiet-nights-14", reason: "لأن روتين ما قبل النوم هو أسرع ما يمكن تحسينه." },
   { zeroArea: "selfReliance", programId: "self-ruqyah-21", reason: "لتتعلّم أن ترقي نفسك وأهلك بلا وسيط." },
-  { zeroArea: "balance", programId: "calm-heart-10", reason: "لتجمع بين الأذكار والأخذ بالأسباب في الأيام المثقلة." },
   { minRatio: 0.8, programId: "self-ruqyah-21", reason: "خطوتك التالية: أن تصبح مرجع أهلك في الرقية الذاتية." },
   { programId: "foundation-7", reason: "لتثبيت وِرد التحصين اليومي أولاً." },
 ];

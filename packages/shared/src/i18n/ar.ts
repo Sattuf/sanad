@@ -14,14 +14,12 @@ export const ar = {
     staff: "الإدارة",
     login: "دخول",
     logout: "خروج",
-    emergency: "طوارئ",
     becomeProvider: "كن مقدّم خدمة",
   },
-  practitionerType: { LicensedPhysician: "طبيب مرخّص", ReligiousPractitioner: "شيخ / راقٍ شرعي" },
+  practitionerType: { ReligiousPractitioner: "شيخ / راقٍ شرعي" },
   track: {
     WaqfFree: "وقفي مجاني",
     DawahGuidance: "دعوي وإرشادي",
-    LicensedHealth: "صحي مرخّص",
     IndependentConsultant: "مستشار مستقل",
   },
   deliveryMode: { InPerson: "حضوري", Remote: "عن بعد", Both: "حضوري وعن بعد" },
@@ -78,7 +76,6 @@ export const ar = {
     Coordinator: "منسق",
     ContentManager: "مدير محتوى",
     PrivacySecurityOfficer: "مسؤول الخصوصية والأمن",
-    ClinicalSupervisor: "مشرف سريري",
     SystemAdmin: "مدير النظام",
   },
   consent: {

@@ -8,7 +8,6 @@ function setup() {
   const client = createApiClient({
     baseUrl: "https://api.test",
     session: { getAccessToken: () => "secret-access", getRefreshToken: () => null, setTokens: () => {}, clear: () => {} },
-    onEmergency: () => {},
     fetch,
   });
   return { auth: authApi(client.api), fetch };

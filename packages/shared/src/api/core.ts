@@ -1,9 +1,8 @@
-import { detectEmergency, EMERGENCY_HEADER } from "../safety/emergency";
-import type { AuthTokens, EmergencyReferral } from "./types";
+import type { AuthTokens } from "./types";
 
 /*
-  نواة عميل الـ API المشتركة (ADR-0014، ADR-0018): ProblemDetails ← ApiError، تجديد الرمز مرة واحدة عند 401،
-  والتقاط إشارة الطوارئ من كل استجابة. لا تعرف أين تُخزَّن الجلسة ولا كيف يُعرض الشريط — يحقنهما كل تطبيق.
+  نواة عميل الـ API المشتركة (ADR-0014): ProblemDetails ← ApiError، وتجديد الرمز مرة واحدة عند 401.
+  لا تعرف أين تُخزَّن الجلسة — يحقنها كل تطبيق.
 */
 
 /** خطأ موحّد من ProblemDetails الخلفي. */
@@ -39,8 +38,6 @@ export interface SessionPort {
 export interface ApiClientOptions {
   baseUrl: string;
   session: SessionPort;
-  /** يُستدعى عند أي إشارة خطر؛ null تعني أن الخادم لم يرسل تفاصيل فتُعرض الإحالة الاحتياطية. */
-  onEmergency: (referral: EmergencyReferral | null) => void;
   fetch?: typeof fetch;
 }
 
@@ -55,7 +52,7 @@ export interface RequestOptions {
 
 export function createApiClient(options: ApiClientOptions) {
   const baseUrl = options.baseUrl.replace(/\/$/, "");
-  const { session, onEmergency } = options;
+  const { session } = options;
   // يُقرأ عند كل طلب لا عند الإنشاء، حتى تعمل بدائل fetch في الاختبارات
   const doFetch: typeof fetch = (input, init) => (options.fetch ?? fetch)(input, init);
   let refreshing: Promise<boolean> | null = null;
@@ -118,8 +115,6 @@ export function createApiClient(options: ApiClientOptions) {
         payload = null;
       }
     }
-    const referral = detectEmergency(res.headers.get(EMERGENCY_HEADER), payload);
-    if (referral !== undefined) onEmergency(referral);
 
     if (!res.ok) {
       const p = (payload ?? {}) as { title?: string; code?: string; errors?: Record<string, string[]>; policyCategory?: string };
