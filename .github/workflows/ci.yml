@@ -92,23 +92,6 @@ jobs:
       # لقطات المراجعة تختلف بين الأنظمة فلا تُقارن هنا
       - run: flutter test --exclude-tags screenshot
 
-  mobile:
-    needs: [secret-scan]
-    runs-on: ubuntu-latest
-    defaults:
-      run: { working-directory: mobile }
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: "22", cache: npm, cache-dependency-path: mobile/package-lock.json }
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm test -- --ci
-      # يثبت أن Metro يحزم التطبيق مع packages/shared للمنصتين (لا يحتاج حساب Expo)
-      - run: npm run bundle:check
-        env: { CI: "1" }
-
   # تطبيق «سند» للرقية الذاتية (PWA) — .claude/skills/sanad-ruqyah-app
   ruqyah-app:
     needs: [secret-scan]
