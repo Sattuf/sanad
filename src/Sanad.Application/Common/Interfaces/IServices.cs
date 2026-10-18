@@ -95,13 +95,6 @@ public interface IAuditLogger
     Task LogForActorAsync(Guid? actorUserId, string action, string entityType, Guid? entityId, object? metadata = null, CancellationToken ct = default);
 }
 
-/// <summary>يجمع إشارات الخطر المرصودة خلال الطلب الحالي لتضمين الإحالة العاجلة في الاستجابة.</summary>
-public interface ISafetySignalContext
-{
-    bool EmergencyReferralTriggered { get; }
-    void Flag();
-}
-
 public interface IIdempotencyStore
 {
     Task<string?> GetResponseAsync(string key, Guid? userId, string requestName, CancellationToken ct);

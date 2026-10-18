@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Domain.Exceptions;
 
 namespace Sanad.Application.Common.Behaviors;
@@ -155,17 +154,3 @@ public sealed class AuditLoggingBehavior<TRequest, TResponse>(IAuditLogger audit
     };
 }
 
-/// <summary>
-/// إن رُصد مؤشر خطر عاجل أثناء الطلب (ملاحظة حجز، رسالة، بلاغ)، تُضمَّن معلومات الإحالة والطوارئ في الاستجابة فوراً.
-/// </summary>
-public sealed class SafetySignalBehavior<TRequest, TResponse>(ISafetySignalContext safetyContext, IEmergencyReferralInfoProvider referralInfo)
-    : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
-{
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
-    {
-        var response = await next();
-        if (safetyContext.EmergencyReferralTriggered && response is ISafetyAwareResponse aware)
-            return (TResponse)aware.WithEmergencyReferral(referralInfo.Get());
-        return response;
-    }
-}

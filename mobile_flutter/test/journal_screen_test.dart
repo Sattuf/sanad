@@ -96,26 +96,6 @@ void main() {
     expect(find.text('رقية: ٣ ← ٧'), findsOneWidget);
   });
 
-  testWidgets('كلمات الخطر في الملاحظة ← شريط الإحالة فوق التطبيق والاتصال، دون رابط لصفحة الطوارئ', (tester) async {
-    final device = FakeDevice();
-    await pumpApp(tester, location: '/journal', device: device);
-    await create(tester);
-    await tester.enterText(find.byKey(const ValueKey('note')), 'صرت أفكر إني أبي أموت');
-    await reveal(tester, find.text('حفظ'));
-    await tester.tap(find.text('حفظ'));
-    await tester.pumpAndSettle();
-    expect(find.text('نحن قلقون عليك — إن كنت في خطر، اطلب المساعدة الآن'), findsOneWidget);
-    expect(find.text(content.fallbackReferral.message), findsOneWidget);
-    expect(find.text('نحن قلقون عليك', skipOffstage: false), findsOneWidget);
-    expect(find.textContaining('صفحة الطوارئ'), findsNothing);
-    final contact = content.fallbackReferral.contacts.first;
-    await tester.tap(find.textContaining('اتصل ${contact.phoneNumber}'));
-    expect(device.outbound.dialed, [contact.phoneNumber]);
-    await tester.tap(find.text('إخفاء'));
-    await tester.pumpAndSettle();
-    expect(find.text(content.fallbackReferral.message), findsNothing);
-  });
-
   testWidgets('الاتجاه: أقل من ٣ أيام «يتشكّل»، و١٤ يوماً تعرض المخططات والملاحظات بلا تشخيص', (tester) async {
     await pumpApp(tester, location: '/journal', prefs: {
       'sanad.companion.v1': jsonEncode({'activeProgramId': 'foundation-7', 'startedOn': '2026-10-02', 'done': {}, 'activeDays': {for (var i = 0; i < 14; i += 2) addDays('2026-10-15', -i): true}, 'finished': []}),
@@ -132,7 +112,7 @@ void main() {
     expect(find.byType(MiniChart, skipOffstage: false), findsNWidgets(content.journalMetrics.length));
     await reveal(tester, find.textContaining('الهدوء في الأسبوع الأخير أعلى'));
     await reveal(tester, find.textContaining('في أيام التزامك كان متوسط هدوئك'));
-    expect(find.textContaining('لا حكم طبي'), findsOneWidget);
+    expect(find.textContaining('هذه ملاحظات عن أيامك أنت'), findsOneWidget);
     expect(find.textContaining('بسبب'), findsNothing);
   });
 

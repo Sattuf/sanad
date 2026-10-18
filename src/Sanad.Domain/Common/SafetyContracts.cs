@@ -1,23 +1,13 @@
 namespace Sanad.Domain.Common;
 
 /// <summary>
-/// فلتر العبارات المحظورة (ادعاء علاجي، وعد بشفاء، جرعة دوائية...). يعيد تصنيف المخالفة أو null.
+/// فلتر العبارات المحظورة (وعد بشفاء، جزم بفك سحر أو عين، ضمان نتيجة...). يعيد تصنيف المخالفة أو null.
 /// مكانه في Domain لأن كيانات Domain تستدعيه عند الإنشاء — راجع references/07-safety-guardrails.md §7.2.
 /// </summary>
 public interface IContentPolicyChecker
 {
     string? FindProhibitedClaim(string text);
 }
-
-/// <summary>
-/// كاشف مؤشرات الخطر العاجل (إيذاء نفس، تهديد...). لا يمنع الحفظ أبداً؛ فقط يطلق مسار الإحالة.
-/// </summary>
-public interface ISafeReferralEvaluator
-{
-    bool RequiresImmediateEmergencyReferral(SafetySignal signal);
-}
-
-public sealed record SafetySignal(string Text);
 
 public static class ContentPolicy
 {

@@ -7,6 +7,7 @@ import { item } from "../../content/library";
 import { PROGRAMS, SLOT_LABEL, TINT, programById, type Program, type ProgramTask, type Slot } from "../../content/programs";
 import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
+import { QUIZ } from "@sanad/shared/content/companion/quiz";
 import { dailyReminderIcs, downloadText } from "../../lib/ics";
 import { currentDay, dayProgress, programProgress, useCompanion } from "../../stores/companion";
 import { NotFoundPage } from "../../app/NotFoundPage";
@@ -42,7 +43,7 @@ export function ProgramsPage() {
         <Link to="/awareness/quiz" className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-border bg-dawn px-5 py-4">
           <div>
             <p className="font-bold">لا تعرف من أين تبدأ؟</p>
-            <p className="text-sm text-muted">اختبار وعي من ٩ أسئلة يقترح عليك البرنامج الأنسب — دقيقتان فقط.</p>
+            <p className="text-sm text-muted">اختبار وعي من {arNum(QUIZ.length)} أسئلة يقترح عليك البرنامج الأنسب — دقيقتان فقط.</p>
           </div>
           <span className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast">ابدأ الاختبار</span>
         </Link>

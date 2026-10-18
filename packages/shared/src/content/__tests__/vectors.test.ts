@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { normalizeArabic } from "../../lib/arabic";
-import { requiresEmergencyReferral } from "../../safety/riskSignals";
 import { searchMyths } from "../companion/myths";
 import { currentProgramDay } from "../companion/programs";
 import { QUIZ, evaluateQuiz } from "../companion/quiz";
@@ -21,8 +20,6 @@ function expandAnswers(spec: string | Record<string, number>): Record<string, nu
 
 describe("متجهات التطابق مع Flutter", () => {
   it.each(v.normalize as [string, string][])("توحيد %s", (input, out) => expect(normalizeArabic(input)).toBe(out));
-  it.each(v.risk.positive as string[])("خطر: %s", (t) => expect(requiresEmergencyReferral(t)).toBe(true));
-  it.each(v.risk.negative as string[])("آمن: %s", (t) => expect(requiresEmergencyReferral(t)).toBe(false));
   it.each(v.mythSearch as { query: string; first: string | null }[])("الميزان: $query", ({ query, first }) =>
     expect(searchMyths(query)[0]?.id ?? null).toBe(first),
   );

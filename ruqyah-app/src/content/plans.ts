@@ -120,7 +120,7 @@ const hamm = pick("hamm");
 const muawwidhat = pick("ruqyah-quran", { only: ["سورة الفاتحة", "آية الكرسي", "سورة الإخلاص", "سورة الفلق", "سورة الناس"] });
 
 const half = Math.ceil(ruqyahQuran.length / 2);
-const NOT_A_TREATMENT: WirdItem = { kind: "note", text: "اقرأ بتدبّر وطمأنينة. والرقية لا تعني ترك العلاج الموصوف لك." };
+const READING_NOTE: WirdItem = { kind: "note", text: "اقرأ بتدبّر وطمأنينة، والشفاء بيد الله وحده." };
 
 const DRAFT_REVIEW = { shariaReviewer: "DEV-REVIEW", safetyCheckedAt: "2026-10-01" };
 
@@ -160,7 +160,7 @@ const allPlans: Plan[] = [
     summary: "آيات الرقية المأثورة مقسومة على يومين، مع دعاءين نبويين",
     contents: "يوم للنصف الأول من آيات الرقية ويوم للنصف الثاني، ومعها رقية النبي ﷺ ورقية جبريل عليه السلام.",
     days: repeatDays(14, (day) => [
-      NOT_A_TREATMENT,
+      READING_NOTE,
       ...(day % 2 === 1 ? ruqyahQuran.slice(0, half) : ruqyahQuran.slice(half)),
       ...ruqyahSunnah.slice(0, 2),
     ]),
@@ -176,7 +176,7 @@ const allPlans: Plan[] = [
     minutesPerDay: 25,
     summary: "آيات الرقية كاملة مع أدعية الرقية من السنة",
     contents: "آيات الرقية المأثورة كلها كل يوم، ثم أربعة أدعية ثابتة يرقي بها المسلم نفسه.",
-    days: repeatDays(21, () => [NOT_A_TREATMENT, ...ruqyahQuran, ...ruqyahSunnah]),
+    days: repeatDays(21, () => [READING_NOTE, ...ruqyahQuran, ...ruqyahSunnah]),
     review: DRAFT_REVIEW,
     version: 1,
     publishedAt: null,
@@ -189,7 +189,7 @@ const allPlans: Plan[] = [
     minutesPerDay: 8,
     summary: "ورد قصير يتنقّل بين آيات الشفاء وأدعية الكرب والمعوذات",
     contents: "دورة من ثلاثة أيام: آيات الشفاء، ثم أدعية الهم والكرب، ثم الفاتحة وآية الكرسي والمعوذات.",
-    days: repeatDays(40, (day) => [NOT_A_TREATMENT, ...[shifa, hamm, muawwidhat][(day - 1) % 3]]),
+    days: repeatDays(40, (day) => [READING_NOTE, ...[shifa, hamm, muawwidhat][(day - 1) % 3]]),
     review: DRAFT_REVIEW,
     version: 1,
     publishedAt: null,

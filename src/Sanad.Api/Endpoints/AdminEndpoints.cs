@@ -86,9 +86,6 @@ public static class AdminEndpoints
             return Results.NoContent();
         }).WithTags("Admin.Safety");
 
-        app.MapGet("/api/v1/admin/safety-alerts", async (ISender s) => Results.Ok(await s.Send(new GetSafetyAlertsQuery())))
-            .WithTags("Admin.Safety").RequireAuthorization(Policies.ReviewSafety);
-
         // ── مكتبة الرقية (ContentManager) ──
         var lib = app.MapGroup("/api/v1/admin/library").WithTags("Admin.Library").RequireAuthorization(Policies.ManageContentLibrary);
         lib.MapGet("/tracks", async (ISender s) => Results.Ok(await s.Send(new GetAdminLibraryQuery())));

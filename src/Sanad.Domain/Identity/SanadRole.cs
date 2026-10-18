@@ -9,7 +9,6 @@ public enum SanadRole
     Coordinator,
     ContentManager,
     PrivacySecurityOfficer,
-    ClinicalSupervisor,
     SystemAdmin
 }
 
@@ -21,14 +20,12 @@ public static class SanadRoles
     public const string Coordinator = nameof(SanadRole.Coordinator);
     public const string ContentManager = nameof(SanadRole.ContentManager);
     public const string PrivacySecurityOfficer = nameof(SanadRole.PrivacySecurityOfficer);
-    public const string ClinicalSupervisor = nameof(SanadRole.ClinicalSupervisor);
     public const string SystemAdmin = nameof(SanadRole.SystemAdmin);
 
     /// <summary>أدوار إدارية حساسة: التحقق الثنائي (2FA) إلزامي قبل أي عملية إدارية.</summary>
     public static readonly IReadOnlySet<SanadRole> Sensitive = new HashSet<SanadRole>
     {
-        SanadRole.Coordinator, SanadRole.ContentManager, SanadRole.PrivacySecurityOfficer,
-        SanadRole.ClinicalSupervisor, SanadRole.SystemAdmin
+        SanadRole.Coordinator, SanadRole.ContentManager, SanadRole.PrivacySecurityOfficer, SanadRole.SystemAdmin
     };
 
     /// <summary>
@@ -37,7 +34,6 @@ public static class SanadRoles
     /// </summary>
     public static readonly IReadOnlySet<SanadRole> AssignableByAdmin = new HashSet<SanadRole>
     {
-        SanadRole.Coordinator, SanadRole.ContentManager, SanadRole.PrivacySecurityOfficer,
-        SanadRole.ClinicalSupervisor, SanadRole.OrganizationRepresentative
+        SanadRole.Coordinator, SanadRole.ContentManager, SanadRole.PrivacySecurityOfficer, SanadRole.OrganizationRepresentative
     };
 }

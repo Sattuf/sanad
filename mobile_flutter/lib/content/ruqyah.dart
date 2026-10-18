@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 /*
-  «الرقية والتحصين» و«الصحة والطمأنينة» والورد اليومي — نظير packages/shared/src/content/ruqyah.ts وwird.ts.
+  «الرقية والتحصين» والورد اليومي — نظير packages/shared/src/content/ruqyah.ts وwird.ts.
   النصوص كلها من assets/content/ruqyah.json المولَّد؛ والمنطق هنا تحرسه متجهات wird المشتركة مع Vitest.
 */
 
@@ -91,7 +91,7 @@ class Guide {
   final List<GuideSection> sections;
 
   /// رابط الدليل حسب قسمه (guidePath في ruqyah.ts).
-  String get path => kind == 'health' ? '/health/$id' : '/ruqyah/guide/$id';
+  String get path => '/ruqyah/guide/$id';
 }
 
 typedef WirdSlot = ({String id, String label, String collection, String defaultTime});

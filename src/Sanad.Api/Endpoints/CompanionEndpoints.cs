@@ -7,8 +7,8 @@ using Sanad.Domain.Companion;
 namespace Sanad.Api.Endpoints;
 
 /// <summary>
-/// تطبيق «سند» للرقية الذاتية (ADR-0021). العام: الخطط المنشورة وأرقام الطوارئ والعدّادات المجهولة.
-/// الحساب (اختياري): مزامنة الخطة والختمات. الإدارة: مدير محتوى للخطط والمعدّين، ومنسق أو مشرف سريري لأرقام الطوارئ.
+/// تطبيق «سند» للرقية الذاتية (ADR-0021). العام: الخطط المنشورة والعدّادات المجهولة.
+/// الحساب (اختياري): مزامنة الخطة والختمات. الإدارة: مدير محتوى للخطط والمعدّين.
 /// </summary>
 public static class CompanionEndpoints
 {
@@ -27,7 +27,6 @@ public static class CompanionEndpoints
         var pub = app.MapGroup("/api/v1/public/companion").WithTags("Companion").AllowAnonymous().RequireRateLimiting("public");
         pub.MapGet("/plans", async (ISender s) => Results.Ok(await s.Send(new GetPublishedPlansQuery())));
         pub.MapGet("/plans/{id:guid}", async (Guid id, ISender s) => Results.Ok(await s.Send(new GetPublishedPlanQuery(id))));
-        pub.MapGet("/emergency", async (string? country, ISender s) => Results.Ok(await s.Send(new GetEmergencyContactsQuery(country))));
         pub.MapPost("/events", async (EventsRequest req, ISender s) =>
         {
             await s.Send(new RecordCompanionEventsCommand(req.Events));
@@ -99,18 +98,6 @@ public static class CompanionEndpoints
         app.MapGet("/api/v1/admin/companion/stats", async ([FromQuery] int? days, ISender s) =>
                 Results.Ok(await s.Send(new GetCompanionStatsQuery(days ?? 30))))
             .WithTags("Admin.Companion").RequireAuthorization(Policies.ViewCompanionInsights);
-
-        // ── أرقام الطوارئ (منسق أو مشرف سريري بتحقق ثنائي) ──
-        var emergency = app.MapGroup("/api/v1/admin/companion/emergency").WithTags("Admin.Safety").RequireAuthorization(Policies.ReviewSafety);
-        emergency.MapGet("", async (ISender s) => Results.Ok(await s.Send(new GetAdminEmergencyContactsQuery())));
-        emergency.MapPost("", async (CreateEmergencyContactCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)));
-        emergency.MapPut("/{id:guid}", async (Guid id, UpdateEmergencyContactCommand cmd, ISender s) => Results.Ok(await s.Send(cmd with { Id = id })));
-        emergency.MapPost("/{id:guid}/verify", async (Guid id, ISender s) => Results.Ok(await s.Send(new VerifyEmergencyContactCommand(id))));
-        emergency.MapDelete("/{id:guid}", async (Guid id, ISender s) =>
-        {
-            await s.Send(new DeleteEmergencyContactCommand(id));
-            return Results.NoContent();
-        });
 
         return app;
     }

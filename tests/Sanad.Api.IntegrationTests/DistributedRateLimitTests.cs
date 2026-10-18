@@ -131,8 +131,8 @@ public sealed class DistributedRateLimitTests
 
         // نوافذ الحد محاذاة لدقائق الساعة: تشغيل العقدتين يستغرق ثوانيَ، فلو وقع حدّ الدقيقة بين الطلبات لبدأ العدّ من جديد.
         // نشغّل العقدتين أولاً، ثم نرسل الطلبات الأربعة متتالية بعيداً عن آخر الدقيقة.
-        await new TestApi(nodeA).Client().GetAsync("/api/v1/safety/emergency-info");
-        await new TestApi(nodeB).Client().GetAsync("/api/v1/safety/emergency-info");
+        await new TestApi(nodeA).Client().GetAsync("/api/v1/public/companion/plans");
+        await new TestApi(nodeB).Client().GetAsync("/api/v1/public/companion/plans");
         var second = DateTimeOffset.UtcNow.Second;
         if (second >= 50) await Task.Delay(TimeSpan.FromSeconds(61 - second));
 

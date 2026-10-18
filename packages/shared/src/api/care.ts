@@ -7,7 +7,6 @@ export function careApi(api: ApiClient["api"]) {
     conversations: () => api.get<Conversation[]>("/api/v1/me/conversations"),
     openForBooking: (bookingId: string) => api.post<Conversation>(`/api/v1/bookings/${encodeURIComponent(bookingId)}/conversation`),
     messages: (conversationId: string, take = 100) => api.get<ChatMessage[]>(`/api/v1/conversations/${encodeURIComponent(conversationId)}/messages?take=${take}`),
-    /** كل رسالة تمر على كاشف الخطر في الخادم — إشارة الطوارئ تُلتقط في نواة العميل. */
     send: (conversationId: string, body: string) => api.post<PostedMessage>(`/api/v1/conversations/${encodeURIComponent(conversationId)}/messages`, { body: body.trim() }),
     report: (conversationId: string, category: ReportCategory, description: string) =>
       api.post<void>(`/api/v1/conversations/${encodeURIComponent(conversationId)}/report`, { category, severity: "Medium", description: description.trim() || null }),

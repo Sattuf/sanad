@@ -32,7 +32,6 @@ export interface GroupKhatma {
 export interface InvitePreview { title: string; memberCount: number; doneCount: number; alreadyMember: boolean; khatmaId: string | null }
 export type KhatmaAction = "MarkDone" | "MarkUndone" | "Claim" | "Release" | "Distribute" | "NewRound" | "RotateInvite" | "Leave" | "RemoveMember";
 
-export interface EmergencyContacts { countryCode: string | null; contacts: { label: string; phoneNumber: string }[]; isFallback: boolean; availableCountries: string[] }
 export interface PushConfig { enabled: boolean; publicKey: string | null }
 
 const anon = { auth: false } as const;
@@ -40,8 +39,6 @@ const anon = { auth: false } as const;
 export const companionApi = {
   plans: () => api.get<ServerPlanSummary[]>("/api/v1/public/companion/plans", anon),
   plan: (id: string) => api.get<ServerPlan>(`/api/v1/public/companion/plans/${id}`, anon),
-  emergency: (country?: string) =>
-    api.get<EmergencyContacts>(`/api/v1/public/companion/emergency${country ? `?country=${encodeURIComponent(country)}` : ""}`, anon),
   config: () => api.get<{ supportUrl: string | null }>("/api/v1/public/companion/config", anon),
   events: (events: { name: string; dimension: string }[]) => api.post<void>("/api/v1/public/companion/events", { events }, anon),
   pushConfig: () => api.get<PushConfig>("/api/v1/public/reminders/push-config", anon),

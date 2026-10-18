@@ -11,7 +11,7 @@ using Sanad.Infrastructure.Storage;
 
 namespace Sanad.Api.Endpoints;
 
-/// <summary>الدليل العام، صفحة المشاركة، الوسائط العامة، ومعلومات الطوارئ — بلا مصادقة، بحد معدل.</summary>
+/// <summary>الدليل العام، صفحة المشاركة، والوسائط العامة — بلا مصادقة، بحد معدل.</summary>
 public static class PublicEndpoints
 {
     /// <summary>صلاحية رابط الصوت الموقّع حين لا يوجد CDN — تكفي لسورة طويلة مع الإيقاف والاستئناف.</summary>
@@ -104,10 +104,6 @@ public static class PublicEndpoints
                 return Results.File(stream, type, $"document{ext}");
             })
             .WithTags("Files").AllowAnonymous().RequireRateLimiting("public");
-
-        // ── الطوارئ (عام بالكامل) ──
-        app.MapGet("/api/v1/safety/emergency-info", async (ISender s) => Results.Ok(await s.Send(new GetEmergencyReferralInfoQuery())))
-            .WithTags("Safety").AllowAnonymous();
 
         return app;
     }

@@ -34,23 +34,21 @@ describe("أول فتح", () => {
   });
 });
 
-describe("طبقة الأمان", () => {
-  it("زر الطوارئ ورابط الطبيب حاضران في كل شاشة رئيسية", () => {
+describe("النطاق الشرعي", () => {
+  it("لا ذكر للطبيب أو الدواء أو الطوارئ في أي شاشة رئيسية", () => {
     actions.updateSettings({ onboarded: true });
     actions.startPlan("morning-evening-7");
     render(<App />);
-    for (const h of ["#/", "#/plans", "#/plans/morning-evening-7", "#/reader", "#/khatma", "#/support"]) {
+    for (const h of ["#/", "#/plans", "#/plans/morning-evening-7", "#/reader", "#/khatma", "#/support", "#/done"]) {
       go(h);
-      expect(screen.getByRole("link", { name: "طوارئ" })).toBeInTheDocument();
-      expect(screen.getAllByRole("link", { name: "متى تحتاج مع الرقية إلى طبيب؟" }).length).toBeGreaterThan(0);
       expect(document.body.textContent).not.toMatch(FORBIDDEN);
+      expect(document.body.textContent).not.toMatch(/طبيب|دواء|الطب|علاج|طوارئ/);
     }
   });
 
-  it("صفحة الخطة تذكر أن الرقية لا تعني ترك العلاج", () => {
+  it("صفحة الخطة تعرض إذن معدّها", () => {
     render(<App />);
     go("#/plans/ruqyah-full-21");
-    expect(screen.getAllByText(/الرقية لا تعني ترك العلاج الموصوف لك/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/خطة تجريبية/)).toBeNull();
     expect(screen.getByText("تاريخ الإذن")).toBeInTheDocument();
   });

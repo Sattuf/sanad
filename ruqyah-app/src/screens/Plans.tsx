@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Btn, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Hashiya, Sarlawh } from "../components/ornaments";
 import { MiniBeads } from "../components/Misbaha";
 import { useCatalog } from "../content/catalog";
 import { track } from "../lib/events";
 import { DURATIONS, findPlan, isDraft, planAuthor, type Duration, type Plan } from "../content/plans";
-import { safety } from "../content/safety";
 import { reminderLabels, type Reminder } from "../domain/enrollment";
 import { ar, days, minutes } from "../lib/arabic";
 import { href, navigate } from "../lib/router";
@@ -59,15 +58,14 @@ export function Plans() {
         </div>
 
         <Hashiya>
-          <p>كل خطة تُنشر باسم معدّها وبإذنه المكتوب. {safety.planNotice}</p>
+          <p>كل خطة تُنشر باسم معدّها وبإذنه المكتوب.</p>
         </Hashiya>
-        <SafetyNote />
       </main>
     </>
   );
 }
 
-/** صفحة الخطة: من أعدّها، الإذن، المحتوى اليومي، المدة، تنبيه العلاج، وزر البدء. */
+/** صفحة الخطة: من أعدّها، الإذن، المحتوى اليومي، المدة، وزر البدء. */
 export function PlanDetail({ id }: { id: string }) {
   const plan = findPlan(id);
   const enrollment = useStore((s) => s.enrollment);
@@ -135,12 +133,6 @@ export function PlanDetail({ id }: { id: string }) {
         </ul>
         {author && <p className="plan-sub" style={{ marginTop: ".75rem" }}>{author.bio}</p>}
 
-        <Hashiya>
-          <p>
-            <strong>{safety.planNotice}</strong> {safety.medication}
-          </p>
-        </Hashiya>
-
         <div className="field">
           <label htmlFor="reminder">وقت التذكير (اختياري)</label>
           <select id="reminder" value={reminder} onChange={(e) => setReminder(e.target.value as Reminder | "")} className="chip">
@@ -179,7 +171,6 @@ export function PlanDetail({ id }: { id: string }) {
             </>
           )}
         </div>
-        <SafetyNote />
       </main>
     </>
   );

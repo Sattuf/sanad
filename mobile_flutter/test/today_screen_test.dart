@@ -14,7 +14,6 @@ import 'package:sanad/features/account/auth.dart';
 import 'package:sanad/core/platform_services.dart';
 import 'package:sanad/core/vault.dart';
 import 'package:sanad/features/journal/journal_store.dart';
-import 'package:sanad/ui/emergency.dart';
 import 'package:sanad/features/companion/companion_store.dart';
 import 'package:sanad/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,7 +65,6 @@ Future<SharedPreferences> pumpApp(
           (ref) => ApiClient(
             baseUrl: 'https://api.test',
             session: ref.read(sessionProvider.notifier),
-            onEmergency: (r) => ref.read(emergencyProvider.notifier).raise(r),
             dio: Dio()..httpClientAdapter = (server ?? FakeServer()),
           ),
         ),
@@ -79,7 +77,7 @@ Future<SharedPreferences> pumpApp(
         locale: const Locale('ar'),
         theme: buildTheme(dark ? Brightness.dark : Brightness.light),
         routerConfig: router,
-        builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: EmergencyOverlay(child: child!)),
+        builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: child!),
       ),
     ),
   );

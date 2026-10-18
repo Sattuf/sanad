@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { citedAyat, quran } from "../quran";
-import { awarenessGuides, collections, guidePath, guides, healthGuides } from "../ruqyah";
+import { awarenessGuides, collections, guides } from "../ruqyah";
 
-// سلامة المحتوى المشترك بين الويب والجوال: نص القرآن مطابق حرفياً، وكل دعاء مخرَّج، ولا جرعات ولا وعود شفاء.
+// سلامة المحتوى المشترك بين الويب والجوال: نص القرآن مطابق حرفياً، وكل دعاء مخرَّج، ولا وعود شفاء.
 describe("content", () => {
   it("every Quran reference resolves to its full ayah range", () => {
     for (const c of collections)
@@ -50,24 +50,4 @@ describe("guides", () => {
   });
 });
 
-describe("health guides", () => {
-  const text = (g: (typeof healthGuides)[number]) =>
-    [g.title, g.subtitle, g.intro, ...g.sections.flatMap((s) => [s.heading, ...s.points.flatMap((p) => [p.text, p.evidence ?? ""])])].join(" ");
-
-  it("live under /health and are separate from the ruqyah guides", () => {
-    expect(healthGuides.map((g) => g.id)).toEqual(["treatment-and-ruqyah", "anxiety-ocd-depression", "sleep-daily", "when-to-see-doctor", "choose-provider"]);
-    for (const g of healthGuides) expect(guidePath(g)).toBe(`/health/${g.id}`);
-    expect(guidePath(guides.find((g) => g.id === "sihr")!)).toBe("/ruqyah/guide/sihr");
-  });
-
-  it("contain no dose, dose unit, or guaranteed-cure wording", () => {
-    const forbidden = [/\d+\s*(ملغ|مغ|ملجم|مجم|مل|mg|mcg|ml)\b/i, /(ملغ|مليغرام|ملجم)/, /جرع(ة|ات|تين)/, /(حبة|قرص|كبسولة)\s*(يومياً|يوميا|كل|مرتين)/, /شفاء\s*(مضمون|مؤكد|تام|كامل)/, /نضمن/];
-    for (const g of healthGuides) for (const re of forbidden) expect(text(g), `${g.id} ${re}`).not.toMatch(re);
-  });
-
-  it("point to emergency help where danger signs are listed", () => {
-    for (const id of ["anxiety-ocd-depression", "when-to-see-doctor"])
-      expect(healthGuides.find((g) => g.id === id)!.sections.some((s) => s.cta?.to === "/emergency")).toBe(true);
-  });
-});
 

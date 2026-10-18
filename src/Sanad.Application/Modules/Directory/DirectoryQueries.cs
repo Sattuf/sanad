@@ -242,7 +242,7 @@ public sealed class GetOrganizationByIdQueryHandler(IApplicationDbContext db, ID
 [AllowAnonymousRequest]
 public sealed record GetVerificationTransparencyQuery : IQuery<VerificationTransparencyDto>;
 
-public sealed record VerificationTransparencyDto(int PublishedProviders, int PublishedOrganizations, int PhysicianProviders, int ReligiousProviders);
+public sealed record VerificationTransparencyDto(int PublishedProviders, int PublishedOrganizations);
 
 public sealed class GetVerificationTransparencyQueryHandler(IApplicationDbContext db) : IRequestHandler<GetVerificationTransparencyQuery, VerificationTransparencyDto>
 {
@@ -251,8 +251,6 @@ public sealed class GetVerificationTransparencyQueryHandler(IApplicationDbContex
         var published = db.ProviderProfiles.Where(p => p.Status == PublicationStatus.Published);
         return new VerificationTransparencyDto(
             await published.CountAsync(cancellationToken),
-            await db.Organizations.CountAsync(o => o.Status == PublicationStatus.Published, cancellationToken),
-            await published.CountAsync(p => p.Type == PractitionerType.LicensedPhysician, cancellationToken),
-            await published.CountAsync(p => p.Type == PractitionerType.ReligiousPractitioner, cancellationToken));
+            await db.Organizations.CountAsync(o => o.Status == PublicationStatus.Published, cancellationToken));
     }
 }

@@ -8,7 +8,7 @@ import '../today_screen_test.dart' show pumpApp, reveal;
 import '../vectors_test.dart' show loadContent;
 import 'today_screenshot_test.dart' show loadFonts, shot, snap;
 
-/// لقطات مراجعة للأسابيع 5–7: الرقية والتحصين والصحة — تُقارن بـ /ruqyah و/health في الويب.
+/// لقطات مراجعة للأسابيع 5–7: الرقية والتحصين — تُقارن بـ /ruqyah في الويب.
 void main() {
   setUpAll(loadFonts);
   final r = loadContent().ruqyah;
@@ -55,9 +55,4 @@ void main() {
     await snap('ruqyah_guide.png');
   });
 
-  shot('الصحة والطمأنينة', (tester) async {
-    await pumpApp(tester, location: '/health', reduceMotion: true);
-    await withScenes(tester);
-    await snap('health_hub.png');
-  });
 }

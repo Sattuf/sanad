@@ -10,10 +10,6 @@ import { formatDateTime } from "@sanad/shared/lib/format";
 import { captchaHeader } from "../../lib/captcha";
 
 const docsByType: Record<PractitionerType, Array<{ value: string; hint: string }>> = {
-  LicensedPhysician: [
-    { value: "MedicalPracticeLicense", hint: "رخصة مزاولة مهنة طبية سارية" },
-    { value: "MedicalBoardRegistration", hint: "شهادة تسجيل لدى هيئة/نقابة طبية" },
-  ],
   ReligiousPractitioner: [
     { value: "ShariaIjazah", hint: "إجازة شرعية من جهة معروفة" },
     { value: "ShariaEndorsement", hint: "تزكية من جهة شرعية معروفة" },
@@ -89,9 +85,8 @@ export function ProviderUpgradePage() {
         <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); setError(null); submit.mutate(); }}>
           <Card>
             <h2 className="font-bold">١. اختر نوعك</h2>
-            <p className="mt-1 text-sm text-muted">مساران متكافئان تماماً — لا أفضلية ظهور لأيٍّ منهما.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="نوع الممارسة">
-              {(["LicensedPhysician", "ReligiousPractitioner"] as const).map((k) => (
+              {(["ReligiousPractitioner"] as const).map((k) => (
                 <button
                   key={k}
                   type="button"
@@ -101,7 +96,7 @@ export function ProviderUpgradePage() {
                   className={cx("rounded-2xl border-2 px-4 py-4 text-start", type === k ? "border-primary bg-surface-2" : "border-border bg-surface")}
                 >
                   <span className="font-bold">{t(`practitionerType.${k}`)}</span>
-                  <span className="mt-1 block text-sm text-muted">{k === "LicensedPhysician" ? "رخصة مزاولة طبية رسمية" : "إجازة أو تزكية شرعية"}</span>
+                  <span className="mt-1 block text-sm text-muted">إجازة أو تزكية شرعية</span>
                 </button>
               ))}
             </div>
@@ -109,8 +104,8 @@ export function ProviderUpgradePage() {
           {type && (
             <Card className="grid gap-4">
               <h2 className="font-bold">٢. المستند الرسمي</h2>
-              <Field label="اللقب المهني كما تريد أن يظهر" htmlFor="title" hint="بلا وعود علاجية — سيُفحص آلياً.">
-                <Input id="title" maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === "LicensedPhysician" ? "مثال: أخصائي نفسي مرخّص" : "مثال: راقٍ شرعي مجاز"} />
+              <Field label="اللقب المهني كما تريد أن يظهر" htmlFor="title" hint="بلا وعود بالشفاء — سيُفحص آلياً.">
+                <Input id="title" maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثال: راقٍ شرعي مجاز" />
               </Field>
               <Field label="نوع المستند" htmlFor="dt" hint={docsByType[type].find((d) => d.value === documentType)?.hint}>
                 <Select id="dt" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>

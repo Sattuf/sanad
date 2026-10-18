@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, ScrollRestoration, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { STAFF_ROLES, useMe, useSignOut } from "../../api/hooks";
 import type { AppNotification } from "@sanad/shared/api/types";
-import { AdministrativeDisclaimerFooter, EmergencyReferralBanner } from "../../components/safety";
+import { AdministrativeDisclaimerFooter } from "../../components/safety";
 import { cx } from "../../lib/cx";
 import { useRealtime } from "../../features/realtime/useRealtime";
 import { useTheme } from "../theme";
@@ -19,7 +19,6 @@ export function AppLayout() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-3 focus:py-2">
         تخطَّ إلى المحتوى
       </a>
-      <EmergencyReferralBanner />
       <SiteHeader />
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         <Outlet />
@@ -49,10 +48,8 @@ function useDiscreetMode() {
   }, [on]);
 }
 
-/** زر السكينة — حاضر في كل الصفحات لمن يشعر بضيق مفاجئ. لا يظهر في صفحة الإحالة (الوضوح أولاً). */
+/** زر السكينة — حاضر في كل الصفحات لمن يشعر بضيق مفاجئ. */
 function SakinaFab() {
-  const { pathname } = useLocation();
-  if (pathname === "/emergency") return null;
   return (
     <Link
       to="/sakina"
@@ -91,7 +88,6 @@ function SiteHeader() {
     { to: "/journal", label: "مذكّرتي", show: true, primary: true },
     { to: "/awareness", label: "ميزان الوعي", show: true, primary: true },
     { to: "/directory", label: t("nav.directory"), show: true },
-    { to: "/health", label: t("nav.health"), show: true },
     { to: "/library", label: label(t("nav.library"), "الاستماع"), show: Boolean(me) },
     { to: "/bookings", label: t("nav.bookings"), show: Boolean(me) },
     { to: "/recommendations", label: t("nav.recommendations"), show: Boolean(me) },
@@ -204,7 +200,6 @@ function NotificationsBell() {
 export function PublicShareLayout() {
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
-      <EmergencyReferralBanner />
       <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-4 py-10">
         <Outlet />
       </main>

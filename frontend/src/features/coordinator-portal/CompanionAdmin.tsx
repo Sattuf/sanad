@@ -12,7 +12,6 @@ import { daysFromPatterns, patternsFromDays, type ItemKind, type PlanDay, type P
   إدارة تطبيق «سند» للرقية الذاتية (ADR-0021). الخادم يفرض كل القواعد؛ الواجهة تعكسها:
   - المعدّ: لا نشر دون إذنه المكتوب مسجَّلاً، وتعديل اسمه أو نبذته يُسقط الإذن.
   - الخطة: مسودة ← مراجعة ← نشر بيد مدير محتوى غير منشئها مع إقرار فحص الأمان بنداً بنداً. المنشور لا يُعدَّل؛ يُنشأ إصدار جديد.
-  - أرقام الطوارئ: من يُدخل الرقم لا يعتمده، ويُراجع كل ستة أشهر.
 */
 
 const fail = (set: (s: string | null) => void) => (err: unknown) => set(err instanceof ApiError ? err.friendly : "تعذّر التنفيذ.");
@@ -46,7 +45,6 @@ const safetyChecks = [
   ["noSymptomQuestions", "لا جدول أعراض ولا أسئلة لتحديد «نوع الإصابة»"],
   ["noConditionLabels", "الخطة موصوفة بمحتواها ومدتها، لا بحالة (سحر مأكول، مس عاشق…)"],
   ["noHealingPromise", "لا وعد بالشفاء ولا تحديد مدة له"],
-  ["noLeavingMedicalCare", "لا طلب ترك دواء أو طبيب، ولا تقليل من العلاج النفسي"],
   ["noSales", "لا ماء ولا زيت ولا عسل مقروء عليه للبيع، ولا إحالة لمن يبيعه"],
   ["noExhaustingPractices", "لا صيام طويل ولا سهر ولا ممارسة جسدية مرهقة"],
   ["noWorseningAsProof", "لا إيحاء بأن اشتداد الأعراض دليل على الإصابة"],
@@ -216,7 +214,7 @@ const blankItem = (kind: ItemKind): PlanItem =>
   : kind === "Dhikr" ? { kind, title: "", text: "", source: "", note: "", repeat: 1 }
   : { kind, text: "", repeat: 1 };
 
-const defaultNote: PlanItem = { kind: "Note", text: "اقرأ بتدبّر وطمأنينة. والرقية لا تعني ترك العلاج الموصوف لك.", repeat: 1 };
+const defaultNote: PlanItem = { kind: "Note", text: "اقرأ بتدبّر وطمأنينة، والشفاء بيد الله وحده.", repeat: 1 };
 
 function PlansSection() {
   const qc = useQueryClient();
@@ -597,119 +595,6 @@ function PlanEditor({ initial, isNew, authors, busy, onSave, onCancel }: {
   );
 }
 
-// ── أرقام الطوارئ ─────────────────────────────────────────────────────────────
-
-interface AdminContact {
-  id: string; countryCode: string; label: string; phoneNumber: string; sourceRef: string; sortOrder: number;
-  status: "Pending" | "Verified"; isStale: boolean; editedByMe: boolean; verifiedAtUtc: string | null;
-}
-type ContactForm = Pick<AdminContact, "countryCode" | "label" | "phoneNumber" | "sourceRef" | "sortOrder">;
-
-export function CompanionEmergencyAdminPage() {
-  const qc = useQueryClient();
-  const list = useQuery({ queryKey: ["companion-emergency"], queryFn: () => api.get<AdminContact[]>("/api/v1/admin/companion/emergency") });
-  const [editing, setEditing] = useState<{ id: string | null; form: ContactForm } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const refresh = () => {
-    setError(null);
-    void qc.invalidateQueries({ queryKey: ["companion-emergency"] });
-  };
-  const save = useMutation({
-    mutationFn: (e: { id: string | null; form: ContactForm }) =>
-      e.id ? api.put(`/api/v1/admin/companion/emergency/${e.id}`, e.form) : api.post("/api/v1/admin/companion/emergency", e.form),
-    onSuccess: () => { setEditing(null); refresh(); },
-    onError: fail(setError),
-  });
-  const verify = useMutation({
-    mutationFn: (id: string) => api.post(`/api/v1/admin/companion/emergency/${id}/verify`),
-    onSuccess: refresh,
-    onError: fail(setError),
-  });
-  const remove = useMutation({
-    mutationFn: (id: string) => api.del(`/api/v1/admin/companion/emergency/${id}`),
-    onSuccess: refresh,
-    onError: fail(setError),
-  });
-
-  if (list.isLoading) return <Loading />;
-  if (list.error) return <ErrorState error={list.error} />;
-  const all = list.data ?? [];
-  const toReview = all.filter((c) => c.status === "Pending" || c.isStale).length;
-
-  return (
-    <div>
-      <PageHeader
-        title="أرقام الطوارئ حسب البلد"
-        subtitle="تظهر في صفحة «متى تحتاج مع الرقية إلى طبيب؟» في تطبيق سند. لا يُكتب رقم من الذاكرة: اذكر مصدره الرسمي، ويعتمده موظف غيرك."
-        actions={!editing && <Button onClick={() => setEditing({ id: null, form: { countryCode: "", label: "", phoneNumber: "", sourceRef: "", sortOrder: 0 } })}>+ رقم جديد</Button>}
-      />
-      {toReview > 0 && <Banner tone="lamp" title={`${toReview} ${toReview === 1 ? "رقم يحتاج" : "أرقام تحتاج"} تحققاً`}>غير المعتمد لا يُعرض، والمعتمد قبل أكثر من ستة أشهر يحتاج إعادة تحقق.</Banner>}
-      {error && <div className="mt-3"><Banner tone="warning" role="alert">{error}</Banner></div>}
-
-      {editing && (
-        <Card className="mt-4">
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate(editing); }}>
-            <Field label="البلد (ISO بحرفين، أو ZZ للدولي)" htmlFor="e-cc">
-              <Input id="e-cc" dir="ltr" maxLength={2} value={editing.form.countryCode} onChange={(e) => setEditing({ ...editing, form: { ...editing.form, countryCode: e.target.value.toUpperCase() } })} required />
-            </Field>
-            <Field label="الجهة" htmlFor="e-label">
-              <Input id="e-label" value={editing.form.label} maxLength={80} onChange={(e) => setEditing({ ...editing, form: { ...editing.form, label: e.target.value } })} required />
-            </Field>
-            <Field label="الرقم" htmlFor="e-phone">
-              <Input id="e-phone" dir="ltr" value={editing.form.phoneNumber} maxLength={16} pattern="\+?[0-9]{2,15}" onChange={(e) => setEditing({ ...editing, form: { ...editing.form, phoneNumber: e.target.value } })} required />
-            </Field>
-            <Field label="ترتيب العرض" htmlFor="e-order">
-              <Input id="e-order" type="number" min={0} max={1000} value={editing.form.sortOrder} onChange={(e) => setEditing({ ...editing, form: { ...editing.form, sortOrder: Number(e.target.value) || 0 } })} className="num" />
-            </Field>
-            <div className="md:col-span-2">
-              <Field label="المصدر الرسمي" htmlFor="e-src" hint="رابط الجهة الرسمية أو مرجع الوثيقة التي تحقق منها المعتمِد.">
-                <Input id="e-src" value={editing.form.sourceRef} maxLength={300} onChange={(e) => setEditing({ ...editing, form: { ...editing.form, sourceRef: e.target.value } })} required />
-              </Field>
-            </div>
-            {editing.id && <div className="md:col-span-2"><Banner tone="warning">حفظ التعديل يعيد الرقم «بانتظار التحقق» فلا يُعرض حتى يعتمده موظف آخر.</Banner></div>}
-            <div className="flex gap-2 md:col-span-2">
-              <Button type="submit" busy={save.isPending}>حفظ</Button>
-              <Button type="button" variant="ghost" onClick={() => setEditing(null)}>إلغاء</Button>
-            </div>
-          </form>
-        </Card>
-      )}
-
-      {!all.length ? (
-        <div className="mt-4"><EmptyState title="لا أرقام بعد">إلى أن يُعتمد رقم لبلد المستخدم يُعرض الرقم الاحتياطي من إعدادات الخادم.</EmptyState></div>
-      ) : (
-        <ul className="mt-4 grid gap-3">
-          {all.map((c) => (
-            <li key={c.id}>
-              <Card as="article">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h2 className="font-bold"><span dir="ltr">{c.countryCode}</span> — {c.label}: <span dir="ltr" className="num">{c.phoneNumber}</span></h2>
-                    <p className="text-xs text-muted">المصدر: {c.sourceRef}{c.verifiedAtUtc ? ` · اعتُمد ${formatDateTime(c.verifiedAtUtc)}` : ""}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {c.status === "Verified" && c.isStale && <Badge tone="warning">يحتاج إعادة تحقق</Badge>}
-                    <Badge tone={c.status === "Verified" ? "success" : "lamp"}>{c.status === "Verified" ? "معتمد" : "بانتظار التحقق"}</Badge>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {(c.status === "Pending" || c.isStale) && (
-                    c.editedByMe
-                      ? <span className="text-sm text-muted">يعتمده موظف غيرك.</span>
-                      : <Button busy={verify.isPending} onClick={() => verify.mutate(c.id)}>تحققت من المصدر — اعتمد</Button>
-                  )}
-                  <Button variant="ghost" onClick={() => setEditing({ id: c.id, form: c })}>تعديل</Button>
-                  <Button variant="ghost" busy={remove.isPending} onClick={() => window.confirm("حذف هذا الرقم؟") && remove.mutate(c.id)}>حذف</Button>
-                </div>
-              </Card>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 // ── المؤشرات المجمّعة ─────────────────────────────────────────────────────────
 
 interface Stats {
@@ -725,7 +610,6 @@ const eventLabels: Record<string, string> = {
   khatma_juz_done: "قراءة جزء",
   khatma_completed: "تمام ختمة",
   khatma_invite_accepted: "انضمام بدعوة",
-  safety_page_opened: "فتح صفحة الأمان",
 };
 
 export function CompanionStatsPage() {

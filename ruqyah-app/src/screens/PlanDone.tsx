@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Btn, Colophon, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Colophon, Hashiya, Sarlawh } from "../components/ornaments";
 import { findPlan } from "../content/plans";
 import { hijri } from "../lib/arabic";
 import { href } from "../lib/router";
@@ -41,7 +41,6 @@ export function PlanDone() {
             </p>
           </Hashiya>
         )}
-        <SafetyNote />
       </main>
     </>
   );

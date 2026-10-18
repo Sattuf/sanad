@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Btn, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Jadwal, Sarlawh } from "../components/ornaments";
 import { MiniBeads } from "../components/Misbaha";
 import { useCatalog } from "../content/catalog";
 import { track } from "../lib/events";
@@ -118,7 +118,6 @@ export function Onboarding() {
           </Jadwal>
         )}
 
-        <SafetyNote />
       </main>
     </>
   );

@@ -22,7 +22,7 @@ void main() {
     await pumpApp(tester, location: '/programs');
     expect(find.text('برامج الالتزام'), findsWidgets);
     expect(find.text('لا تعرف من أين تبدأ؟'), findsOneWidget);
-    expect(find.textContaining('اختبار وعي من ٩ أسئلة'), findsOneWidget);
+    expect(find.textContaining('اختبار وعي من ${arNum(content.quizQuestions.length)} أسئلة'), findsOneWidget);
     for (final p in content.programs) {
       await reveal(tester, find.text(p.tagline));
       expect(find.text(p.title), findsWidgets);

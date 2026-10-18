@@ -28,8 +28,6 @@ const { QUIZ, QUIZ_TIERS, QUIZ_RECOMMENDATIONS } = await import(src("content/com
 const { GUIDE_MODES, GUIDE_NAFTH_ITEM, HAND_STEP, INTENTION_TIPS, guideSteps } = await import(src("content/companion/guide.ts"));
 const { PACED_DHIKR, PULSE_SECONDS, SAKINA_NEEDS, SAKINA_NEED_ORDER, SAKINA_REPEAT } = await import(src("content/companion/sakina.ts"));
 const { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES } = await import(src("content/companion/journal.ts"));
-const { RISK_INDICATORS } = await import(src("safety/riskSignals.ts"));
-const { FALLBACK_REFERRAL } = await import(src("safety/emergency.ts"));
 const { ar } = await import(src("i18n/ar.ts"));
 const { GROUP_ORDER, HERO_VERSES, collections, groups, guides, suggestedWird } = await import(src("content/ruqyah.ts"));
 const { MAX_COUNT, slotForHour, slots } = await import(src("content/wird.ts"));
@@ -59,7 +57,7 @@ const files = {
     journal: { metrics: JOURNAL_METRICS, trendDays: TREND_DAYS, trendMinEntries: TREND_MIN_ENTRIES, stableDelta: STABLE_DELTA },
     sakina: { needOrder: SAKINA_NEED_ORDER, needs: SAKINA_NEEDS, repeat: SAKINA_REPEAT, pacedDhikr: PACED_DHIKR, pulseSeconds: PULSE_SECONDS },
   },
-  // «الرقية والتحصين» و«الصحة والطمأنينة»: المجموعات والأدلة، وأوقات الورد
+  // «الرقية والتحصين»: المجموعات والأدلة، وأوقات الورد
   "ruqyah.json": {
     $generated: GENERATED,
     groups,
@@ -74,13 +72,6 @@ const files = {
   },
   // تسميات الواجهة المشتركة (التنقل، فئات المكتبة…) — الويب يقرؤها من i18n/ar.ts
   "strings.json": { $generated: GENERATED, ar },
-  "safety.json": {
-    $generated: GENERATED,
-    // صيغة RegExp متوافقة بين JS وDart؛ النص يُوحَّد قبل الفحص بنفس normalizeArabic
-    riskPatterns: RISK_INDICATORS.map((r) => ({ source: r.source, caseInsensitive: r.flags.includes("i") })),
-    // الإحالة الافتراضية حين يُكتشف خطر على الجهاز نفسه (البند 5)
-    fallbackReferral: FALLBACK_REFERRAL,
-  },
 };
 
 const outDir = fileURLToPath(new URL("../../../mobile_flutter/assets/content/", import.meta.url));

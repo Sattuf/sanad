@@ -40,7 +40,7 @@ public static class DevCompanionSeed
         // منشئ ومراجع مختلفان كما تشترط المراجعة الشرعية بعينين
         var creator = Guid.Parse("00000000-0000-0000-0000-00000000c0de");
         var reviewer = Guid.Parse("00000000-0000-0000-0000-0000000feed5");
-        var all = new SafetyAttestation(true, true, true, true, true, true, true, true);
+        var all = new SafetyAttestation(true, true, true, true, true, true, true);
         var authors = new Dictionary<string, PlanAuthor>();
         var n = 0;
         foreach (var a in file.Authors)

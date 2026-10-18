@@ -38,10 +38,9 @@ public sealed class Report : BaseEntity, IAggregateRoot
     public static Report Submit(
         Guid reporterUserId, Guid targetSubjectId, ReportTargetType targetType, Guid escalationSubjectId,
         ReportCategory category, ReportSeverity severity, string? plainDescription,
-        IFieldEncryptor encryptor, ISafeReferralEvaluator riskEvaluator, DateTimeOffset nowUtc)
+        IFieldEncryptor encryptor, DateTimeOffset nowUtc)
     {
         ArgumentNullException.ThrowIfNull(encryptor);
-        ArgumentNullException.ThrowIfNull(riskEvaluator);
         if (!Enum.IsDefined(category) || !Enum.IsDefined(severity) || !Enum.IsDefined(targetType))
             throw new DomainException("تصنيف البلاغ غير معروف.");
         if (reporterUserId == targetSubjectId) throw new DomainException("لا يمكن الإبلاغ عن نفسك.");
@@ -58,12 +57,7 @@ public sealed class Report : BaseEntity, IAggregateRoot
         };
 
         var description = Guard.Optional(plainDescription, "وصف البلاغ", MaxDescriptionLength);
-        if (description is not null)
-        {
-            report.DescriptionEncrypted = encryptor.Encrypt(description);
-            if (riskEvaluator.RequiresImmediateEmergencyReferral(new SafetySignal(description)))
-                report.Raise(new EmergencyReferralTriggeredEvent(reporterUserId, EmergencySignalSource.Report, report.Id));
-        }
+        if (description is not null) report.DescriptionEncrypted = encryptor.Encrypt(description);
 
         report.Raise(new ReportSubmittedEvent(report.Id, severity));
         return report;

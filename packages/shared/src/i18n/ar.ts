@@ -3,7 +3,6 @@ export const ar = {
   nav: {
     directory: "الدليل",
     ruqyah: "الرقية والتحصين",
-    health: "الصحة والطمأنينة",
     library: "المكتبة الصوتية",
     bookings: "حجوزاتي",
     recommendations: "توصياتي",
@@ -14,14 +13,12 @@ export const ar = {
     staff: "الإدارة",
     login: "دخول",
     logout: "خروج",
-    emergency: "طوارئ",
     becomeProvider: "كن مقدّم خدمة",
   },
-  practitionerType: { LicensedPhysician: "طبيب مرخّص", ReligiousPractitioner: "شيخ / راقٍ شرعي" },
+  practitionerType: { ReligiousPractitioner: "شيخ / راقٍ شرعي" },
   track: {
     WaqfFree: "وقفي مجاني",
     DawahGuidance: "دعوي وإرشادي",
-    LicensedHealth: "صحي مرخّص",
     IndependentConsultant: "مستشار مستقل",
   },
   deliveryMode: { InPerson: "حضوري", Remote: "عن بعد", Both: "حضوري وعن بعد" },
@@ -56,8 +53,6 @@ export const ar = {
   },
   publication: { Draft: "مسودة", ConditionallyApproved: "معتمد مشروطاً", Published: "منشور", Suspended: "معلَّق", Rejected: "مرفوض" },
   documentType: {
-    MedicalPracticeLicense: "رخصة مزاولة مهنة طبية",
-    MedicalBoardRegistration: "تسجيل لدى هيئة/نقابة طبية",
     ShariaIjazah: "إجازة شرعية",
     ShariaEndorsement: "تزكية من جهة شرعية معروفة",
     OrganizationRegistration: "سجل/ترخيص جهة",
@@ -78,7 +73,6 @@ export const ar = {
     Coordinator: "منسق",
     ContentManager: "مدير محتوى",
     PrivacySecurityOfficer: "مسؤول الخصوصية والأمن",
-    ClinicalSupervisor: "مشرف سريري",
     SystemAdmin: "مدير النظام",
   },
   consent: {

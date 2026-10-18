@@ -6,7 +6,6 @@ using Sanad.Application.Common.Behaviors;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Application.Modules.Accounts;
 using Sanad.Application.Modules.Scheduling;
 using Sanad.Application.Modules.Verification;
@@ -79,25 +78,6 @@ public class ValidationBehaviorTests
     }
 }
 
-public class SafetySignalBehaviorTests
-{
-    [Fact]
-    public async Task Flagged_request_gets_emergency_referral_attached()
-    {
-        var ctx = Substitute.For<ISafetySignalContext>();
-        ctx.EmergencyReferralTriggered.Returns(true);
-        var info = Substitute.For<IEmergencyReferralInfoProvider>();
-        info.Get().Returns(new EmergencyReferralDto(true, "اتصل بالطوارئ", [new("طوارئ", "112")], "/emergency"));
-
-        var sut = new SafetySignalBehavior<CreateBookingRequestCommand, BookingCreatedDto>(ctx, info);
-        var result = await sut.Handle(new CreateBookingRequestCommand(Guid.NewGuid(), Guid.NewGuid(), "x", true),
-            () => Task.FromResult(new BookingCreatedDto(Guid.NewGuid(), "UnderReview", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null)), CancellationToken.None);
-
-        result.EmergencyReferral.Should().NotBeNull();
-        result.EmergencyReferral!.Contacts.Should().ContainSingle(c => c.PhoneNumber == "112");
-    }
-}
-
 public class IdempotencyBehaviorTests
 {
     [Fact]
@@ -115,7 +95,7 @@ public class IdempotencyBehaviorTests
         Task<BookingCreatedDto> Next()
         {
             calls++;
-            return Task.FromResult(new BookingCreatedDto(Guid.NewGuid(), "UnderReview", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch, null));
+            return Task.FromResult(new BookingCreatedDto(Guid.NewGuid(), "UnderReview", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch));
         }
 
         var first = await sut.Handle(cmd, Next, CancellationToken.None);
@@ -146,7 +126,7 @@ public class RequestSecurityMarkersTests
     [Fact]
     public void Every_staff_request_requires_mfa()
     {
-        var staffRoles = new[] { SanadRoles.Coordinator, SanadRoles.ContentManager, SanadRoles.SystemAdmin, SanadRoles.ClinicalSupervisor, SanadRoles.PrivacySecurityOfficer };
+        var staffRoles = new[] { SanadRoles.Coordinator, SanadRoles.ContentManager, SanadRoles.SystemAdmin, SanadRoles.PrivacySecurityOfficer };
         var requests = typeof(DependencyInjection).Assembly.GetTypes()
             .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequest<>)));
         foreach (var t in requests)

@@ -31,9 +31,8 @@ export const ACCESS_LOG_ACTION_LABELS: Record<string, string> = {
   "PatientCare.CaseNoteSupervisoryRead": "مراجعة إشرافية لملف حجزك",
 };
 export const ACCESS_LOG_ROLE_LABELS: Record<string, string> = {
-  AssignedProvider: "المختص المعالج",
+  AssignedProvider: "المختص المكلّف",
   CoordinatorEscalation: "منسق (تصعيد موثّق)",
-  ClinicalSupervisor: "مشرف سريري",
 };
 
 /** الشروط والخصوصية إلزاميتان قبل أي شاشة مصادَقة (من يدخل بجوجل/أبل/الهاتف لم يمر بنموذج تسجيل). */

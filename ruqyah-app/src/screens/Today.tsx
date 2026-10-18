@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Btn, Hashiya, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Hashiya, Jadwal, Sarlawh } from "../components/ornaments";
 import { Misbaha } from "../components/Misbaha";
 import { findPlan, planAuthor } from "../content/plans";
 import { currentDay, doneToday, isFinished, isResuming } from "../domain/enrollment";
@@ -85,7 +85,6 @@ export function Today() {
             </p>
           </Hashiya>
         )}
-        <SafetyNote />
       </main>
     </>
   );

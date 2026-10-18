@@ -104,26 +104,6 @@ public sealed class VerificationDecidedHandler(INotificationDispatcher notificat
     }
 }
 
-/// <summary>
-/// مسار الإحالة العاجلة (الجانب الإداري): سجل تدقيق بلا نص + تنبيه فوري للمنسقين والمشرفين السريريين.
-/// الجانب الموجّه للمستخدم (معلومات الطوارئ) يصل في نفس الاستجابة عبر SafetySignalBehavior.
-/// </summary>
-public sealed class EmergencyReferralTriggeredHandler(IAuditLogger audit, IIdentityService identity, INotificationDispatcher notifications)
-    : INotificationHandler<DomainEventNotification<EmergencyReferralTriggeredEvent>>
-{
-    public async Task Handle(DomainEventNotification<EmergencyReferralTriggeredEvent> notification, CancellationToken cancellationToken)
-    {
-        var e = notification.Event;
-        await audit.LogForActorAsync(e.UserId, SafetyAuditActions.EmergencyReferralTriggered, e.Source.ToString(), e.SourceEntityId, null, cancellationToken);
-
-        var staff = (await identity.GetUserIdsInRoleAsync(SanadRole.ClinicalSupervisor, cancellationToken))
-            .Concat(await identity.GetUserIdsInRoleAsync(SanadRole.Coordinator, cancellationToken)).Distinct();
-        foreach (var uid in staff)
-            await notifications.DispatchAsync(new NotificationMessage(uid, "safety.alert", "تنبيه سلامة عاجل",
-                "رُصد مؤشر خطر محتمل — راجع قائمة تنبيهات السلامة.", "/coordinator/safety-alerts"), cancellationToken);
-    }
-}
-
 public sealed class EscalationLevelChangedHandler(IIdentityService identity, INotificationDispatcher notifications)
     : INotificationHandler<DomainEventNotification<EscalationLevelChangedEvent>>
 {

@@ -125,7 +125,7 @@ public sealed class TestApi(SanadApiFactory factory)
         return await Ok(await Client(session).PostAsync("/api/v1/me/provider-upgrade-request", Body(new
         {
             requestedType = type,
-            declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
+            declaredTitle = "راقٍ شرعي مجاز",
             documentType,
             issuingAuthority = "جهة إصدار تجريبية",
             uploadedDocumentFileId = fileId,
@@ -135,11 +135,11 @@ public sealed class TestApi(SanadApiFactory factory)
     public sealed record Practitioner(Session Session, Guid ProviderProfileId, Guid OfferingId, IReadOnlyList<Guid> SlotIds, string Email);
 
     /// <summary>مختص منشور كامل: تسجيل ← طلب ترقية ← اعتماد منسق ← إكمال الملف ← نشر ← خدمة ← فترات.</summary>
-    public async Task<Practitioner> PublishedPractitionerAsync(string type = "LicensedPhysician", int slots = 3)
+    public async Task<Practitioner> PublishedPractitionerAsync(string type = "ReligiousPractitioner", int slots = 3)
     {
         var email = $"prac_{Guid.NewGuid():N}@sanad.test";
         var user = await RegisterBeneficiaryAsync(email);
-        var doc = type == "LicensedPhysician" ? "MedicalPracticeLicense" : "ShariaIjazah";
+        const string doc = "ShariaIjazah";
         var request = await RequestUpgradeAsync(user, type, doc);
 
         var coordinator = await CoordinatorAsync();
@@ -154,13 +154,13 @@ public sealed class TestApi(SanadApiFactory factory)
         var practitioner = Client(session);
         await EnsureSuccess(await practitioner.PutAsync("/api/v1/me/provider-profile", Body(new
         {
-            displayName = "د. مختص تجريبي",
-            declaredTitle = type == "LicensedPhysician" ? "طبيب نفسي مرخّص" : "راقٍ شرعي مجاز",
-            practiceScope = "استشارات وتوجيه ضمن نطاق مهني محدد",
+            displayName = "الشيخ مختص تجريبي",
+            declaredTitle = "راقٍ شرعي مجاز",
+            practiceScope = "رقية شرعية وإرشاد ديني ضمن نطاق محدد",
             languages = new[] { "ar" },
             deliveryMode = "Remote",
             city = "الرياض",
-            professionalBoundariesNote = "لا تشخيص عبر المنصة، والإحالة للطوارئ عند الخطر",
+            professionalBoundariesNote = "الرقية دعاء وسبب، والشفاء بيد الله وحده",
         })));
         await EnsureSuccess(await practitioner.PostAsync("/api/v1/me/provider-profile/publish", null));
         var profile = await Ok(await practitioner.GetAsync("/api/v1/me/provider-profile"));
@@ -169,7 +169,7 @@ public sealed class TestApi(SanadApiFactory factory)
             category = "استشارة فردية",
             description = "جلسة استشارية عن بعد",
             cancellationPolicy = "الإلغاء قبل 24 ساعة",
-            explicitExclusions = new[] { "لا وصفات دوائية" },
+            explicitExclusions = new[] { "لا وعد بنتيجة" },
             sessionDurationMinutes = 45,
         })));
         var slotIds = new List<Guid>();

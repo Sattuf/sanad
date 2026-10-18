@@ -7,7 +7,7 @@ const h = vi.hoisted(() => ({ signedIn: true, actCalls: [] as unknown[][], state
 vi.mock("../api/client", () => ({
   hasApi: true, API_URL: "http://api.test", WEB_URL: "",
   isSignedIn: () => h.signedIn,
-  onSessionChange: () => () => {}, onEmergency: () => () => {},
+  onSessionChange: () => () => {},
   session: { getRefreshToken: () => null, getAccessToken: () => null, setTokens: () => {}, clear: () => {} },
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), del: vi.fn() },
 }));

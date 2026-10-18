@@ -14,7 +14,6 @@ import 'features/companion/reminders.dart';
 import 'features/ruqyah/ruqyah_reminders.dart';
 import 'features/privacy/discreet.dart';
 import 'theme/theme.dart';
-import 'ui/emergency.dart';
 
 /// سند — رفيق السكينة اليومي (ADR-0023). العربية وRTL افتراضياً ووحيدة، كالويب.
 Future<void> main() async {
@@ -67,6 +66,5 @@ class SanadApp extends ConsumerWidget {
         theme: buildTheme(Brightness.light),
         darkTheme: buildTheme(Brightness.dark),
         routerConfig: router,
-        builder: (context, child) => EmergencyOverlay(child: child!),
       );
 }

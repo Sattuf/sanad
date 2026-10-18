@@ -19,7 +19,6 @@ import { currentDay, useCompanion } from "../../stores/companion";
 const tracks = [
   { key: "WaqfFree", title: "وقفي مجاني", text: "جهات وقفية وخيرية تقدّم خدماتها بلا مقابل." },
   { key: "DawahGuidance", title: "دعوي وإرشادي", text: "مشايخ ورقاة مجازون، بتوثيق إجازاتهم وتزكياتهم." },
-  { key: "LicensedHealth", title: "صحي مرخّص", text: "أطباء وأخصائيون بتراخيص مزاولة موثّقة إدارياً." },
   { key: "IndependentConsultant", title: "مستشار مستقل", text: "مستشارون مستقلون بتوثيق إداري ساري." },
 ];
 
@@ -165,12 +164,10 @@ export function HomePage() {
 
       <section className="grid items-center gap-8 md:grid-cols-2">
         <div>
-          <h2 className="text-3xl font-bold">نفرّق بين الوهم والمرض</h2>
+          <h2 className="text-3xl font-bold">مشايخ وجهات موثّقون</h2>
           <p className="mt-3 leading-8 text-muted">
-            ليس كل أرق عيناً، ولا كل تعب سحراً. نقص فيتامين د، واضطراب الغدة، والقلق والاكتئاب — أسباب حقيقية قابلة للفحص. سند يدعوك للتداوي المتكامل:
-            الرقية والأذكار مع الأخذ بالأسباب الطبية، لا بدلاً منها. «تداووا عباد الله».
+            رقاة مجازون وجهات وقفية ودعوية، بتوثيق إداري لإجازاتهم وتزكياتهم. الرقية دعاء وسبب، والشفاء بيد الله وحده.
           </p>
-          <Link to="/awareness?q=اعراض" className="mt-4 inline-block font-semibold text-primary">هل كل عَرَض سببه عين؟ ←</Link>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {tracks.map((t) => (
@@ -181,7 +178,7 @@ export function HomePage() {
               </Card>
             </Link>
           ))}
-          <p className="text-xs text-muted sm:col-span-2">دليل مختصين موثّقين إدارياً — المسارات الأربعة متكافئة، وأنت تختار.</p>
+          <p className="text-xs text-muted sm:col-span-2">دليل موثّق إدارياً — المسارات متكافئة، وأنت تختار.</p>
         </div>
       </section>
 
@@ -198,11 +195,9 @@ export function HomePage() {
       </section>
 
       {stats.data && (
-        <section aria-label="أرقام التوثيق" className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Stat label="مقدّمو خدمة منشورون" value={stats.data.publishedProviders} />
+        <section aria-label="أرقام التوثيق" className="grid grid-cols-2 gap-4">
+          <Stat label="مشايخ ورقاة منشورون" value={stats.data.publishedProviders} />
           <Stat label="جهات منشورة" value={stats.data.publishedOrganizations} />
-          <Stat label="أطباء مرخّصون" value={stats.data.physicianProviders} />
-          <Stat label="مشايخ ورقاة" value={stats.data.religiousProviders} />
         </section>
       )}
 

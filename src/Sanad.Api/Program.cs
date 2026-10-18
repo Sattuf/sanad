@@ -145,7 +145,7 @@ builder.Services.AddRateLimiter(o =>
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .WithOrigins(builder.Configuration.GetSection("Frontend:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"])
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials()
-    .WithExposedHeaders(EmergencySignalShortCircuitMiddleware.Header, CorrelationIdMiddleware.Header)));
+    .WithExposedHeaders(CorrelationIdMiddleware.Header)));
 
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
@@ -196,7 +196,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseAuthorization();
-app.UseMiddleware<EmergencySignalShortCircuitMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

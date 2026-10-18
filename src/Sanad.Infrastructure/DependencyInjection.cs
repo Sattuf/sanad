@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.FeatureManagement;
 using Sanad.Application.Common.Interfaces;
-using Sanad.Application.Common.Safety;
 using Sanad.Application.Modules.Ruqyah;
 using Sanad.Application.Modules.RuqyahLibrary;
 using Sanad.Domain.Common;
@@ -41,7 +40,6 @@ public static class DependencyInjection
         services.Configure<CaptchaOptions>(config.GetSection(CaptchaOptions.Section));
         services.Configure<StorageOptions>(config.GetSection(StorageOptions.Section));
         services.Configure<OutboxOptions>(config.GetSection(OutboxOptions.Section));
-        services.Configure<EmergencyReferralOptions>(config.GetSection(EmergencyReferralOptions.Section));
         services.Configure<PolicyVersionOptions>(config.GetSection(PolicyVersionOptions.Section));
 
         // ── قاعدة البيانات: PostgreSQL في الإنتاج، SQLite للتطوير/الاختبار (ADR-0002) ──
@@ -93,9 +91,6 @@ public static class DependencyInjection
         services.AddScoped<IIdempotencyStore, DbIdempotencyStore>();
         services.AddSingleton<IFieldEncryptor, AesGcmFieldEncryptor>();
         services.AddSingleton<IContentPolicyChecker, ContentPolicyChecker>();
-        services.AddSingleton<ISafeReferralEvaluator, SafeReferralEvaluator>();
-        services.AddScoped<ISafetySignalContext, SafetySignalContext>();
-        services.AddSingleton<IEmergencyReferralInfoProvider, EmergencyReferralInfoProvider>();
         services.AddSingleton<IPolicyVersionProvider, PolicyVersionProvider>();
 
         // ── Cache: Redis إن وُجد، وإلا ذاكرة محلية ──

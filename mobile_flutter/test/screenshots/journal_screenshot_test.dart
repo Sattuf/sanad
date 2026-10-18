@@ -3,7 +3,6 @@ library;
 
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sanad/content/journal.dart';
@@ -60,18 +59,6 @@ void main() {
     await createWithDays(tester);
     await reveal(tester, find.text('آخر ١٤ يوماً'));
     await snap('journal_dark.png');
-  });
-
-  shot('شريط الإحالة', (tester) async {
-    await pumpApp(tester, location: '/journal');
-    final container = ProviderScope.containerOf(tester.element(find.byType(JournalScreen)));
-    await tester.runAsync(() => container.read(journalProvider.notifier).create('2468'));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byKey(const ValueKey('note')), 'فقدتُ الأمل في الحياة');
-    await reveal(tester, find.text('حفظ'));
-    await tester.tap(find.text('حفظ'));
-    await tester.pumpAndSettle();
-    await snap('emergency_banner.png');
   });
 
   shot('الخصوصية والتمويه', (tester) async {

@@ -64,7 +64,6 @@ button{font:inherit; color:inherit}
   display:flex; justify-content:space-between; pointer-events:none}
 .sarlawh .tools > *{pointer-events:auto}
 .tool{background:none; border:0; color:#E8DDBA; font-size:.8rem; padding:.25rem .5rem; cursor:pointer}
-.sos{background:#7E2418; color:#FBEFE6; border-radius:2px; text-decoration:none; font-size:.8rem; padding:.2rem .6rem}
 
 .date-line{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:.85rem; padding:1.1rem 1.25rem .25rem}
 
@@ -160,13 +159,6 @@ h2{font-family:var(--f-kufi); font-weight:500; font-size:1.25rem; line-height:1.
 .support-list{list-style:none; padding:0; margin:0}
 .support-list li{padding:.65rem 0; border-bottom:1px solid var(--rule)}
 
-/* ===== safety dialog ===== */
-dialog{border:0; padding:0; background:var(--paper); color:var(--ink); max-width:28rem; width:calc(100% - 2rem)}
-dialog::backdrop{background:rgba(11,17,48,.55)}
-dialog .jadwal{margin:0; padding:1.5rem 1.4rem}
-dialog h3{font-family:var(--f-kufi); font-weight:500; margin:0 0 .5rem; font-size:1.2rem}
-dialog ul{padding-inline-start:1.1rem; margin:.25rem 0 1rem}
-
 /* ===== tab bar ===== */
 nav.tabs{position:fixed; bottom:0; inset-inline:0; background:var(--paper);
   border-top:1px solid var(--rule); padding-bottom:env(safe-area-inset-bottom,0px); z-index:5}
@@ -203,7 +195,6 @@ nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
     <svg class="pat" aria-hidden="true"><rect width="100%" height="100%" fill="url(#girih)"/></svg>
     <div class="tools">
       <button class="tool" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي">الوضع: تلقائي</button>
-      <a class="sos" href="#" id="sosLink">طوارئ</a>
     </div>
     <div class="cartouche"><h1 id="screenTitle">ورد اليوم</h1></div>
   </header>
@@ -227,7 +218,7 @@ nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
 
       <div class="note">
         <svg width="10" height="10" aria-hidden="true"><use href="#star8"/></svg>
-        <span>الرقية والطب لا يتعارضان. <button class="link" type="button" data-safety>متى تحتاج مع الرقية إلى طبيب؟</button></span>
+        <span>الشفاء بيد الله وحده، والرقية دعاء وسبب.</span>
       </div>
     </section>
 
@@ -248,7 +239,7 @@ nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
       <div id="planList"></div>
       <div class="note">
         <svg width="10" height="10" aria-hidden="true"><use href="#star8"/></svg>
-        <span>كل خطة تُنشر باسم معدّها وبإذنه المكتوب. الرقية لا تعني ترك العلاج الموصوف لك.</span>
+        <span>كل خطة تُنشر باسم معدّها وبإذنه المكتوب.</span>
       </div>
     </section>
 
@@ -305,22 +296,6 @@ nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
   </ul>
 </nav>
 
-<dialog id="safety" aria-labelledby="safetyTitle">
-  <div class="jadwal">
-    <h3 id="safetyTitle">متى تحتاج مع الرقية إلى طبيب؟</h3>
-    <p>الرقية والطب لا يتعارضان، وكثير من الناس يجمعون بينهما.</p>
-    <p><strong>اطلب المساعدة فوراً</strong> إن فكّرت في إيذاء نفسك أو كان أحد حولك في خطر. اتصل برقم الطوارئ في بلدك الآن.</p>
-    <p style="margin-bottom:.25rem"><strong>استشر طبيباً إذا:</strong></p>
-    <ul>
-      <li>استمر الحزن أو الخوف أو الأرق أكثر من أسبوعين وعطّل يومك.</li>
-      <li>صرت تسمع أو ترى ما لا يسمعه أو يراه غيرك.</li>
-      <li>تأتيك نوبات خوف شديد مع خفقان أو ضيق نفس.</li>
-    </ul>
-    <p>إن كنت تتناول دواءً فلا تتركه دون طبيبك، واستمر في وردك معه.</p>
-    <p class="sample-tag" style="text-align:start">يراجع هذا النص مختص قبل النشر، وتُضاف أرقام الطوارئ حسب البلد.</p>
-    <form method="dialog" style="margin-top:1rem"><div class="btn-wrap"><button class="btn" value="close">فهمت</button></div></form>
-  </div>
-</dialog>
 
 <script>
 (function(){
@@ -364,11 +339,6 @@ nav.tabs button[aria-current="page"] .mark{color:var(--gold)}
   }
   document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); } });
   $('#openWird').addEventListener('click',()=>go('reader'));
-
-  /* safety */
-  const dlg = $('#safety');
-  document.addEventListener('click', e => { if(e.target.closest('[data-safety]')){ dlg.showModal ? dlg.showModal() : dlg.setAttribute('open',''); } });
-  $('#sosLink').addEventListener('click', e => { e.preventDefault(); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open',''); });
 
   /* misbaha */
   function buildMisbaha(justDone){

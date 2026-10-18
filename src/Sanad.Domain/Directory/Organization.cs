@@ -4,8 +4,8 @@ using Sanad.Domain.Verification;
 
 namespace Sanad.Domain.Directory;
 
-/// <summary>المسارات الأربعة الثابتة — يختارها المستخدم بنفسه من واجهة محايدة، ولا ترتيب بينها.</summary>
-public enum OrganizationTrack { WaqfFree, DawahGuidance, LicensedHealth, IndependentConsultant }
+/// <summary>المسارات الثابتة — يختارها المستخدم بنفسه من واجهة محايدة، ولا ترتيب بينها.</summary>
+public enum OrganizationTrack { WaqfFree, DawahGuidance, IndependentConsultant }
 
 public enum PublicationStatus { Draft, ConditionallyApproved, Published, Suspended, Rejected }
 

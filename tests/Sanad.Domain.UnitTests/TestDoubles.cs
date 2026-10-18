@@ -16,12 +16,7 @@ internal sealed class ReversingEncryptor : IFieldEncryptor
 
 internal sealed class KeywordPolicyChecker : IContentPolicyChecker
 {
-    public string? FindProhibitedClaim(string text) => text.Contains("مضمون", StringComparison.Ordinal) || text.Contains("ملغ", StringComparison.Ordinal) ? "محظور" : null;
-}
-
-internal sealed class KeywordRiskEvaluator : ISafeReferralEvaluator
-{
-    public bool RequiresImmediateEmergencyReferral(SafetySignal signal) => signal.Text.Contains("انتحار", StringComparison.Ordinal);
+    public string? FindProhibitedClaim(string text) => text.Contains("مضمون", StringComparison.Ordinal) ? "محظور" : null;
 }
 
 internal static class Builders
@@ -29,10 +24,9 @@ internal static class Builders
     public static readonly DateTimeOffset Now = new(2026, 9, 1, 9, 0, 0, TimeSpan.Zero);
     public static readonly IContentPolicyChecker Policy = new KeywordPolicyChecker();
 
-    public static VerificationRecord ApprovedUpgrade(PractitionerType type = PractitionerType.LicensedPhysician, Guid? userId = null)
+    public static VerificationRecord ApprovedUpgrade(PractitionerType type = PractitionerType.ReligiousPractitioner, Guid? userId = null)
     {
-        var doc = type == PractitionerType.LicensedPhysician ? VerificationDocumentTypes.MedicalPracticeLicense : VerificationDocumentTypes.ShariaIjazah;
-        var v = VerificationRecord.RequestProviderUpgrade(userId ?? Guid.NewGuid(), type, "مختص", doc, "جهة", Guid.NewGuid(), Now);
+        var v = VerificationRecord.RequestProviderUpgrade(userId ?? Guid.NewGuid(), type, "مختص", VerificationDocumentTypes.ShariaIjazah, "جهة", Guid.NewGuid(), Now);
         v.Approve(Guid.NewGuid(), false, Now.AddYears(1), Now);
         return v;
     }

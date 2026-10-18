@@ -7,20 +7,16 @@ export type Role =
   | "Coordinator"
   | "ContentManager"
   | "PrivacySecurityOfficer"
-  | "ClinicalSupervisor"
   | "SystemAdmin";
 
-export type PractitionerType = "ReligiousPractitioner" | "LicensedPhysician";
-export type OrganizationTrack = "WaqfFree" | "DawahGuidance" | "LicensedHealth" | "IndependentConsultant";
+export type PractitionerType = "ReligiousPractitioner";
+export type OrganizationTrack = "WaqfFree" | "DawahGuidance" | "IndependentConsultant";
 export type DeliveryMode = "InPerson" | "Remote" | "Both";
 export type AudioCategory = "QuranRecitation" | "Dua" | "Adhkar";
 export type ConsentType = "TermsOfService" | "PrivacyPolicy" | "SensitiveDataProcessing" | "MarketingCommunication";
 export type ReportCategory = "Impersonation" | "FinancialExploitation" | "Harassment" | "UnauthorizedClaim" | "PrivacyViolation" | "Other";
 export type ReportSeverity = "Low" | "Medium" | "High" | "Critical";
 export type SignInStage = "Succeeded" | "RequiresPasswordChange" | "RequiresTwoFactorSetup" | "RequiresTwoFactorCode";
-
-export interface EmergencyContact { label: string; phoneNumber: string }
-export interface EmergencyReferral { required: boolean; message: string; contacts: EmergencyContact[]; emergencyPagePath: string }
 
 export interface AuthResponse {
   userId: string;
@@ -91,7 +87,7 @@ export interface OrganizationPublic {
   verificationSourceUrl: string | null; verification: VerificationBadge; providers: DirectoryItem[];
 }
 
-export interface Transparency { publishedProviders: number; publishedOrganizations: number; physicianProviders: number; religiousProviders: number }
+export interface Transparency { publishedProviders: number; publishedOrganizations: number }
 
 export interface Slot { id: string; startUtc: string; endUtc: string; status: string }
 
@@ -100,12 +96,12 @@ export interface BookingSummary {
   serviceCategory: string; counterpartDisplayName: string | null; administrativeReasonForRejection: string | null; conversationId: string | null;
 }
 
-export interface BookingCreated { id: string; status: string; slotStartUtc: string; slotEndUtc: string; emergencyReferral: EmergencyReferral | null }
+export interface BookingCreated { id: string; status: string; slotStartUtc: string; slotEndUtc: string }
 export interface BookingNote { bookingId: string; note: string | null }
 
 export interface Conversation { id: string; bookingRequestId: string; status: string; lastMessageAtUtc: string | null; counterpartDisplayName: string }
 export interface ChatMessage { id: string; conversationId: string; senderUserId: string; isMine: boolean; body: string; status: string; sentAtUtc: string }
-export interface PostedMessage { id: string; conversationId: string; sentAtUtc: string; emergencyReferral: EmergencyReferral | null }
+export interface PostedMessage { id: string; conversationId: string; sentAtUtc: string }
 
 export interface CaseNote { id: string; bookingRequestId: string; authoredByProviderProfileId: string; note: string; recordedAtUtc: string }
 
@@ -167,7 +163,6 @@ export interface ReportItem {
 }
 export interface ReportDetail { report: ReportItem; description: string | null; currentEscalationLevel: string | null }
 export interface EscalationCase { id: string; subjectAccountId: string; level: string; documentedReportsCount: number; isOpen: boolean; lastRecomputedAtUtc: string | null }
-export interface SafetyAlert { auditEntryId: string; userId: string | null; source: string; sourceEntityId: string | null; occurredAtUtc: string }
 
 export interface UserSummary { id: string; email: string | null; phoneNumber: string | null; displayName: string; roles: Role[]; twoFactorEnabled: boolean; createdAtUtc: string; isDeleted: boolean }
 export interface UserPage { items: UserSummary[]; total: number }

@@ -7,10 +7,10 @@ namespace Sanad.Domain.UnitTests;
 
 internal static class Companion
 {
-    public static readonly SafetyAttestation AllChecked = new(true, true, true, true, true, true, true, true);
+    public static readonly SafetyAttestation AllChecked = new(true, true, true, true, true, true, true);
 
     public static List<PlanDay> Days(int n) => Enumerable.Range(1, n).Select(d => new PlanDay(d, [
-        new PlanItem(PlanItemKind.Note, null, null, "اقرأ بتدبّر. والرقية لا تعني ترك العلاج الموصوف لك.", null, null, 1),
+        new PlanItem(PlanItemKind.Note, null, null, "اقرأ بتدبّر وحضور قلب.", null, null, 1),
         new PlanItem(PlanItemKind.Quran, "kursi", "آية الكرسي", null, null, null, 3),
         new PlanItem(PlanItemKind.Dhikr, null, "بسم الله الذي لا يضر", "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ", "رواه أبو داود (5088)", null, 3),
     ])).ToList();
@@ -260,35 +260,6 @@ public class KhatmaTests
         for (var i = k.Members.Count; i < Khatma.MaxMembers; i++) k.Join(Guid.NewGuid(), $"عضو {i}", Now);
         var full = () => k.Join(Guid.NewGuid(), "زائد", Now);
         full.Should().Throw<DomainException>();
-    }
-}
-
-public class EmergencyContactTests
-{
-    [Fact]
-    public void Editor_cannot_verify_and_edits_require_reverification()
-    {
-        var editor = Guid.NewGuid();
-        var c = EmergencyContact.Create("sa", "الهلال الأحمر", "997", "موقع الجهة الرسمي", 0, editor, Now);
-        c.CountryCode.Should().Be("SA");
-        var self = () => c.Verify(editor, Now);
-        self.Should().Throw<DomainException>().Which.Code.Should().Be("self_review");
-        c.Verify(Guid.NewGuid(), Now);
-        c.Status.Should().Be(EmergencyContactStatus.Verified);
-        c.IsStale(Now.AddDays(200)).Should().BeTrue();
-
-        c.Update("SA", "الهلال الأحمر", "997", "موقع الجهة الرسمي", 0, Guid.NewGuid(), Now);
-        c.Status.Should().Be(EmergencyContactStatus.Pending);
-    }
-
-    [Theory]
-    [InlineData("SAU", "997")]
-    [InlineData("SA", "99-7")]
-    [InlineData("SA", "tel:997")]
-    public void Invalid_country_or_number_is_rejected(string cc, string phone)
-    {
-        var act = () => EmergencyContact.Create(cc, "جهة", phone, "مصدر", 0, Guid.NewGuid(), Now);
-        act.Should().Throw<DomainException>();
     }
 }
 

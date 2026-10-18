@@ -5,7 +5,6 @@ using Sanad.Application.Common.Access;
 using Sanad.Application.Common.Exceptions;
 using Sanad.Application.Common.Interfaces;
 using Sanad.Application.Common.Messaging;
-using Sanad.Application.Common.Safety;
 using Sanad.Domain.Common;
 using Sanad.Domain.Consent;
 using Sanad.Domain.Identity;
@@ -17,11 +16,7 @@ namespace Sanad.Application.Modules.Scheduling;
 public sealed record BookingSummaryDto(Guid Id, string Status, DateTimeOffset SlotStartUtc, DateTimeOffset SlotEndUtc, Guid ProviderProfileId,
     string ProviderDisplayName, string ServiceCategory, string? CounterpartDisplayName, string? AdministrativeReasonForRejection, Guid? ConversationId);
 
-public sealed record BookingCreatedDto(Guid Id, string Status, DateTimeOffset SlotStartUtc, DateTimeOffset SlotEndUtc, EmergencyReferralDto? EmergencyReferral)
-    : ISafetyAwareResponse
-{
-    public ISafetyAwareResponse WithEmergencyReferral(EmergencyReferralDto referral) => this with { EmergencyReferral = referral };
-}
+public sealed record BookingCreatedDto(Guid Id, string Status, DateTimeOffset SlotStartUtc, DateTimeOffset SlotEndUtc);
 
 // ── إنشاء حجز: Idempotency-Key إلزامي، "ملاحظتي للمختص" اختيارية ومشفّرة ──────────────
 public sealed record CreateBookingRequestCommand(Guid ServiceOfferingId, Guid AvailabilitySlotId, string? BeneficiaryNote,
@@ -39,13 +34,12 @@ public sealed class CreateBookingRequestCommandValidator : AbstractValidator<Cre
 
 public sealed class CreateBookingRequestCommandHandler(
     IApplicationDbContext db, AccessContext access, IDateTime clock, IRequestContext requestContext,
-    IFieldEncryptor encryptor, ISafeReferralEvaluator riskEvaluator, ISafetySignalContext safety, IPolicyVersionProvider policies)
+    IFieldEncryptor encryptor, IPolicyVersionProvider policies)
     : IRequestHandler<CreateBookingRequestCommand, BookingCreatedDto>
 {
     public async Task<BookingCreatedDto> Handle(CreateBookingRequestCommand request, CancellationToken cancellationToken)
     {
         // أولاً وقبل أي منطق قد يفشل: فحص مؤشر الخطر — الإحالة تصل بصرف النظر عن نجاح إنشاء الحجز
-        SafetySignals.EvaluateEarly(riskEvaluator, safety, request.BeneficiaryNote);
 
         var userId = access.UserId;
         var now = clock.UtcNow;
@@ -58,7 +52,7 @@ public sealed class CreateBookingRequestCommandHandler(
             {
                 if (!existing.BelongsToBeneficiary(userId)) throw new ConflictException("مفتاح التكرار مستخدم لطلب آخر.");
                 var existingSlot = await db.AvailabilitySlots.AsNoTracking().FirstAsync(s => s.Id == existing.AvailabilitySlotId, cancellationToken);
-                return new BookingCreatedDto(existing.Id, existing.Status.ToString(), existingSlot.StartUtc, existingSlot.EndUtc, null);
+                return new BookingCreatedDto(existing.Id, existing.Status.ToString(), existingSlot.StartUtc, existingSlot.EndUtc);
             }
         }
 
@@ -74,12 +68,11 @@ public sealed class CreateBookingRequestCommandHandler(
             ?? throw new NotFoundException("الفترة", request.AvailabilitySlotId);
 
         var booking = BookingRequest.Create(userId, offering, provider, slot, key, now);
-        booking.SetBeneficiaryNote(request.BeneficiaryNote, encryptor, riskEvaluator);
-        SafetySignals.CollectFrom(safety, booking);
+        booking.SetBeneficiaryNote(request.BeneficiaryNote, encryptor);
 
         db.BookingRequests.Add(booking);
         await db.SaveChangesAsync(cancellationToken); // تعارض ConcurrencyStamp على الفترة ⇒ 409
-        return new BookingCreatedDto(booking.Id, booking.Status.ToString(), slot.StartUtc, slot.EndUtc, null);
+        return new BookingCreatedDto(booking.Id, booking.Status.ToString(), slot.StartUtc, slot.EndUtc);
     }
 
     private async Task EnsureSensitiveConsentAsync(Guid userId, bool consentNow, DateTimeOffset now, CancellationToken ct)

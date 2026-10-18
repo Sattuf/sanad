@@ -48,8 +48,7 @@ public sealed class RecordProviderCaseNoteCommandHandler(IApplicationDbContext d
 }
 
 /// <summary>
-/// قراءة ملاحظات المختص لحجز: كاتبها نفسه، أو ClinicalSupervisor (إشراف)، أو Coordinator عند تصعيد موثّق مفتوح فقط —
-/// الأدوار الإدارية بجلسة 2FA. المستفيد لا يصل هنا إطلاقاً (404، لا كشف لوجود الملاحظة).
+/// قراءة ملاحظات المختص لحجز: كاتبها نفسه، أو Coordinator عند تصعيد موثّق مفتوح فقط — بجلسة 2FA. المستفيد لا يصل هنا إطلاقاً (404، لا كشف لوجود الملاحظة).
 /// </summary>
 public sealed record GetCaseNoteForBookingQuery(Guid BookingRequestId) : IQuery<IReadOnlyList<CaseNoteDto>>, ISensitiveRequest;
 
@@ -61,19 +60,18 @@ public sealed class GetCaseNoteForBookingQueryHandler(IApplicationDbContext db, 
         var booking = await access.LoadBookingAsync(request.BookingRequestId, cancellationToken);
         var provider = await access.GetCurrentProviderAsync(cancellationToken);
         var isAuthorProvider = provider is not null && booking.IsAssignedTo(provider.Id);
-        var isSupervisor = access.IsStaff(SanadRoles.ClinicalSupervisor);
-        var isCoordinatorOnEscalation = !isAuthorProvider && !isSupervisor && await access.CoordinatorHasEscalationAccessAsync(booking, cancellationToken);
+        var isCoordinatorOnEscalation = !isAuthorProvider && await access.CoordinatorHasEscalationAccessAsync(booking, cancellationToken);
 
-        if (!isAuthorProvider && !isSupervisor && !isCoordinatorOnEscalation)
+        if (!isAuthorProvider && !isCoordinatorOnEscalation)
             throw new NotFoundException("الحجز", request.BookingRequestId);
 
         var query = db.ProviderCaseNotes.AsNoTracking().Where(n => n.BookingRequestId == booking.Id);
-        if (isAuthorProvider && !isSupervisor) query = query.Where(n => n.AuthoredByProviderProfileId == provider!.Id);
+        if (isAuthorProvider) query = query.Where(n => n.AuthoredByProviderProfileId == provider!.Id);
         var notes = (await query.ToListAsync(cancellationToken)).OrderBy(n => n.RecordedAtUtc).ToList();
 
         if (!isAuthorProvider)
             await audit.LogAsync("PatientCare.CaseNoteSupervisoryRead", nameof(ProviderCaseNote), booking.Id,
-                new { Via = isSupervisor ? "ClinicalSupervisor" : "CoordinatorEscalation", Count = notes.Count }, ct: cancellationToken);
+                new { Via = "CoordinatorEscalation", Count = notes.Count }, ct: cancellationToken);
 
         return notes.Select(n => new CaseNoteDto(n.Id, n.BookingRequestId, n.AuthoredByProviderProfileId,
             encryptor.Decrypt(n.NoteEncrypted), n.RecordedAtUtc)).ToList();

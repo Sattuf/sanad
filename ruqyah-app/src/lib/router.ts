@@ -8,7 +8,6 @@ export type Route =
   | { name: "reader" }
   | { name: "khatma" }
   | { name: "support" }
-  | { name: "safety" }
   | { name: "planDone" }
   | { name: "account" }
   | { name: "group"; id: string }
@@ -29,8 +28,6 @@ export function parse(hash: string): Route {
       return parts[1] ? { name: "join", code: decodeURIComponent(parts[1]) } : { name: "khatma" };
     case "support":
       return { name: "support" };
-    case "safety":
-      return { name: "safety" };
     case "done":
       return { name: "planDone" };
     default:
