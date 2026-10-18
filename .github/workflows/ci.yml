@@ -24,6 +24,36 @@ jobs:
       - run: |
           ! grep -riE "payment|subscription|FinanceOfficer" --include="*.cs" -r src/
 
+  # تحليل ثابت للكود (SAST): قواعد OWASP العامة لـ C# وTypeScript/React. أي نتيجة تُسقط البناء.
+  # (CodeQL يحتاج GitHub Advanced Security في المستودع الخاص؛ Semgrep يعمل خطوةً عادية بلا رفع تقارير.)
+  sast:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install semgrep==1.178.0
+      - run: >-
+          semgrep scan --error --metrics=off
+          --config p/csharp --config p/typescript --config p/react --config p/owasp-top-ten --config p/secrets
+          --exclude tests --exclude "**/__tests__" --exclude "**/*.test.ts" --exclude "**/*.test.tsx" --exclude e2e
+          --exclude "**/Migrations" --exclude mobile_flutter --exclude docs --exclude references
+
+  # ثغرات الاعتماديات المعروفة في npm وFlutter (pub) من قاعدة OSV؛ ‏NuGet يغطيه dotnet list package --vulnerable
+  dependency-scan:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google/osv-scanner-action/osv-scanner-action@v2.6.0
+        with:
+          scan-args: |-
+            --lockfile=frontend/package-lock.json
+            --lockfile=packages/shared/package-lock.json
+            --lockfile=ruqyah-app/package-lock.json
+            --lockfile=mobile_flutter/pubspec.lock
+
   backend:
     needs: [secret-scan, no-payment-code-check]
     runs-on: ubuntu-latest
