@@ -44,13 +44,13 @@ public static partial class PlanWording
 {
     private static readonly (Regex Pattern, string Category)[] Rules =
     [
-        (R(@"تشخيص|اعراضك|جدول\s*(ال)?اعراض|نوع\s*(ال)?اصاب|اصابتك|حالتك\s*(هي|من)"), "تشخيص أو سؤال عن الحالة"),
-        (R(@"مسحور|ممسوس|معيون|محسود|السحر\s*الماكول|السحر\s*المشروب|(ال)?مس\s*(ال)?عاشق|(ال)?عاشق|فك\s*(ال)?سحر|ابطال\s*(ال)?سحر\s*(نهائيا|تماما)"), "وصف بالحالة لا بالمحتوى"),
-        (R(@"برنامج\s*علاجي|خطه\s*علاجيه|جلسه\s*علاجيه|لعلاج\s*(ال)?(سحر|عين|مس|حسد)"), "تسمية الخطة علاجاً"),
-        (R(@"نسبه\s*(ال)?نجاح|حالات\s*شفيت|تشفي\s*خلال|شفاء\s*خلال|بعد\s*\d+\s*(يوم|ايام)\s*(ت|ي)شفي"), "وعد بالشفاء أو مدة له"),
-        (R(@"تشتد\s*(ال)?اعراض|اشتداد\s*(ال)?اعراض|(ال)?اعراض\s*(ت|س)زيد"), "اعتبار اشتداد الأعراض دليلاً"),
-        (R(@"ماء\s*مقروء|زيت\s*مقروء|عسل\s*مقروء|سدر\s*مقروء|للبيع|اطلبه\s*الان|اشتر"), "بيع أو إحالة لبائع"),
-        (R(@"تفسير\s*(ال)?(حلم|احلام|رؤيا|رؤى)"), "تفسير أحلام"),
+        (ConditionQuestions(), "تشخيص أو سؤال عن الحالة"),
+        (ConditionLabels(), "وصف بالحالة لا بالمحتوى"),
+        (ClinicalNaming(), "تسمية الخطة علاجاً"),
+        (OutcomePromises(), "وعد بالشفاء أو مدة له"),
+        (WorseningAsProof(), "اعتبار اشتداد الأعراض دليلاً"),
+        (Sales(), "بيع أو إحالة لبائع"),
+        (DreamReading(), "تفسير أحلام"),
     ];
 
     public static void EnsureAllowed(string context, params string?[] texts)
@@ -82,8 +82,31 @@ public static partial class PlanWording
         return sb.ToString();
     }
 
-    private static Regex R(string pattern) =>
-        new(pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
+    // مولّدة وقت البناء لا مُترجمة وقت التشغيل: لا ترجمة ولا JIT داخل مهلة المطابقة (كان ذلك يتجاوز 250 ملي ثانية
+    // أحياناً على خوادم CI المشغولة). الأنماط بدائل حرفية بلا محدِّدات متداخلة، فلا تراجع كارثي؛ والمهلة سقف أمان فقط.
+    private const RegexOptions Options = RegexOptions.CultureInvariant | RegexOptions.IgnoreCase;
+    private const int TimeoutMs = 1000;
+
+    [GeneratedRegex(@"تشخيص|اعراضك|جدول\s*(ال)?اعراض|نوع\s*(ال)?اصاب|اصابتك|حالتك\s*(هي|من)", Options, TimeoutMs)]
+    private static partial Regex ConditionQuestions();
+
+    [GeneratedRegex(@"مسحور|ممسوس|معيون|محسود|السحر\s*الماكول|السحر\s*المشروب|(ال)?مس\s*(ال)?عاشق|(ال)?عاشق|فك\s*(ال)?سحر|ابطال\s*(ال)?سحر\s*(نهائيا|تماما)", Options, TimeoutMs)]
+    private static partial Regex ConditionLabels();
+
+    [GeneratedRegex(@"برنامج\s*علاجي|خطه\s*علاجيه|جلسه\s*علاجيه|لعلاج\s*(ال)?(سحر|عين|مس|حسد)", Options, TimeoutMs)]
+    private static partial Regex ClinicalNaming();
+
+    [GeneratedRegex(@"نسبه\s*(ال)?نجاح|حالات\s*شفيت|تشفي\s*خلال|شفاء\s*خلال|بعد\s*\d+\s*(يوم|ايام)\s*(ت|ي)شفي", Options, TimeoutMs)]
+    private static partial Regex OutcomePromises();
+
+    [GeneratedRegex(@"تشتد\s*(ال)?اعراض|اشتداد\s*(ال)?اعراض|(ال)?اعراض\s*(ت|س)زيد", Options, TimeoutMs)]
+    private static partial Regex WorseningAsProof();
+
+    [GeneratedRegex(@"ماء\s*مقروء|زيت\s*مقروء|عسل\s*مقروء|سدر\s*مقروء|للبيع|اطلبه\s*الان|اشتر", Options, TimeoutMs)]
+    private static partial Regex Sales();
+
+    [GeneratedRegex(@"تفسير\s*(ال)?(حلم|احلام|رؤيا|رؤى)", Options, TimeoutMs)]
+    private static partial Regex DreamReading();
 }
 
 /// <summary>
