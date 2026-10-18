@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { quran, type QuranKey } from "@sanad/shared/content/quran";
 import { Counter } from "../components/Counter";
-import { Btn, Hashiya, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Hashiya, Jadwal, Sarlawh } from "../components/ornaments";
 import { findPlan, type WirdItem } from "../content/plans";
 import { currentDay, isFinished } from "../domain/enrollment";
 import { ar } from "../lib/arabic";
@@ -111,7 +111,6 @@ export function Reader() {
             </button>
           </p>
         )}
-        <SafetyNote />
       </main>
     </>
   );

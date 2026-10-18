@@ -6,7 +6,7 @@ import { href, navigate } from "../lib/router";
 import { load, save } from "../lib/storage";
 import { useAccount } from "../state/account";
 import { members, NewGroupKhatma } from "./GroupKhatma";
-import { Colophon, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Colophon, Hashiya, Sarlawh } from "../components/ornaments";
 import { Rosette } from "../components/Rosette";
 import { dailyPace, daysAtPace, doneCount, isComplete, JUZ_COUNT } from "../domain/khatma";
 import { ajza, ar, days, hijri } from "../lib/arabic";
@@ -72,7 +72,6 @@ export function Khatma() {
         )}
 
         <GroupSection />
-        <SafetyNote />
       </main>
     </>
   );

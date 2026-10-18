@@ -19,7 +19,6 @@ vi.mock("../../api/client", () => ({
   WEB_URL: "",
   isSignedIn: () => true,
   onSessionChange: () => () => {},
-  onEmergency: () => () => {},
   session: { getRefreshToken: () => "r", getAccessToken: () => "a", setTokens: () => {}, clear: () => {} },
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), del: vi.fn() },
 }));

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { hasApi } from "../api/client";
 import { companionApi } from "../api/companion";
-import { Btn, Hashiya, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Hashiya, Sarlawh } from "../components/ornaments";
 
 /*
   ادعم — content-guardrails.md §5. صفحة واحدة، بلا نوافذ منبثقة، ولا يظهر طلب الدعم داخل القارئ.
@@ -45,7 +45,6 @@ export function Support() {
             <p>يُفعَّل زر الدعم بعد اعتماد الجهة المستقبِلة ومراجعة سياسات المتاجر. وإلى ذلك الحين، أجمل ما تدعم به سند أن تدلّ عليه من يحتاجه.</p>
           )}
         </Hashiya>
-        <SafetyNote />
       </main>
     </>
   );

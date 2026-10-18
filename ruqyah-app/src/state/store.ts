@@ -35,8 +35,6 @@ export interface State {
   plansCompleted: number;
   /** تسجيل في الحساب أُوقف على هذا الجهاز ولم يُبلَّغ الخادم بعد (دون اتصال). */
   pendingStopId: string | null;
-  /** بلد أرقام الطوارئ (ISO)، أو null ليُستنتج من لغة الجهاز. */
-  country: string | null;
   /** مشاركة عدّادات مجهولة تماماً (بلا أي معرّف). */
   anonymousStats: boolean;
 }
@@ -49,7 +47,6 @@ const initial = (): State => ({
   supportNoteSeen: load("supportNoteSeen", false),
   plansCompleted: load("plansCompleted", 0),
   pendingStopId: load<string | null>("pendingStopId", null),
-  country: load<string | null>("country", null),
   anonymousStats: load("anonymousStats", true),
 });
 
@@ -104,10 +101,6 @@ export const actions = {
 
   clearPendingStop() {
     set({ pendingStopId: null });
-  },
-
-  setCountry(country: string | null) {
-    set({ country });
   },
 
   setAnonymousStats(anonymousStats: boolean) {

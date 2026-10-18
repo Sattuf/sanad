@@ -2,9 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "@sanad/shared/api/core";
 import { authApi } from "@sanad/shared/api/auth";
 import { api, hasApi, WEB_URL } from "../api/client";
-import { Btn, Hashiya, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Hashiya, Jadwal, Sarlawh } from "../components/ornaments";
 import { reminderLabels, type Reminder } from "../domain/enrollment";
-import { countryFromLocale } from "../lib/country";
 import { currentPush, defaultTimes, disablePush, enablePush, pushSupported, testPush } from "../lib/push";
 import { register, signIn, signOut, SignInNeedsWebError, useAccount } from "../state/account";
 import { actions, useStore } from "../state/store";
@@ -41,7 +40,6 @@ export function Account() {
             المجهولة تُحصي الأحداث يومياً دون أي معرّف لك أو لجهازك.
           </p>
         </Hashiya>
-        <SafetyNote />
       </main>
     </>
   );
@@ -243,30 +241,12 @@ function SignedIn({ displayName }: { displayName: string | null }) {
 }
 
 function Preferences() {
-  const country = useStore((s) => s.country);
   const stats = useStore((s) => s.anonymousStats);
-  const [value, setValue] = useState(country ?? "");
-  useEffect(() => setValue(country ?? ""), [country]);
 
   return (
     <>
       <h2>تفضيلات</h2>
       <div className="form">
-        <label>
-          بلدك لأرقام الطوارئ
-          <input
-            dir="ltr"
-            maxLength={2}
-            value={value}
-            placeholder={countryFromLocale() ?? "SA"}
-            onChange={(e) => setValue(e.target.value.toUpperCase().replace(/[^A-Z]/g, ""))}
-            onBlur={() => actions.setCountry(value.length === 2 ? value : null)}
-            aria-describedby="country-hint"
-          />
-          <span className="hint" id="country-hint">
-            رمز البلد بحرفين (مثل SA أو EG). فارغ: يُستنتج من لغة جهازك.
-          </span>
-        </label>
         {hasApi && (
           <label style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
             <input type="checkbox" checked={stats} onChange={(e) => actions.setAnonymousStats(e.target.checked)} style={{ minHeight: "auto" }} />

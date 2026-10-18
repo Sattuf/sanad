@@ -13,7 +13,6 @@
   --fayruz: #2c7f7a;
   --rule: #c3c9da;
   --on-lazward: #f3f1e8;
-  --sos: #7e2418;
 
   --f-kufi: "Reem Kufi", "Noto Kufi Arabic", sans-serif;
   --f-quran: "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif;
@@ -82,7 +81,6 @@ h3 { font-family: var(--f-kufi); font-weight: 500; font-size: 1.1rem; margin: 1.
 }
 .sarlawh .tools > * { pointer-events: auto; }
 .tool { background: none; border: 0; color: #e8ddba; font-size: .8rem; padding: .25rem .5rem; cursor: pointer; }
-.sos { background: var(--sos); color: #fbefe6; border-radius: 2px; text-decoration: none; font-size: .8rem; padding: .2rem .6rem; }
 .date-line { display: flex; justify-content: space-between; color: var(--ink-soft); font-size: .85rem; padding: 1.1rem 1.25rem .25rem; }
 .date-line a { color: var(--ink-soft); }
 
@@ -211,8 +209,6 @@ a.ruled-row:hover .plan-title { color: var(--lazward); }
 /* ── الدعم والأمان ── */
 .plain-list { list-style: none; padding: 0; margin: 0; }
 .plain-list li { padding: .65rem 0; border-bottom: 1px solid var(--rule); }
-.safety ul { padding-inline-start: 1.1rem; margin: .25rem 0 1rem; }
-.safety .urgent { border-inline-start: 3px solid var(--sos); padding-inline-start: .75rem; }
 .contacts a { font-weight: 600; }
 
 /* ── أول فتح ── */

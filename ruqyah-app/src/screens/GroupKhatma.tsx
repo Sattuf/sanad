@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { ApiError } from "@sanad/shared/api/core";
 import { companionApi, type GroupKhatma, type InvitePreview, type KhatmaAction } from "../api/companion";
-import { Btn, Colophon, Hashiya, Jadwal, SafetyNote, Sarlawh } from "../components/ornaments";
+import { Btn, Colophon, Hashiya, Jadwal, Sarlawh } from "../components/ornaments";
 import { Rosette } from "../components/Rosette";
 import { ME, type Khatma } from "../domain/khatma";
 import { ajza, ar, hijri } from "../lib/arabic";
@@ -263,7 +263,6 @@ export function GroupKhatmaScreen({ id }: { id: string }) {
         <Hashiya>
           <p>النيّة لا يراها إلا أعضاء الختمة، ولا تظهر في الدعوة ولا في الإشعارات. يصلك إشعار واحد عند تمام الختمة.</p>
         </Hashiya>
-        <SafetyNote />
       </main>
     </>
   );
@@ -404,7 +403,6 @@ export function JoinKhatma({ code }: { code: string }) {
             </form>
           )}
         </Jadwal>
-        <SafetyNote />
       </main>
     </>
   );

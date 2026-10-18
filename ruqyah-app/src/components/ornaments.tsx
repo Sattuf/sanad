@@ -33,7 +33,7 @@ export const Star = ({ size = 10, className }: { size?: number; className?: stri
 const themeNames: Record<Theme, string> = { auto: "تلقائي", light: "نهاري", dark: "ليلي" };
 const nextTheme: Record<Theme, Theme> = { auto: "light", light: "dark", dark: "auto" };
 
-/** السرلوح: رأس كل شاشة. يحمل دائماً زر الطوارئ (طبقة الأمان لا تُحذف). */
+/** السرلوح: رأس كل شاشة. */
 export function Sarlawh({ title }: { title: string }) {
   const theme = useStore((s) => s.settings.theme);
   return (
@@ -51,9 +51,6 @@ export function Sarlawh({ title }: { title: string }) {
           >
             الوضع: {themeNames[theme]}
           </button>
-          <a className="sos" href={href({ name: "safety" })}>
-            طوارئ
-          </a>
         </div>
         <div className="cartouche">
           <h1 id="screen-title">{title}</h1>
@@ -80,15 +77,6 @@ export const Hashiya = ({ children }: { children: ReactNode }) => (
     <Star />
     <div>{children}</div>
   </div>
-);
-
-/** رابط طبقة الأمان، يظهر في حاشية كل شاشة رئيسية. */
-export const SafetyNote = () => (
-  <Hashiya>
-    <p>
-      الرقية والطب لا يتعارضان. <a className="link" href={href({ name: "safety" })}>متى تحتاج مع الرقية إلى طبيب؟</a>
-    </p>
-  </Hashiya>
 );
 
 /** زر أساسي بشكل الخرطوشة. */

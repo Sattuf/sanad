@@ -1,5 +1,4 @@
 import { createApiClient, type SessionPort } from "@sanad/shared/api/core";
-import type { EmergencyReferral } from "@sanad/shared/api/types";
 
 /*
   عميل الـ API — النواة المشتركة نفسها التي يستعملها الويب والجوال (ADR-0014، ADR-0018).
@@ -51,17 +50,9 @@ export const onSessionChange = (l: () => void) => {
 
 export const isSignedIn = () => Boolean(session.getRefreshToken() || session.getAccessToken());
 
-/** إشارة خطر من أي استجابة: تُعرض فوراً صفحة الطوارئ، بصرف النظر عن نجاح الطلب. */
-const emergencyListeners = new Set<(r: EmergencyReferral | null) => void>();
-export const onEmergency = (l: (r: EmergencyReferral | null) => void) => {
-  emergencyListeners.add(l);
-  return () => emergencyListeners.delete(l);
-};
-
 export const client = createApiClient({
   baseUrl: API_URL || "http://invalid.localhost",
   session,
-  onEmergency: (r) => emergencyListeners.forEach((l) => l(r)),
 });
 
 export const api = client.api;

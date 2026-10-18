@@ -9,7 +9,7 @@ import { load, save } from "./storage";
 */
 export type EventName =
   | "plan_started" | "wird_completed" | "plan_completed" | "khatma_juz_done" | "khatma_completed"
-  | "khatma_invite_accepted" | "safety_page_opened" | "first_open";
+  | "khatma_invite_accepted" | "first_open";
 
 const KEY = "events";
 
