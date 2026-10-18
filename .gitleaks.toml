@@ -11,4 +11,6 @@ description = "Synthetic test/dev passwords"
 regexTarget = "secret"
 regexes = [
   '''^(Strong-Pass-123|Demo-Pass-123|Admin-Strong-Pass-1|Bootstrap-Temp-Pass1)$''',
+  # مفتاح AES اصطناعي في متجه التوافق packages/shared/test-vectors/vault.json: البايتات 0x00..0x1F بترميز base64
+  '''^AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=$''',
 ]
