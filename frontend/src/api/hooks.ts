@@ -55,4 +55,4 @@ export function useSignOut() {
   }, [clear, qc]);
 }
 
-export const STAFF_ROLES: Role[] = ["Coordinator", "ContentManager", "SystemAdmin", "ClinicalSupervisor", "PrivacySecurityOfficer"];
+export const STAFF_ROLES: Role[] = ["Coordinator", "ContentManager", "SystemAdmin", "PrivacySecurityOfficer"];

@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { acceptedBookingWithDoctor, loginViaUi } from "./helpers";
+import { acceptedBookingWithSheikh, loginViaUi } from "./helpers";
 
 // لقطات مراجعة بصرية (ليست اختبارات مقارنة بكسلية) — تُحفظ في test-results/screens
 const shot = (name: string, project: string) => ({ path: `test-results/screens/${project}-${name}.png`, fullPage: true });
@@ -20,11 +20,9 @@ test("لقطات الشاشات الرئيسية", async ({ page, request }, inf
   await page.waitForLoadState("networkidle");
   await page.screenshot(shot("directory", p));
 
-  await page.goto("/emergency");
-  await page.screenshot(shot("emergency", p));
 
-  const bookingId = await acceptedBookingWithDoctor(request);
-  await loginViaUi(page, "doctor@sanad.local");
+  const bookingId = await acceptedBookingWithSheikh(request);
+  await loginViaUi(page, "sheikh@sanad.local");
   await page.goto(`/provider/bookings/${bookingId}`);
   await page.waitForLoadState("networkidle");
   await page.screenshot(shot("provider-workspace", p));

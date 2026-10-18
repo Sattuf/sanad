@@ -43,17 +43,17 @@ describe("إدارة خطط سند", () => {
     const publish = screen.getByRole("button", { name: "راجعتها — انشر" });
     expect(publish).toBeDisabled();
     const boxes = screen.getAllByRole("checkbox");
-    expect(boxes).toHaveLength(8);
-    boxes.slice(0, 7).forEach((b) => fireEvent.click(b));
+    expect(boxes).toHaveLength(7);
+    boxes.slice(0, 6).forEach((b) => fireEvent.click(b));
     expect(publish).toBeDisabled();
-    fireEvent.click(boxes[7]);
+    fireEvent.click(boxes[6]);
     expect(publish).toBeEnabled();
     fireEvent.click(publish);
     await waitFor(() => expect(calls.posts).toHaveLength(1));
     const body = calls.posts[0].body as { action: string; safety: Record<string, boolean> };
     expect(calls.posts[0].path).toBe("/api/v1/admin/companion/plans/p1/review");
     expect(body.action).toBe("Approve");
-    expect(Object.values(body.safety)).toEqual(Array(8).fill(true));
+    expect(Object.values(body.safety)).toEqual(Array(7).fill(true));
   });
 
   it("أنماط الأيام تولّد أيام الخطة وتُستنتج منها بالعكس", () => {

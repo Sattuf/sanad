@@ -62,7 +62,7 @@ export function DashboardPage() {
           <Card className="md:col-span-2">
             <h2 className="font-bold">{t("nav.becomeProvider")}</h2>
             <p className="mt-2 text-muted">
-              طبيب مرخّص أو شيخ/راقٍ شرعي؟ اطلب الترقية بمستندك الرسمي. يبقى حسابك مستفيداً حتى يعتمد المنسق الطلب.
+              شيخ أو راقٍ شرعي؟ اطلب الترقية بإجازتك أو تزكيتك. يبقى حسابك مستفيداً حتى يعتمد المنسق الطلب.
             </p>
             <Link to="/provider-upgrade" className="mt-3 inline-block text-sm font-semibold text-primary">
               {me.hasPendingUpgradeRequest ? "متابعة طلبي" : "طلب الترقية"}

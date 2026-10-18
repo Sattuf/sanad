@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { ProgressRing } from "../../components/companion";
-import { Banner, Button, Card, Field, Input, PageHeader, Textarea } from "../../components/ui";
+import { Button, Card, Field, Input, PageHeader, Textarea } from "../../components/ui";
 import { addDays, arNum, localDay, shortDayLabel } from "../../lib/dates";
 import { downloadText } from "../../lib/ics";
 import { cx } from "../../lib/cx";
-import { requiresEmergencyReferral } from "@sanad/shared/safety/riskSignals";
 import { JOURNAL_METRICS, STABLE_DELTA, TREND_DAYS, TREND_MIN_ENTRIES, journalTrends, sessionsDelta } from "@sanad/shared/content/companion/journal";
 import { vault, WrongPinError } from "../../lib/vault";
 import { useCompanion } from "../../stores/companion";
-import { useEmergency } from "../../stores/emergency";
 import { useJournal, type CheckIn, type JournalData, type Scale } from "../../stores/journal";
 
 /*
@@ -144,19 +141,12 @@ function ScalePicker({ label, low, high, value, onChange }: { label: string; low
 
 function CheckInForm({ day, existing, onPickDay }: { day: string; existing?: CheckIn; onPickDay: (d: string) => void }) {
   const saveCheckIn = useJournal((s) => s.saveCheckIn);
-  const raise = useEmergency((s) => s.raise);
   const [v, setV] = useState({ calm: existing?.calm ?? 2, sleep: existing?.sleep ?? 2, energy: existing?.energy ?? 2, mood: existing?.mood ?? 2 } as Record<(typeof METRICS)[number]["key"], Scale>);
   const [note, setNote] = useState(existing?.note ?? "");
   const [saved, setSaved] = useState(false);
-  const [risk, setRisk] = useState(false);
   const today = localDay();
 
   const submit = async () => {
-    // البند 5: مؤشر خطر في نص المذكرة → إحالة فورية، حتى لو لم يغادر النص الجهاز
-    if (requiresEmergencyReferral(note)) {
-      setRisk(true);
-      raise(null);
-    }
     await saveCheckIn({ day, ...v, note: note.trim() || undefined });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -182,14 +172,6 @@ function CheckInForm({ day, existing, onPickDay }: { day: string; existing?: Che
           <Textarea id="note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} placeholder="ما الذي أثقلك أو أسعدك اليوم؟" />
         </Field>
       </div>
-      {risk && (
-        <div className="mt-4">
-          <Banner tone="danger" title="نحن قلقون عليك" role="alert">
-            ما كتبته يوحي بأنك تمرّ بوقت صعب جداً. لست وحدك — تحدّث الآن مع شخص تثق به، أو{" "}
-            <Link to="/emergency" className="font-bold underline">اطلب المساعدة العاجلة</Link>.
-          </Banner>
-        </div>
-      )}
       <div className="mt-4 flex items-center gap-3">
         <Button onClick={() => void submit()}>{existing ? "تحديث" : "حفظ"}</Button>
         {saved && <span className="text-sm font-semibold text-success" role="status">حُفظ مشفّراً ✓</span>}
@@ -241,17 +223,8 @@ function Trends({ data }: { data: JournalData }) {
             <strong className="num">{arNum((tr.committedCalm.other + 1).toFixed(1))}</strong> في غيرها.
           </p>
         )}
-        <p className="text-xs text-muted">هذه ملاحظات عن أيامك أنت، لا حكم طبي — والتزامن بين أمرين لا يعني بالضرورة أن أحدهما سبب الآخر.</p>
+        <p className="text-xs text-muted">هذه ملاحظات عن أيامك أنت — والتزامن بين أمرين لا يعني بالضرورة أن أحدهما سبب الآخر.</p>
       </div>
-
-      {tr.low && (
-        <div className="mt-4">
-          <Banner tone="primary" title="خذ بالأسباب أيضاً">
-            لاحظنا أن {tr.low === "sleep" ? "نومك" : "هدوءك"} منخفض معظم الأيام الماضية. استمر على وِردك، واستشر طبيباً كذلك — أسباب كثيرة للأرق والقلق
-            قابلة للفحص والعلاج، والتداوي لا ينافي الرقية. <Link to="/directory?track=LicensedHealth" className="font-semibold underline">ابحث عن مختص موثّق</Link>
-          </Banner>
-        </div>
-      )}
 
       <details className="mt-4 text-sm">
         <summary className="cursor-pointer font-semibold text-primary">عرض كجدول</summary>

@@ -6,14 +6,13 @@ import { BookPage } from "../features/booking/BookPage";
 import { BookingDetailPage, MyBookingsPage } from "../features/booking/BookingPages";
 import { ConversationPage } from "../features/chat/ConversationPage";
 import {
-  LibraryAdminPage, OrganizationsAdminPage, ProvidersAdminPage, ReportsAdminPage, SafetyAlertsPage, StaffIndex, StaffLayout, UsersAdminPage,
+  LibraryAdminPage, OrganizationsAdminPage, ProvidersAdminPage, ReportsAdminPage, StaffIndex, StaffLayout, UsersAdminPage,
   VerificationQueuePage,
 } from "../features/coordinator-portal/StaffPortal";
 import { RuqyahDuasAdminPage } from "../features/coordinator-portal/RuqyahDuasAdmin";
-import { CompanionEmergencyAdminPage, CompanionPlansAdminPage, CompanionStatsPage } from "../features/coordinator-portal/CompanionAdmin";
+import { CompanionPlansAdminPage, CompanionStatsPage } from "../features/coordinator-portal/CompanionAdmin";
 import { DirectoryPage, OrganizationPage, ProviderPage } from "../features/directory/DirectoryPages";
 import { FavoritesPage, LibraryPage, PublicSharePage } from "../features/library/LibraryPages";
-import { HealthHubPage } from "../features/health/HealthPages";
 import { RuqyahCollectionPage, RuqyahGuidePage, RuqyahHubPage } from "../features/ruqyah/RuqyahPages";
 import { MyRecommendationsPage } from "../features/patient-care/MyRecommendations";
 import { CaseNoteEditor, RecommendationComposer } from "../features/patient-care/ProviderEditors";
@@ -23,7 +22,7 @@ import {
 import { ProviderUpgradePage } from "../features/provider-upgrade/ProviderUpgradePage";
 import { HomePage } from "../features/public/HomePage";
 import { SakinaPage } from "../features/companion/SakinaPage";
-import { AboutVerificationPage, EmergencyPage, PrivacyPage, TermsPage } from "../features/public/StaticPages";
+import { AboutVerificationPage, PrivacyPage, TermsPage } from "../features/public/StaticPages";
 import { RequireAuth, RequireRole } from "./guards";
 import { AppLayout, PublicShareLayout } from "./layout/AppLayout";
 import { NotFoundPage } from "./NotFoundPage";
@@ -52,15 +51,10 @@ export const router = createBrowserRouter([
       { path: "/directory", element: <DirectoryPage /> },
       { path: "/providers/:id", element: <ProviderPage /> },
       { path: "/organizations/:id", element: <OrganizationPage /> },
-      { path: "/emergency", element: <EmergencyPage /> },
       // الرقية والتحصين المكتوبة: عامة بلا تسجيل (محتوى ثابت، لا بيانات مستخدم)
       { path: "/ruqyah", element: <RuqyahHubPage /> },
       { path: "/ruqyah/guide/:guideId", element: <RuqyahGuidePage /> },
       { path: "/ruqyah/:collectionId", element: <RuqyahCollectionPage /> },
-      // الصحة والطمأنينة: توعية عامة، عامة بلا تسجيل؛ صفحة الدليل نفسها بمسار القسم
-      { path: "/health", element: <HealthHubPage /> },
-      { path: "/health/:guideId", element: <RuqyahGuidePage /> },
-
       // رفيق السكينة اليومي — بلا تسجيل دخول، محلي على الجهاز (docs/adr/0022)
       // تُحمَّل عند الطلب؛ السكينة وحدها محمّلة مسبقاً لتعمل فوراً ودون إنترنت
       { path: "/today", lazy: () => import("../features/companion/ProgramPages").then((m) => ({ Component: m.TodayPage })) },
@@ -107,7 +101,7 @@ export const router = createBrowserRouter([
       {
         path: "/staff",
         element: auth(
-          <RequireRole roles={["Coordinator", "ContentManager", "SystemAdmin", "ClinicalSupervisor", "PrivacySecurityOfficer"]}>
+          <RequireRole roles={["Coordinator", "ContentManager", "SystemAdmin", "PrivacySecurityOfficer"]}>
             <StaffLayout />
           </RequireRole>,
         ),
@@ -117,11 +111,9 @@ export const router = createBrowserRouter([
           { path: "organizations", element: <RequireRole roles={["Coordinator"]}><OrganizationsAdminPage /></RequireRole> },
           { path: "providers", element: <RequireRole roles={["Coordinator"]}><ProvidersAdminPage /></RequireRole> },
           { path: "reports", element: <RequireRole roles={["Coordinator"]}><ReportsAdminPage /></RequireRole> },
-          { path: "safety-alerts", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><SafetyAlertsPage /></RequireRole> },
           { path: "library", element: <RequireRole roles={["ContentManager", "SystemAdmin"]}><LibraryAdminPage /></RequireRole> },
           { path: "duas", element: <RequireRole roles={["ContentManager"]}><RuqyahDuasAdminPage /></RequireRole> },
           { path: "companion-plans", element: <RequireRole roles={["ContentManager"]}><CompanionPlansAdminPage /></RequireRole> },
-          { path: "companion-emergency", element: <RequireRole roles={["Coordinator", "ClinicalSupervisor"]}><CompanionEmergencyAdminPage /></RequireRole> },
           { path: "companion-stats", element: <RequireRole roles={["ContentManager", "Coordinator"]}><CompanionStatsPage /></RequireRole> },
           { path: "users", element: <RequireRole roles={["SystemAdmin"]}><UsersAdminPage /></RequireRole> },
         ],

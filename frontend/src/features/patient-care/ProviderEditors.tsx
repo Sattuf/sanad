@@ -31,8 +31,8 @@ export function CaseNoteEditor() {
   return (
     <div className="mx-auto max-w-3xl">
       <div role="note" className="sticky top-16 z-10 mb-4 rounded-xl border-2 border-private bg-private-bg px-4 py-3 text-private">
-        <p className="font-bold">ملاحظة إشرافية خاصة — لن يراها المستفيد أبداً تحت أي ظرف</p>
-        <p className="text-sm">يطّلع عليها المشرف السريري، أو المنسق عند تصعيد موثّق فقط. لتوجيه المستفيد استخدم «إرسال توصية».</p>
+        <p className="font-bold">ملاحظة خاصة — لن يراها المستفيد أبداً تحت أي ظرف</p>
+        <p className="text-sm">لا يطّلع عليها غيرك إلا المنسق عند تصعيد موثّق. لتوجيه المستفيد استخدم «إرسال توصية».</p>
       </div>
       <Link to={`/provider/bookings/${id}`} className="text-sm text-muted">→ العودة للحجز</Link>
       <Card className="mt-3">
@@ -82,7 +82,7 @@ export function RecommendationComposer() {
     <div className="mx-auto max-w-3xl">
       <div role="note" className="sticky top-16 z-10 mb-4 rounded-xl border-2 border-success bg-success-bg px-4 py-3 text-success">
         <p className="font-bold">هذه التوصية سترسَل مباشرة للمستفيد الآن</p>
-        <p className="text-sm">توجيه عام أو مقاطع للاستماع — لا جرعات ولا وصفات دوائية ولا وعد بشفاء، حتى لو كنت طبيباً مرخّصاً. الوصفات مكانها القناة الطبية الرسمية.</p>
+        <p className="text-sm">توجيه عام أو مقاطع للاستماع — ولا وعد بشفاء أو بنتيجة مضمونة.</p>
       </div>
       <Link to={`/provider/bookings/${id}`} className="text-sm text-muted">→ العودة للحجز</Link>
       <Card className="mt-3">

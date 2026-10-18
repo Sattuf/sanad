@@ -19,11 +19,11 @@ export async function apiLogin(request: APIRequestContext, email: string, passwo
   return body.accessToken as string;
 }
 
-/** حجز مقبول بين المستفيد التجريبي والطبيبة التجريبية — عبر الـ API لتسريع التهيئة. */
-export async function acceptedBookingWithDoctor(request: APIRequestContext) {
+/** حجز مقبول بين المستفيد التجريبي والشيخ التجريبي — عبر الـ API لتسريع التهيئة. */
+export async function acceptedBookingWithSheikh(request: APIRequestContext) {
   const beneficiary = await apiLogin(request, "beneficiary@sanad.local");
-  const doctor = await apiLogin(request, "doctor@sanad.local");
-  const dir = await (await request.get(`${API}/api/v1/directory?practitionerType=LicensedPhysician`)).json();
+  const sheikh = await apiLogin(request, "sheikh@sanad.local");
+  const dir = await (await request.get(`${API}/api/v1/directory?practitionerType=ReligiousPractitioner`)).json();
   const providerId = dir.items[0].id as string;
   const provider = await (await request.get(`${API}/api/v1/providers/${providerId}`)).json();
   const slots = await (await request.get(`${API}/api/v1/providers/${providerId}/availability`, { headers: { Authorization: `Bearer ${beneficiary}` } })).json();
@@ -33,7 +33,7 @@ export async function acceptedBookingWithDoctor(request: APIRequestContext) {
   });
   expect(booking.ok()).toBeTruthy();
   const { id } = await booking.json();
-  const accept = await request.post(`${API}/api/v1/bookings/${id}/accept`, { headers: { Authorization: `Bearer ${doctor}` } });
+  const accept = await request.post(`${API}/api/v1/bookings/${id}/accept`, { headers: { Authorization: `Bearer ${sheikh}` } });
   expect(accept.ok()).toBeTruthy();
   return id as string;
 }

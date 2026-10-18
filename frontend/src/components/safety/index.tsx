@@ -1,42 +1,8 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEmergency } from "../../stores/emergency";
 import type { VerificationBadge as Badge } from "@sanad/shared/api/types";
 import { cx } from "../../lib/cx";
 import { formatDate } from "@sanad/shared/lib/format";
-
-/**
- * شريط الطوارئ — بلا أي حركة (الوضوح الفوري أولاً)، أعلى كل شاشة، لا يختفي تلقائياً.
- * references/07-safety-guardrails.md §7.4 و13 §13.4.
- */
-export function EmergencyReferralBanner() {
-  const referral = useEmergency((s) => s.referral);
-  const dismiss = useEmergency((s) => s.dismiss);
-  if (!referral) return null;
-  return (
-    <div role="alert" aria-live="assertive" className="border-b-4 border-danger bg-danger-bg text-danger">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-base font-bold">نحن قلقون عليك — إن كنت في خطر، اطلب المساعدة الآن</p>
-          <p className="mt-1 text-sm leading-7">{referral.message}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {referral.contacts.map((c) => (
-            <a key={c.phoneNumber} href={`tel:${c.phoneNumber}`} className="rounded-xl bg-danger px-4 py-2 text-sm font-bold text-white">
-              اتصل {c.phoneNumber} <span className="font-normal">— {c.label}</span>
-            </a>
-          ))}
-          <Link to="/emergency" className="rounded-xl border border-danger px-4 py-2 text-sm font-bold">
-            صفحة الطوارئ
-          </Link>
-          <button type="button" onClick={dismiss} className="px-2 text-xs underline">
-            إخفاء
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function VerificationBadge({ verification }: { verification: Badge }) {
   const { t } = useTranslation();

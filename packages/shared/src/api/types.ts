@@ -87,7 +87,7 @@ export interface OrganizationPublic {
   verificationSourceUrl: string | null; verification: VerificationBadge; providers: DirectoryItem[];
 }
 
-export interface Transparency { publishedProviders: number; publishedOrganizations: number; physicianProviders: number; religiousProviders: number }
+export interface Transparency { publishedProviders: number; publishedOrganizations: number }
 
 export interface Slot { id: string; startUtc: string; endUtc: string; status: string }
 
@@ -163,7 +163,6 @@ export interface ReportItem {
 }
 export interface ReportDetail { report: ReportItem; description: string | null; currentEscalationLevel: string | null }
 export interface EscalationCase { id: string; subjectAccountId: string; level: string; documentedReportsCount: number; isOpen: boolean; lastRecomputedAtUtc: string | null }
-export interface SafetyAlert { auditEntryId: string; userId: string | null; source: string; sourceEntityId: string | null; occurredAtUtc: string }
 
 export interface UserSummary { id: string; email: string | null; phoneNumber: string | null; displayName: string; roles: Role[]; twoFactorEnabled: boolean; createdAtUtc: string; isDeleted: boolean }
 export interface UserPage { items: UserSummary[]; total: number }

@@ -6,7 +6,7 @@ import { ApiError, api, mediaUrl } from "../../api/client";
 import { useMe } from "../../api/hooks";
 import type {
   AudioCategory, AudioTrackAdmin, EscalationCase, OrganizationAdmin, OrganizationTrack, ProviderAdmin, ReportDetail, ReportItem, Role,
-  SafetyAlert, UserPage, VerificationQueueItem,
+  UserPage, VerificationQueueItem,
 } from "@sanad/shared/api/types";
 import { TrackMedia } from "../../components/TrackMedia";
 import { LibraryAddPanel } from "./LibraryAddPanel";
@@ -19,11 +19,9 @@ const tabs: Array<{ to: string; label: string; roles: Role[] }> = [
   { to: "/staff/organizations", label: "الجهات", roles: ["Coordinator"] },
   { to: "/staff/providers", label: "المختصون", roles: ["Coordinator"] },
   { to: "/staff/reports", label: "البلاغات والتصعيد", roles: ["Coordinator"] },
-  { to: "/staff/safety-alerts", label: "تنبيهات السلامة", roles: ["Coordinator", "ClinicalSupervisor"] },
   { to: "/staff/library", label: "المكتبة", roles: ["ContentManager", "SystemAdmin"] },
   { to: "/staff/duas", label: "الأدعية المكتوبة", roles: ["ContentManager"] },
   { to: "/staff/companion-plans", label: "خطط تطبيق سند", roles: ["ContentManager"] },
-  { to: "/staff/companion-emergency", label: "أرقام الطوارئ", roles: ["Coordinator", "ClinicalSupervisor"] },
   { to: "/staff/companion-stats", label: "مؤشرات سند", roles: ["ContentManager", "Coordinator"] },
   { to: "/staff/users", label: "الأدوار", roles: ["SystemAdmin"] },
 ];
@@ -180,7 +178,7 @@ export function OrganizationsAdminPage() {
           <Field label="الاسم التجاري" htmlFor="ot"><Input id="ot" value={form.tradeName} onChange={(e) => setForm({ ...form, tradeName: e.target.value })} /></Field>
           <Field label="المسار" htmlFor="otr">
             <Select id="otr" value={form.track} onChange={(e) => setForm({ ...form, track: e.target.value as OrganizationTrack })}>
-              {(["WaqfFree", "DawahGuidance", "LicensedHealth", "IndependentConsultant"] as const).map((k) => <option key={k} value={k}>{t(`track.${k}`)}</option>)}
+              {(["WaqfFree", "DawahGuidance", "IndependentConsultant"] as const).map((k) => <option key={k} value={k}>{t(`track.${k}`)}</option>)}
             </Select>
           </Field>
           <Field label="رقم السجل" htmlFor="orn"><Input id="orn" value={form.registrationNumber} onChange={(e) => setForm({ ...form, registrationNumber: e.target.value })} /></Field>
@@ -318,29 +316,6 @@ function ReportReview({ id, onDone }: { id: string; onDone: () => void }) {
   );
 }
 
-export function SafetyAlertsPage() {
-  const alerts = useQuery({ queryKey: ["safety-alerts"], queryFn: () => api.get<SafetyAlert[]>("/api/v1/admin/safety-alerts"), refetchInterval: 30_000 });
-  const sourceLabel: Record<string, string> = { BookingBeneficiaryNote: "ملاحظة حجز", ConversationMessage: "رسالة محادثة", Report: "بلاغ" };
-  if (alerts.isLoading) return <Loading />;
-  if (alerts.error) return <StaffError error={alerts.error} />;
-  return (
-    <div>
-      <PageHeader title="تنبيهات السلامة" subtitle="مؤشرات خطر رُصدت آلياً. المصدر والتوقيت فقط — النص نفسه لا يظهر هنا. تابِع عبر المسار الإشرافي الموثّق." />
-      {!alerts.data?.length ? <EmptyState title="لا تنبيهات" /> : (
-        <ul className="grid gap-2">
-          {alerts.data.map((a) => (
-            <li key={a.auditEntryId} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-danger/40 bg-danger-bg px-4 py-3 text-danger">
-              <span className="font-semibold">{sourceLabel[a.source] ?? a.source}</span>
-              <span className="num text-sm">{formatDateTime(a.occurredAtUtc)}</span>
-              <span className="num w-full break-all text-xs opacity-80">مستخدم: {a.userId} · مصدر: {a.sourceEntityId}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 // ── المكتبة (ContentManager) ─────────────────────────────────────────────────
 /** مجلدات المكتبة = تصنيفات AudioTrack. كل مجلد يحدد تلقائياً تصنيف ما يُضاف إليه. */
 const libraryFolders: Array<{ id: AudioCategory; label: string; sourceHint: string }> = [
@@ -455,7 +430,7 @@ function LibraryManager() {
 }
 
 // ── الأدوار (SystemAdmin) — لا خيار لمنح SystemAdmin إطلاقاً (10 §10.9) ─────────
-const assignable: Role[] = ["Coordinator", "ContentManager", "PrivacySecurityOfficer", "ClinicalSupervisor"];
+const assignable: Role[] = ["Coordinator", "ContentManager", "PrivacySecurityOfficer"];
 
 export function UsersAdminPage() {
   const { t } = useTranslation();

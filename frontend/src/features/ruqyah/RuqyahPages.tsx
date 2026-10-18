@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useMe } from "../../api/hooks";
 import { cx } from "../../lib/cx";
 import { NotFoundPage } from "../../app/NotFoundPage";
-import { GROUP_ORDER, HERO_VERSES as heroVerses, awarenessGuides, collections, findCollection, findGuide, groups, guidePath, healthGuides, methodGuides, suggestedWird, type Collection, type Guide, type Item, type SceneTheme } from "@sanad/shared/content/ruqyah";
+import { GROUP_ORDER, HERO_VERSES as heroVerses, awarenessGuides, collections, findCollection, findGuide, groups, guidePath, methodGuides, suggestedWird, type Collection, type Guide, type Item, type SceneTheme } from "@sanad/shared/content/ruqyah";
 import { quran } from "@sanad/shared/content/quran";
 import { useDailyProgress, useCollectionEntries, useMyWird, type MyWird } from "./progress";
 import { DueWirdNudge, ReminderCard } from "./ReminderWidgets";
@@ -66,10 +66,6 @@ export function RuqyahHubPage() {
         <h2 id="guides-title" className="text-2xl font-bold">منهج الوقاية والعلاج الشرعي</h2>
         <p className="mt-1 text-muted">خطوات عملية مدعومة بالدليل: كيف تتحصّن، وكيف ترقي نفسك، وما الذي تحذره.</p>
         <GuideGrid items={methodGuides} action="اقرأ المنهج ←" />
-        <Link to="/health/treatment-and-ruqyah" className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:border-primary">
-          <span><span className="font-bold">الرقية والتداوي معاً</span> <span className="text-muted">— «تداووا عباد الله»: كيف تجمع بين الرقية ومراجعة الطبيب.</span></span>
-          <span className="text-sm font-semibold text-primary">الصحة والطمأنينة ←</span>
-        </Link>
       </section>
 
       <section aria-labelledby="awareness-title">
@@ -533,7 +529,6 @@ function Counter({ count, repeat, onCount }: { count: number; repeat: number; on
 const guideSections: Record<NonNullable<Guide["kind"]>, { root: { to: string; label: string }; crumb?: string; tag: string; list: Guide[] }> = {
   method: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "المنهج", tag: "منهج", list: methodGuides },
   awareness: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "توعية وتحذير", tag: "توعية", list: awarenessGuides },
-  health: { root: { to: "/health", label: "الصحة والطمأنينة" }, tag: "صحة", list: healthGuides },
 };
 
 export function RuqyahGuidePage() {
@@ -584,7 +579,7 @@ export function RuqyahGuidePage() {
             {s.cta && (
               <Link
                 to={s.cta.to}
-                className={cx("mt-5 inline-block rounded-xl px-4 py-2 text-sm font-semibold", s.cta.to === "/emergency" ? "bg-danger text-white" : "bg-primary text-primary-contrast")}
+                className="mt-5 inline-block rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-contrast"
               >
                 {s.cta.label}
               </Link>

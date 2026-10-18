@@ -4,7 +4,7 @@ import { useMemo } from "react";
 /*
   لغة الحركة (references/13-visual-motion-design.md): مصباح دافئ متنفّس + جزيئات ضوء صاعدة.
   transform/opacity فقط (لا Layout)، حد أقصى 24–30 جزيئاً، واحترام prefers-reduced-motion إلزامي.
-  لا تُستخدم إطلاقاً في شاشة الطوارئ ولا في محرري الملاحظة/التوصية.
+  لا تُستخدم إطلاقاً في محرري الملاحظة/التوصية.
 */
 
 export function AnimatedLamp({ size = 176 }: { size?: number }) {

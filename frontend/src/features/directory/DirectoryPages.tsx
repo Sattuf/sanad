@@ -45,14 +45,9 @@ export function DirectoryPage() {
         <Input id="dq" placeholder="ابحث باسم أو خدمة أو نطاق…" value={q} onChange={(e) => setQ(e.target.value)} />
         <Select aria-label="المسار" value={params.get("track") ?? ""} onChange={(e) => setParam("track", e.target.value)}>
           <option value="">كل المسارات</option>
-          {(["WaqfFree", "DawahGuidance", "LicensedHealth", "IndependentConsultant"] as const).map((k) => (
+          {(["WaqfFree", "DawahGuidance", "IndependentConsultant"] as const).map((k) => (
             <option key={k} value={k}>{t(`track.${k}`)}</option>
           ))}
-        </Select>
-        <Select aria-label="نوع الممارسة" value={params.get("practitionerType") ?? ""} onChange={(e) => setParam("practitionerType", e.target.value)}>
-          <option value="">طبيب أو شيخ</option>
-          <option value="LicensedPhysician">{t("practitionerType.LicensedPhysician")}</option>
-          <option value="ReligiousPractitioner">{t("practitionerType.ReligiousPractitioner")}</option>
         </Select>
         <Select aria-label="طريقة التقديم" value={params.get("deliveryMode") ?? ""} onChange={(e) => setParam("deliveryMode", e.target.value)}>
           <option value="">أي طريقة</option>

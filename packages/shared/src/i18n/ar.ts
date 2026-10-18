@@ -3,7 +3,6 @@ export const ar = {
   nav: {
     directory: "الدليل",
     ruqyah: "الرقية والتحصين",
-    health: "الصحة والطمأنينة",
     library: "المكتبة الصوتية",
     bookings: "حجوزاتي",
     recommendations: "توصياتي",
@@ -54,8 +53,6 @@ export const ar = {
   },
   publication: { Draft: "مسودة", ConditionallyApproved: "معتمد مشروطاً", Published: "منشور", Suspended: "معلَّق", Rejected: "مرفوض" },
   documentType: {
-    MedicalPracticeLicense: "رخصة مزاولة مهنة طبية",
-    MedicalBoardRegistration: "تسجيل لدى هيئة/نقابة طبية",
     ShariaIjazah: "إجازة شرعية",
     ShariaEndorsement: "تزكية من جهة شرعية معروفة",
     OrganizationRegistration: "سجل/ترخيص جهة",

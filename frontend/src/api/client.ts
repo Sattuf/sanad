@@ -1,13 +1,11 @@
 import { createApiClient } from "@sanad/shared/api/core";
-import { useEmergency } from "../stores/emergency";
 import { useSession } from "../stores/session";
 
 export { ApiError, type RequestOptions } from "@sanad/shared/api/core";
-export { EMERGENCY_HEADER } from "@sanad/shared/safety/emergency";
 
 export const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, "") ?? "http://localhost:5080";
 
-// النواة مشتركة مع تطبيق الجوال (packages/shared)؛ هنا فقط ربطها بمخزن الجلسة وشريط الطوارئ في الويب
+// النواة مشتركة مع تطبيق الجوال (packages/shared)؛ هنا فقط ربطها بمخزن الجلسة في الويب
 const client = createApiClient({
   baseUrl: API_BASE,
   session: {
@@ -16,7 +14,6 @@ const client = createApiClient({
     setTokens: (access, refresh) => useSession.getState().setTokens(access, refresh),
     clear: () => useSession.getState().clear(),
   },
-  onEmergency: (referral) => useEmergency.getState().raise(referral),
 });
 
 export const { request, api, mediaUrl } = client;
