@@ -9,7 +9,6 @@ namespace Sanad.Api.Middleware;
 
 /// <summary>
 /// تحويل الاستثناءات إلى ProblemDetails موحّد. لا تفاصيل داخلية في الاستجابة أبداً.
-/// إن رُصد مؤشر خطر خلال الطلب، تُضمَّن معلومات الإحالة العاجلة حتى في استجابة الخطأ.
 /// </summary>
 public sealed class SanadExceptionHandler(IProblemDetailsService problemDetails, ILogger<SanadExceptionHandler> logger) : IExceptionHandler
 {

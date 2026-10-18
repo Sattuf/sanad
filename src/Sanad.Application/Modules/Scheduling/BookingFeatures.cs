@@ -39,8 +39,6 @@ public sealed class CreateBookingRequestCommandHandler(
 {
     public async Task<BookingCreatedDto> Handle(CreateBookingRequestCommand request, CancellationToken cancellationToken)
     {
-        // أولاً وقبل أي منطق قد يفشل: فحص مؤشر الخطر — الإحالة تصل بصرف النظر عن نجاح إنشاء الحجز
-
         var userId = access.UserId;
         var now = clock.UtcNow;
         var key = requestContext.IdempotencyKey;
