@@ -1,7 +1,6 @@
 # سند — تطبيق Flutter
 
 تطبيق المستفيد على Android وiOS بواجهة الويب نفسها ([ADR-0023](../docs/adr/0023-mobile-app-flutter.md)، الخطة: [docs/flutter-app-plan.md](../docs/flutter-app-plan.md)).
-يحلّ محل تطبيق React Native في `mobile/` عند الإطلاق.
 
 ## التشغيل
 
