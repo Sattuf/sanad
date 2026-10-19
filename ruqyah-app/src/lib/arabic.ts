@@ -34,5 +34,3 @@ export function hijri(d = new Date(), withWeekday = true) {
     return gregorian.format(d);
   }
 }
-
-export const gregorianDate = (d = new Date()) => gregorian.format(d);

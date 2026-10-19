@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { collections } from "../ruqyah";
-import { buildEntries, bumpCount, countCompleted, localDay, mergeCounts, parseTime, slotForHour, wirdPayload } from "../wird";
+import { buildEntries, countCompleted, localDay, mergeCounts, parseTime, slotForHour, target, wirdPayload } from "../wird";
 
 const sleep = collections.find((c) => c.id === "sleep")!;
 
@@ -20,12 +20,10 @@ describe("الورد", () => {
     expect(mergeCounts({ "0": 2 }, undefined)).toEqual({ "0": 2 });
   });
 
-  it("العدّاد لا يتجاوز التكرار، والإتمام يُحسب", () => {
+  it("الإتمام يُحسب حين يبلغ كل عدّاد تكراره", () => {
     const entries = buildEntries("sleep", sleep.items);
-    let counts = {};
-    for (const e of entries) for (let i = 0; i < 50; i++) counts = bumpCount(counts, e);
+    const counts = Object.fromEntries(entries.map((e) => [e.key, target(e.item)]));
     expect(countCompleted(entries, counts)).toBe(entries.length);
-    expect(Object.values(counts).every((v) => (v as number) <= 100)).toBe(true);
     expect(wirdPayload("sleep", "2026-10-01", entries, counts)).toMatchObject({ completedItems: entries.length, totalItems: entries.length });
   });
 

@@ -20,11 +20,6 @@ export function useMe() {
   });
 }
 
-export function useHasRole(...roles: Role[]) {
-  const { data } = useMe();
-  return Boolean(data && roles.some((r) => data.roles.includes(r)));
-}
-
 /** يحفظ الرموز بعد نجاح أي طريقة دخول، ويعيد تحميل الملف الشخصي. */
 export function useCompleteSignIn() {
   const setTokens = useSession((s) => s.setTokens);

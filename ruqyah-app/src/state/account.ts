@@ -1,5 +1,4 @@
 import { useSyncExternalStore } from "react";
-import { ApiError } from "@sanad/shared/api/core";
 import { authApi, completedTokens } from "@sanad/shared/api/auth";
 import type { MyProfile } from "@sanad/shared/api/types";
 import { api, hasApi, isSignedIn, onSessionChange, session } from "../api/client";
@@ -84,8 +83,6 @@ export async function restoreSession() {
   if (!hasApi || !isSignedIn()) return;
   await afterSignIn();
 }
-
-export const isNetworkError = (e: unknown) => e instanceof ApiError && (e.status === 0 || e.status >= 500);
 
 // ── مزامنة الخطة ─────────────────────────────────────────────────────────────
 
