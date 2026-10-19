@@ -82,6 +82,8 @@ public static class AuthEndpoints
 
         g.MapGet("/google/callback", async (HttpContext http, ISender sender, IDistributedCache cache, IConfiguration config) =>
         {
+            // بلا إعداد جوجل لا يُسجَّل مخطط External أصلاً: 404 كنقطة التحدي، لا استثناء داخلي (500)
+            if (string.IsNullOrWhiteSpace(config["Auth:Google:ClientId"])) return Results.NotFound();
             var frontend = config["Frontend:BaseUrl"] ?? "/";
             var result = await http.AuthenticateAsync(ExternalScheme);
             await http.SignOutAsync(ExternalScheme);

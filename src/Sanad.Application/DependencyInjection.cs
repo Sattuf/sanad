@@ -24,6 +24,8 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(AuditLoggingBehavior<,>));
         });
 
+        // كل قاعدة تتوقف عند أول إخفاق: NotNull().Must(x => x.Count…) كانت تكمل إلى Must على null فترمي (500)
+        ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
         services.AddScoped<AccessContext>();
         services.AddScoped<FileUploadService>();
