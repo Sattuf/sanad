@@ -72,7 +72,7 @@
 | `tests/` | Domain / Application / Api.IntegrationTests | [الاختبارات](#الاختبارات) |
 | `frontend/` | الويب: React 18 + TypeScript + Vite + Tailwind، عربي RTL، Framer Motion | [ADR-0014](docs/adr/0014-frontend-client-and-session.md)، [ADR-0022](docs/adr/0022-local-first-daily-companion.md) |
 | `mobile_flutter/` | تطبيق الجوال بـ Flutter (Android وiOS)، يصل محتواه وألوانه من الويب آلياً | [README](mobile_flutter/README.md)، [ADR-0023](docs/adr/0023-mobile-app-flutter.md) |
-| `packages/shared/` | المحتوى والمنطق المشترك (المصحف، الأذكار، البرامج، كشف الخطر، عميل الـ API) ومولّدات Dart ومتجهات التطابق | [ADR-0023](docs/adr/0023-mobile-app-flutter.md) |
+| `packages/shared/` | المحتوى والمنطق المشترك (المصحف، الأذكار، البرامج، عميل الـ API) ومولّدات Dart ومتجهات التطابق | [ADR-0023](docs/adr/0023-mobile-app-flutter.md) |
 | `ruqyah-app/` | «سند» للرقية الذاتية: PWA محلية أولاً، وحساب اختياري للمزامنة والختمة الجماعية | [README](ruqyah-app/README.md)، [ADR-0021](docs/adr/0021-self-ruqyah-companion-app.md) |
 | `tools/Sanad.LibraryImport/` | استيراد مقاطع المكتبة الصوتية دفعة واحدة | [README](tools/Sanad.LibraryImport/README.md) |
 | `docs/adr/` | سجلّ قرارات المعمارية (23 قراراً) | [الفهرس](docs/README.md#سجلّ-القرارات-adr) |
@@ -121,7 +121,7 @@ node frontend/scripts/export-tokens.mjs --check      # ألوان Flutter وصو
 cd mobile_flutter; flutter analyze; flutter test --exclude-tags screenshot
 cd mobile_flutter; flutter test --tags screenshot    # لقطات المراجعة (‎--update-goldens لتحديثها بعد مراجعتها)
 cd ruqyah-app; npm run check:guardrails; npm run typecheck; npm test; npm run build
-npx playwright test                                  # E2E — يتطلب تشغيل الـ API والويب أولاً
+npx playwright test                                  # E2E (Chrome وFirefox وWebKit) — يتطلب تشغيل الـ API والويب أولاً، ويعمل في CI تلقائياً
 ```
 
 اختبار هجرات PostgreSQL عبر Testcontainers يُفعَّل بـ `SANAD_TEST_POSTGRES=1` (يحتاج Docker، ومفعّل في CI).
