@@ -1,9 +1,8 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { useMemo } from "react";
 
 /*
-  لغة الحركة (references/13-visual-motion-design.md): مصباح دافئ متنفّس + جزيئات ضوء صاعدة.
-  transform/opacity فقط (لا Layout)، حد أقصى 24–30 جزيئاً، واحترام prefers-reduced-motion إلزامي.
+  لغة الحركة (references/13-visual-motion-design.md): مصباح دافئ متنفّس.
+  transform/opacity فقط (لا Layout)، واحترام prefers-reduced-motion إلزامي.
   لا تُستخدم إطلاقاً في محرري الملاحظة/التوصية.
 */
 
@@ -45,25 +44,5 @@ function LampGlyph({ size }: { size: number }) {
       <path d="M38 98 h44" stroke="var(--lamp-glow)" strokeWidth="3" strokeLinecap="round" />
       <path d="M60 18 v-8" stroke="var(--lamp-glow)" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
     </svg>
-  );
-}
-
-export function ParticleField({ count = 24 }: { count?: number }) {
-  const reduce = useReducedMotion();
-  const particles = useMemo(() => Array.from({ length: Math.min(count, 30) }, (_, i) => i), [count]);
-  if (reduce) return null;
-  return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden>
-      {particles.map((i) => (
-        <motion.span
-          key={i}
-          className="absolute h-1 w-1 rounded-full"
-          style={{ left: `${(i * 37) % 100}%`, bottom: `${(i * 13) % 20}%`, background: "var(--lamp-glow)" }}
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: [0, 0.8, 0], y: -140 - (i % 4) * 30 }}
-          transition={{ duration: 3 + (i % 5), repeat: Infinity, delay: i * 0.3, ease: "easeOut" }}
-        />
-      ))}
-    </div>
   );
 }

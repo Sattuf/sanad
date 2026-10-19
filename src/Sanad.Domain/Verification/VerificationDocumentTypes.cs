@@ -20,8 +20,6 @@ public static class VerificationDocumentTypes
         [PractitionerType.ReligiousPractitioner] = [ShariaIjazah, ShariaEndorsement],
     };
 
-    public static IReadOnlyList<string> AllowedFor(PractitionerType type) => AllowedByType[type];
-
     public static bool IsKnownPractitionerDocument(string documentType) =>
         AllowedByType.Values.Any(list => list.Contains(documentType, StringComparer.Ordinal));
 

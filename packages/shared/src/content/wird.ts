@@ -48,9 +48,6 @@ export const target = (item: Item) => item.repeat ?? 1;
 
 export const countCompleted = (entries: Entry[], counts: Counts) => entries.filter((e) => (counts[e.key] ?? 0) >= target(e.item)).length;
 
-/** زيادة عدّاد عنصر حتى عدد تكراره، لا أكثر. */
-export const bumpCount = (counts: Counts, entry: Entry): Counts => ({ ...counts, [entry.key]: Math.min(target(entry.item), (counts[entry.key] ?? 0) + 1) });
-
 /** جسم الحفظ في الحساب: العناصر المعروفة فقط، وكل عدّاد ضمن الحد. */
 export function wirdPayload(collectionId: string, day: string, entries: Entry[], counts: Counts) {
   return {
