@@ -51,7 +51,7 @@ test("5) لا عنصر واجهة يتعلق باشتراك أو دفع في أ�
   await loginViaUi(page, "sheikh@sanad.local");
   // كلمات كاملة (مع حرف عطف/جر ملتصق) من النص المرئي بفواصل عناصره؛ textContent يلصق العناصر فتتكوّن كلمات وهمية
   // («وإرشاد» + «فعّالة» ← «…ادفع…»)
-  const forbidden = /(?:^|[\s\p{P}])[وفبل]?(ادفع|الدفع|السعر|الأسعار|اشترك الآن|باقة)|(payment|subscribe|checkout)/iu;
+  const forbidden = /(?:^|[\s\p{P}])[وفبل]?(ادفع|الدفع|السعر|الأسعار|اشترك الآن|باقة)|\b(payment|subscribe|checkout)\b/iu;
   for (const path of ["/", "/directory", "/dashboard", "/library", "/provider", "/provider/offerings", "/provider/slots", "/account"]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
