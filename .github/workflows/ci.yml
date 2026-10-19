@@ -141,3 +141,57 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm audit --audit-level=high
+
+  # E2E على الـ API الحقيقي (Development: SQLite وحسابات العرض) والويب المبني، بمحرّكات Chrome وFirefox وWebKit.
+  # المفاتيح عشوائية لهذا التشغيل فقط؛ لا سرّ في المستودع.
+  e2e:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      SANAD_API_URL: http://localhost:5080
+      SANAD_WEB_URL: http://localhost:5173
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with: { dotnet-version: "9.0.x" }
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - name: Random keys for this run
+        run: |
+          {
+            echo "Auth__Jwt__SigningKeyBase64=$(openssl rand -base64 48)"
+            echo "Encryption__FieldKeyBase64=$(openssl rand -base64 32)"
+            echo "Otp__HmacKeyBase64=$(openssl rand -base64 32)"
+            echo "Storage__UrlSigningKeyBase64=$(openssl rand -base64 32)"
+          } >> "$GITHUB_ENV"
+      - run: dotnet build src/Sanad.Api --configuration Release
+      - name: Start the API
+        run: nohup dotnet run --project src/Sanad.Api --configuration Release --no-build --urls http://localhost:5080 > api.log 2>&1 &
+      - name: Build and serve the web app
+        working-directory: frontend
+        env: { VITE_API_BASE_URL: http://localhost:5080 }
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium firefox webkit
+          npm run build
+          nohup npx vite preview --port 5173 --strictPort > ../web.log 2>&1 &
+      - name: Wait for both servers
+        run: |
+          for u in "$SANAD_API_URL/api/v1/auth/providers" "$SANAD_WEB_URL/"; do
+            for i in $(seq 1 60); do curl -sf -o /dev/null "$u" && break; sleep 2; done
+            curl -sf -o /dev/null "$u" || { echo "not up: $u"; cat api.log web.log; exit 1; }
+          done
+      - name: Playwright
+        working-directory: frontend
+        run: npx playwright test
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: e2e-report
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+            api.log
+            web.log
+          retention-days: 7

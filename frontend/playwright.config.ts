@@ -9,14 +9,20 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: false,
   workers: 1,
-  reporter: [["list"]],
+  // في CI: تقرير HTML يُرفع عند الفشل، وإعادة محاولة واحدة لتمييز التذبذب من الفشل الحقيقي
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
+  retries: process.env.CI ? 1 : 0,
   use: {
     baseURL: process.env.SANAD_WEB_URL ?? "http://localhost:5173",
     locale: "ar",
     trace: "retain-on-failure",
   },
+  // التوافقية: المحرّكات الثلاثة (Chrome، Firefox، Safari/WebKit) على الاختبارات الحرجة، واللقطات على الجوال
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] }, testMatch: /critical\.spec\.ts/ },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /critical\.spec\.ts/ },
     { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /visual\.spec\.ts/ },
+    { name: "mobile-safari", use: { ...devices["iPhone 14"] }, testMatch: /visual\.spec\.ts/ },
   ],
 });

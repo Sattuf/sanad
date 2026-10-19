@@ -49,11 +49,64 @@ test("4) صفحة المشاركة العامة تعمل من متصفح بلا 
 
 test("5) لا عنصر واجهة يتعلق باشتراك أو دفع في أي شاشة", async ({ page }) => {
   await loginViaUi(page, "sheikh@sanad.local");
-  const forbidden = /(ادفع|الدفع|السعر|الأسعار|اشترك الآن|باقة|payment|subscribe|checkout)/i;
+  // كلمات كاملة (مع حرف عطف/جر ملتصق) من النص المرئي بفواصل عناصره؛ textContent يلصق العناصر فتتكوّن كلمات وهمية
+  // («وإرشاد» + «فعّالة» ← «…ادفع…»)
+  const forbidden = /(?:^|[\s\p{P}])[وفبل]?(ادفع|الدفع|السعر|الأسعار|اشترك الآن|باقة)|(payment|subscribe|checkout)/iu;
   for (const path of ["/", "/directory", "/dashboard", "/library", "/provider", "/provider/offerings", "/provider/slots", "/account"]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
-    await expect(page.locator("body"), `المسار ${path}`).not.toContainText(forbidden);
+    const text = await page.evaluate(() => document.body.innerText);
+    expect(text, `المسار ${path}`).not.toMatch(forbidden);
   }
 });
 
+
+test("6) الجلسة: رمز الوصول في الذاكرة فقط، والخروج يبطل رمز التحديث على الخادم", async ({ page, request }) => {
+  await loginViaUi(page, "beneficiary@sanad.local");
+  const stored = await page.evaluate(() => ({
+    local: JSON.stringify({ ...localStorage }),
+    session: JSON.stringify({ ...sessionStorage }),
+    cookies: document.cookie,
+    refresh: sessionStorage.getItem("sanad.refresh"),
+  }));
+  // لا JWT (يبدأ بـ eyJ) ولا رمز تحديث في localStorage أو الكوكيز؛ رمز التحديث وحده في sessionStorage (ADR-0014)
+  expect(stored.local).not.toMatch(/eyJ|refresh/i);
+  expect(stored.cookies).not.toMatch(/eyJ|refresh/i);
+  expect(stored.session).not.toMatch(/eyJ/);
+  expect(stored.refresh).toBeTruthy();
+
+  await page.getByRole("button", { name: "خروج", exact: true }).first().click();
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("sanad.refresh"))).toBeNull();
+  const reuse = await request.post(`${API}/api/v1/auth/refresh`, { data: { refreshToken: stored.refresh } });
+  expect([400, 401]).toContain(reuse.status());
+
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/login/);
+});
+
+test("7) نص المستخدم يُعرض نصاً: لا تنفيذ لسكربت في الاسم أو رسالة المحادثة (XSS مخزّن)", async ({ page, request }) => {
+  const payload = `<img src=x onerror="window.__xss=1"><script>window.__xss=1</script>`;
+  const bookingId = await acceptedBookingWithSheikh(request);
+  const token = await apiLogin(request, "beneficiary@sanad.local");
+  const auth = { Authorization: `Bearer ${token}` };
+  const original = (await (await request.get(`${API}/api/v1/me`, { headers: auth })).json()).displayName as string;
+  try {
+    expect((await request.patch(`${API}/api/v1/me`, { headers: auth, data: { displayName: `مستفيد ${payload}`.slice(0, 100) } })).ok()).toBeTruthy();
+    const conv = await (await request.post(`${API}/api/v1/bookings/${bookingId}/conversation`, { headers: auth })).json();
+    expect((await request.post(`${API}/api/v1/conversations/${conv.id}/messages`, { headers: auth, data: { body: payload } })).ok()).toBeTruthy();
+
+    await loginViaUi(page, "beneficiary@sanad.local");
+    for (const path of ["/dashboard", "/account", `/conversations/${conv.id}`]) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss), `المسار ${path}`).toBeUndefined();
+    }
+    await expect(page.getByText(payload).first()).toBeVisible(); // ظاهر نصاً حرفياً (في الرسالة، وفي الاسم أعلى الصفحة)
+    await loginViaUi(page, "sheikh@sanad.local");
+    await page.goto(`/conversations/${conv.id}`);
+    await page.waitForLoadState("networkidle");
+    expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
+  } finally {
+    await request.patch(`${API}/api/v1/me`, { headers: auth, data: { displayName: original } });
+  }
+});
