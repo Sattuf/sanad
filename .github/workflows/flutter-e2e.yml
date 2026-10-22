@@ -22,6 +22,12 @@ jobs:
       # الرحلات تسجّل الدخول مرات كثيرة من عنوان واحد
       RateLimiting__AuthPerMinute: "1000"
     steps:
+      # قرص المشغّل لا يكفي قسم بيانات المحاكي (7.4 GB): نحذف أدوات مثبّتة مسبقاً لا نستعملها
+      - name: Free disk space
+        run: |
+          sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL /usr/local/lib/node_modules /usr/local/share/powershell /usr/share/miniconda
+          sudo docker image prune --all --force > /dev/null
+          df -h /
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # المحاكي يحتاج KVM؛ مشغّلات ubuntu تدعمه لكن الجهاز غير متاح للمستخدم افتراضياً
       - name: Enable KVM
@@ -58,7 +64,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
           working-directory: mobile_flutter
           script: flutter test integration_test --dart-define=SANAD_API_BASE=http://10.0.2.2:5080 --reporter expanded
       - if: failure()
