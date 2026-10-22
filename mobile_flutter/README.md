@@ -49,5 +49,23 @@ flutter test --exclude-tags screenshot
 flutter test --tags screenshot --update-goldens
 ```
 
+### رحلات المستخدم على جهاز حقيقي (`integration_test/`)
+
+السيناريوهات السبعة في [خطة Flutter §9](../docs/flutter-app-plan.md): التطبيق الحقيقي بإضافاته الأصلية على محاكٍ أو جهاز،
+وخادم حقيقي في Development (حسابات العرض). الدخول يتم عبر الـ API ثم يُفتح التطبيق بالجلسة، فيمر بمسار استعادة الجلسة الحقيقي
+(دخول جوجل نفسه لا يعمل داخل اختبار).
+
+```bash
+# 1) الخادم (في مجلد المستودع) — المحاكي يصل إلى حاسوبك عبر 10.0.2.2
+$env:ASPNETCORE_ENVIRONMENT="Development"; dotnet run --project src/Sanad.Api --urls http://localhost:5080
+# 2) المحاكي مشغَّل، ثم من mobile_flutter (من PowerShell: Gradle يحتاج الكتابة في %USERPROFILE%\.gradle)
+flutter test integration_test -d emulator-5554 --dart-define=SANAD_API_BASE=http://10.0.2.2:5080
+```
+
+- **التطبيق لا يُفتح والاختبار ينتظر بلا نهاية** (وفي `adb logcat`: `START ... DefaultLauncher ... result code=-92`): بقي الوضع المتحفّظ
+  مفعّلاً من تجربة يدوية، فأيقونة التطبيق الأساسية معطّلة. أعِدها:
+  `adb root; adb shell pm enable app.sanad/app.sanad.DefaultLauncher; adb shell pm disable app.sanad/app.sanad.NotesLauncher; adb unroot`.
+- بيانات العرض تحتاج موعداً متاحاً للشيخ (رحلة الحجز)؛ كل تشغيل يحجز واحداً.
+
 ## الخطوط
 IBM Plex Sans Arabic وAmiri وAmiri Quran في `assets/fonts` برخصة SIL OFL 1.1 (نصوصها مع الملفات).

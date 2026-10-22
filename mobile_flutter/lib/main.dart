@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,15 +20,26 @@ import 'theme/theme.dart';
 /// سند — رفيق السكينة اليومي (ADR-0023). العربية وRTL افتراضياً ووحيدة، كالويب.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await startApp();
+}
+
+var _audioReady = false;
+
+/// يبني الحاوية بخدمات الجهاز الحقيقية ويشغّل التطبيق. اختبارات integration_test تستدعيه مرة أخرى لمحاكاة إعادة الفتح،
+/// ومع [overrides] لحقن جلسة أو خادم آخر — فالمسار هو نفسه الذي يمر به المستخدم.
+Future<ProviderContainer> startApp({List<Override> overrides = const []}) async {
   // التلاوة تستمر والشاشة مقفلة: خدمة وسائط أمامية بإشعار تحكّم، والأيقونة المحايدة دائماً.
   // تبقى الخدمة في المقدّمة عند الإيقاف المؤقت: انتهاء كل آية يُبلَّغ «متوقفاً» حتى تبدأ التالية، ولو خرجت الخدمة
   // من المقدّمة في هذه الفجوة لقطع النظام الشبكة عن التطبيق والشاشة مقفلة فتعلق الآية التالية. الإيقاف التام يزيل الإشعار.
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'app.sanad.playback',
-    androidNotificationChannelName: 'التشغيل الصوتي',
-    androidNotificationIcon: 'drawable/ic_stat_notes',
-    androidStopForegroundOnPause: false,
-  );
+  if (!_audioReady) {
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'app.sanad.playback',
+      androidNotificationChannelName: 'التشغيل الصوتي',
+      androidNotificationIcon: 'drawable/ic_stat_notes',
+      androidStopForegroundOnPause: false,
+    );
+    _audioReady = true; // مرة واحدة لكل عملية
+  }
   final (prefs, content) = (await SharedPreferences.getInstance(), await ContentRepository.load(rootBundle));
   // رمز التحديث من Keychain/Keystore قبل أول إطار: الجلسة تُستعاد صامتاً بأول طلب
   final refreshStore = SecureRefreshTokenStore();
@@ -42,6 +54,7 @@ Future<void> main() async {
       reminderSchedulerProvider.overrideWithValue(reminders),
       refreshTokenStoreProvider.overrideWithValue(refreshStore),
       initialRefreshTokenProvider.overrideWithValue(refreshToken),
+      ...overrides,
     ],
   );
   runApp(UncontrolledProviderScope(container: container, child: const SanadApp()));
@@ -51,6 +64,7 @@ Future<void> main() async {
   await reminders.init();
   await container.read(remindersProvider.notifier).refresh();
   await container.read(ruqyahRemindersProvider.notifier).refresh();
+  return container;
 }
 
 class SanadApp extends ConsumerWidget {

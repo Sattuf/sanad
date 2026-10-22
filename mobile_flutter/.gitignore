@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ذاكرة Kotlin المؤقتة لبناء أندرويد
+/android/.kotlin/
