@@ -195,3 +195,53 @@ jobs:
             api.log
             web.log
           retention-days: 7
+
+  # فحص ديناميكي (DAST): OWASP ZAP يهاجم الـ API وهو يعمل، بكل مسارات OpenAPI وبجلسة مستخدم حقيقية.
+  # القواعد المستثناة وأسبابها في .zap/rules.tsv
+  dast:
+    needs: [backend]
+    runs-on: ubuntu-latest
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      # ZAP يرسل آلاف الطلبات من عنوان واحد
+      RateLimiting__AuthPerMinute: "100000"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with: { dotnet-version: "9.0.x" }
+      - name: Random keys for this run
+        run: |
+          {
+            echo "Auth__Jwt__SigningKeyBase64=$(openssl rand -base64 48)"
+            echo "Encryption__FieldKeyBase64=$(openssl rand -base64 32)"
+            echo "Otp__HmacKeyBase64=$(openssl rand -base64 32)"
+            echo "Storage__UrlSigningKeyBase64=$(openssl rand -base64 32)"
+          } >> "$GITHUB_ENV"
+      - run: dotnet build src/Sanad.Api --configuration Release
+      - name: Start the API
+        run: |
+          nohup dotnet run --project src/Sanad.Api --configuration Release --no-build --urls http://localhost:5080 > api.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:5080/api/v1/auth/providers && exit 0; sleep 2; done
+          cat api.log; exit 1
+      # حساب جديد لا حساب عرض: الفحص قد يطلب حذف الحساب أو الخروج فيُبطل جلسته
+      - name: Session for the scan
+        run: |
+          token=$(curl -sf -X POST http://localhost:5080/api/v1/auth/register/email \
+            -H 'Content-Type: application/json' -H "Idempotency-Key: zap-$GITHUB_RUN_ID" \
+            -d '{"email":"zap@sanad.test","password":"Strong-Pass-123","displayName":"ZAP","acceptTerms":true,"acceptPrivacyPolicy":true}' | jq -r .accessToken)
+          echo "::add-mask::$token"
+          echo "ZAP_AUTH_HEADER_VALUE=Bearer $token" >> "$GITHUB_ENV"
+      - uses: zaproxy/action-api-scan@5158fe4d9d8fcc75ea204db81317cce7f9e5453d # v0.10.0
+        with:
+          target: http://localhost:5080/swagger/v1/swagger.json
+          format: openapi
+          rules_file_name: .zap/rules.tsv
+          allow_issue_writing: false
+          fail_action: true
+          artifact_name: zap-report
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dast-api-log
+          path: api.log
+          retention-days: 7
