@@ -148,6 +148,19 @@ public sealed partial class ApiHardeningTests(MatrixFixture fx) : IClassFixture<
         Header("Referrer-Policy").Should().Be("strict-origin-when-cross-origin");
         Header("Cache-Control").Should().Contain("no-store");
         Header("Cross-Origin-Resource-Policy").Should().Be("same-origin");
+        Header("X-Correlation-Id").Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task An_error_response_returns_the_callers_correlation_id()
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Get, "/api/v1/providers/00000000-0000-0000-0000-000000000001");
+        req.Headers.Add("X-Correlation-Id", "support-ticket-42");
+        var res = await fx.Api.Client().SendAsync(req);
+
+        res.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        res.Headers.GetValues("X-Correlation-Id").Should().Equal("support-ticket-42");
+        (await res.Content.ReadAsStringAsync()).Should().Contain("\"traceId\":\"support-ticket-42\"");
     }
 
     [Theory]
