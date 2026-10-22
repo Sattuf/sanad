@@ -9,6 +9,8 @@ import 'package:cryptography/cryptography.dart';
   AES-256-GCM، ومفتاح بيانات (DEK) عشوائي مغلّف بمفتاح من الرمز (PBKDF2-SHA256، 310 ألف دورة)،
   وملف JSON بالصيغة نفسها (v: 1) فتُفتح خزنة الويب هنا والعكس — تحرسه test-vectors/vault.json.
   WebCrypto يُخرج النص المشفّر ووسم GCM (16 بايت) متصلين في ct، فنفعل مثله.
+  التشفير بـ Dart وحدها (بلا cryptography_flutter): على أندرويد كان المسار الأصلي أبطأ من Dart في اشتقاق المفتاح
+  (5.9–11.6 ث مقابل 3.9 ث في debug، بالمفتاح نفسه)، والإضافة تستعمل إعداد Kotlin سيرفضه Flutter قريباً.
 */
 
 const vaultKey = 'sanad.vault.v1';
