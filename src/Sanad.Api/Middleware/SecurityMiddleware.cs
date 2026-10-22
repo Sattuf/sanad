@@ -54,7 +54,8 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
         var incoming = ctx.Request.Headers[Header].ToString();
         if (!string.IsNullOrWhiteSpace(incoming) && incoming.Length <= 64 && incoming.All(c => char.IsLetterOrDigit(c) || c == '-'))
             ctx.TraceIdentifier = incoming;
-        ctx.Response.Headers[Header] = ctx.TraceIdentifier;
+        // عند بدء الإرسال: معالج الاستثناءات يمسح الرؤوس قبل كتابة الخطأ، وهو أحوج ما يكون إلى المعرّف
+        ctx.Response.OnStarting(() => { ctx.Response.Headers[Header] = ctx.TraceIdentifier; return Task.CompletedTask; });
         using (LogContext.PushProperty("CorrelationId", ctx.TraceIdentifier))
             await next(ctx);
     }
