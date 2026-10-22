@@ -52,10 +52,12 @@ jobs:
           api report_json -d "hash=$hash" > mobsf-report.json
           api scorecard -d "hash=$hash" > mobsf-scorecard.json
       - name: Findings
-        run: python3 .mobsf/check.py mobsf-scorecard.json .mobsf/accepted.json
+        run: python3 .mobsf/check.py mobsf-scorecard.json .mobsf/accepted.json mobsf-report.json mobile_flutter/build/app/outputs/mapping/release/mapping.txt
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: mobsf-report
-          path: mobsf-*.json
+          path: |
+            mobsf-*.json
+            mobile_flutter/build/app/outputs/mapping/release/mapping.txt
           retention-days: 14
