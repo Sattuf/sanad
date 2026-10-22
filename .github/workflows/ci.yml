@@ -1,6 +1,15 @@
 name: CI
 
-on: [push, pull_request]
+# دقائق Actions محدودة (مستودع خاص): push على main فقط — فروع طلبات الدمج يغطيها pull_request،
+# وكان كل push إليها يشغّل CI مرتين. ودفعة أحدث على الطلب نفسه تلغي التشغيل الجاري.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # كل Action مثبّت على commit بعينه (والإصدار في التعليق): الوسم المتحرك قد يُغيَّر لاحقاً فيشغّل CI كوداً آخر.
 jobs:
@@ -173,7 +182,9 @@ jobs:
         env: { VITE_API_BASE_URL: http://localhost:5080 }
         run: |
           npm ci
-          npx playwright install --with-deps chromium firefox webkit
+          # طلبات الدمج: Chromium وحده؛ المتصفحات الثلاثة والجوال بعد الدمج في main
+          if [ "${{ github.event_name }}" = pull_request ]; then npx playwright install --with-deps chromium
+          else npx playwright install --with-deps chromium firefox webkit; fi
           npm run build
           nohup npx vite preview --port 5173 --strictPort > ../web.log 2>&1 &
       - name: Wait for both servers
@@ -184,7 +195,7 @@ jobs:
           done
       - name: Playwright
         working-directory: frontend
-        run: npx playwright test
+        run: npx playwright test ${{ github.event_name == 'pull_request' && '--project=desktop' || '' }}
       - if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
