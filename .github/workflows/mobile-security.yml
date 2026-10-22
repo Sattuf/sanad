@@ -1,0 +1,55 @@
+name: Mobile security
+
+# فحص ثابت لـ APK الإصدار بـ MobSF: الأذونات، والمكوّنات المكشوفة، وإعدادات الشبكة والنسخ الاحتياطي، والأسرار في الكود.
+# بناء الإصدار بطيء فلا يعمل مع كل push: أسبوعياً، ويدوياً، وعند تغيير إعدادات أندرويد أو هذا الملف.
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/mobile-security.yml
+      - .mobsf/**
+      - mobile_flutter/android/**
+      - mobile_flutter/pubspec.yaml
+
+permissions:
+  contents: read
+
+jobs:
+  mobsf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with: { distribution: temurin, java-version: "21" }
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with: { flutter-version: "3.44.3", channel: stable, cache: true }
+      - name: Start MobSF
+        run: |
+          key=$(openssl rand -hex 32)
+          echo "::add-mask::$key"
+          echo "MOBSF_KEY=$key" >> "$GITHUB_ENV"
+          # v4.5.3
+          docker run -d --name mobsf -p 8000:8000 -e MOBSF_API_KEY="$key" \
+            opensecurity/mobile-security-framework-mobsf@sha256:5113fbad0727445dda01afdccafea5e107bfa8632ead8a169492f5caa8aa1b7c
+      - name: Build the release APK
+        working-directory: mobile_flutter
+        run: flutter build apk --release
+      - name: Scan
+        run: |
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:8000/login/ && break; sleep 5; done
+          api() { curl -sf -H "Authorization: $MOBSF_KEY" "http://localhost:8000/api/v1/$@"; }
+          hash=$(api upload -F file=@mobile_flutter/build/app/outputs/flutter-apk/app-release.apk | python3 -c 'import json,sys; print(json.load(sys.stdin)["hash"])')
+          api scan -d "hash=$hash" > /dev/null
+          api report_json -d "hash=$hash" > mobsf-report.json
+          api scorecard -d "hash=$hash" > mobsf-scorecard.json
+      - name: Findings
+        run: python3 .mobsf/check.py mobsf-scorecard.json .mobsf/accepted.json
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mobsf-report
+          path: mobsf-*.json
+          retention-days: 14
