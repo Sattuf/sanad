@@ -1,0 +1,75 @@
+name: Flutter E2E
+
+# رحلات المستخدم السبع (mobile_flutter/integration_test) على محاكي أندرويد 16 وخادم حقيقي في Development.
+# بطيئة (بناء Gradle + إقلاع المحاكي) فلا تعمل مع كل push: كل ليلة، ويدوياً من تبويب Actions.
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+  # وعند تعديل هذا الملف نفسه، ليُختبر قبل الدمج
+  pull_request:
+    paths: [.github/workflows/flutter-e2e.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  journeys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      # الرحلات تسجّل الدخول مرات كثيرة من عنوان واحد
+      RateLimiting__AuthPerMinute: "1000"
+    steps:
+      # قرص المشغّل لا يكفي قسم بيانات المحاكي (7.4 GB): نحذف أدوات مثبّتة مسبقاً لا نستعملها
+      - name: Free disk space
+        run: |
+          sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL /usr/local/lib/node_modules /usr/local/share/powershell /usr/share/miniconda
+          sudo docker image prune --all --force > /dev/null
+          df -h /
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # المحاكي يحتاج KVM؛ مشغّلات ubuntu تدعمه لكن الجهاز غير متاح للمستخدم افتراضياً
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
+        with: { dotnet-version: "9.0.x" }
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with: { distribution: temurin, java-version: "21" }
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with: { flutter-version: "3.44.3", channel: stable, cache: true }
+      - name: Random keys for this run
+        run: |
+          {
+            echo "Auth__Jwt__SigningKeyBase64=$(openssl rand -base64 48)"
+            echo "Encryption__FieldKeyBase64=$(openssl rand -base64 32)"
+            echo "Otp__HmacKeyBase64=$(openssl rand -base64 32)"
+            echo "Storage__UrlSigningKeyBase64=$(openssl rand -base64 32)"
+          } >> "$GITHUB_ENV"
+      - run: dotnet build src/Sanad.Api --configuration Release
+      - name: Start the API
+        run: |
+          nohup dotnet run --project src/Sanad.Api --configuration Release --no-build --urls http://localhost:5080 > api.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:5080/api/v1/auth/providers && exit 0; sleep 2; done
+          cat api.log; exit 1
+      - run: flutter pub get
+        working-directory: mobile_flutter
+      # المحاكي يصل إلى الخادم على الجهاز المضيف عبر 10.0.2.2
+      - uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
+          working-directory: mobile_flutter
+          script: flutter test integration_test --dart-define=SANAD_API_BASE=http://10.0.2.2:5080 --reporter expanded
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: flutter-e2e-api-log
+          path: api.log
+          retention-days: 7
