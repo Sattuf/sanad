@@ -238,12 +238,13 @@ class _LegalLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.t;
     final style = TextStyle(fontSize: 12, height: 2, color: t.muted);
-    Widget link(String text, String path) => GestureDetector(
+    Widget link(String text, String path) => TapTarget(
           onTap: () => onOpen(path),
-          child: Text(text, style: style.copyWith(decoration: TextDecoration.underline)),
+          child: Semantics(link: true, child: Text(text, style: style.copyWith(decoration: TextDecoration.underline))),
         );
     return Wrap(
       alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text('بالمتابعة توافق على ', style: style),
         link('شروط الاستخدام', '/terms'),
@@ -284,7 +285,11 @@ class _GoogleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    return Opacity(
+    // يُعلن معطّلاً لقارئ الشاشة (وتُعفى ألوانه الباهتة من حد التباين) حين لا يتوفر الدخول بجوجل
+    return Semantics(
+      button: true,
+      enabled: enabled || busy,
+      child: Opacity(
       opacity: enabled || busy ? 1 : 0.5,
       child: Material(
         color: t.googleSurface,
@@ -315,6 +320,7 @@ class _GoogleButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

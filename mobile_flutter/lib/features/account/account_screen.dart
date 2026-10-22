@@ -234,11 +234,14 @@ class _Upcoming extends ConsumerWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text('لا مواعيد قادمة. ', style: TextStyle(color: t.muted)),
-              InkWell(
+              TapTarget(
                 onTap: () => context.push('/directory'),
-                child: Text(
-                  'تصفّح الدليل',
-                  style: TextStyle(color: t.primary, decoration: TextDecoration.underline),
+                child: Semantics(
+                  link: true,
+                  child: Text(
+                    'تصفّح الدليل',
+                    style: TextStyle(color: t.primary, decoration: TextDecoration.underline),
+                  ),
                 ),
               ),
             ],

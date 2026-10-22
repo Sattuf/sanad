@@ -124,9 +124,12 @@ class _SakinaScreenState extends ConsumerState<SakinaScreen> {
                         style: TextButton.styleFrom(foregroundColor: t.sakinaMuted, shape: const StadiumBorder()),
                         child: const Text('→ خروج'),
                       ),
-                      Text(
-                        'سكينة',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.sakinaAccent),
+                      Flexible(
+                        child: Text(
+                          'سكينة',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: t.sakinaAccent),
+                        ),
                       ),
                       const SizedBox(width: 64),
                     ],
