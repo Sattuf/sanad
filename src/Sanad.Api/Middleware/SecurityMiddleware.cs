@@ -10,6 +10,14 @@ public sealed class SecurityHeadersMiddleware(RequestDelegate next)
 
     public Task InvokeAsync(HttpContext ctx)
     {
+        // عند بدء الإرسال لا قبل التنفيذ: معالج الاستثناءات يمسح رؤوس الاستجابة قبل كتابة الخطأ،
+        // فرؤوس تُضبط مسبقاً كانت تضيع من كل 4xx/5xx يمر به (وجده ZAP واختبار ApiHardeningTests)
+        ctx.Response.OnStarting(() => { Apply(ctx); return Task.CompletedTask; });
+        return next(ctx);
+    }
+
+    private static void Apply(HttpContext ctx)
+    {
         var headers = ctx.Response.Headers;
         headers.XContentTypeOptions = "nosniff";
         headers.XFrameOptions = "DENY";
@@ -26,9 +34,13 @@ public sealed class SecurityHeadersMiddleware(RequestDelegate next)
         else
             headers.ContentSecurityPolicy = DefaultCsp;
 
-        if (path.StartsWithSegments("/api") && !path.StartsWithSegments("/api/v1/media"))
+        // الصوت يُشغَّل بعنصر <audio> من أصل الواجهة (طلب بلا CORS)، فيُسمح به عبر الأصول؛ وما عداه JSON يُجلب بـ CORS
+        headers["Cross-Origin-Resource-Policy"] = path.StartsWithSegments("/api/v1/media") || path.StartsWithSegments("/api/v1/public/recitation")
+            || path.StartsWithSegments("/api/v1/files/signed") ? "cross-origin" : "same-origin";
+
+        // نقطة النهاية قد تضبط تخزيناً مؤقتاً عاماً (التلاوات) فلا نتجاوزه
+        if (path.StartsWithSegments("/api") && !path.StartsWithSegments("/api/v1/media") && string.IsNullOrEmpty(headers.CacheControl))
             headers.CacheControl = "no-store";
-        return next(ctx);
     }
 }
 
