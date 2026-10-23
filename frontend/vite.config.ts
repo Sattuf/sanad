@@ -14,10 +14,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ["react", "react-dom", "react-router-dom"],
-          motion: ["framer-motion"],
-          realtime: ["@microsoft/signalr"],
+        // Vite 8 (Rolldown) يقبل manualChunks دالةً فقط؛ الحزم الكبيرة في ملفات مستقلة كما كانت
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return undefined;
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id)) return "react";
+          if (/[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/.test(id)) return "motion";
+          if (id.includes("@microsoft/signalr")) return "realtime";
+          return undefined;
         },
       },
     },
