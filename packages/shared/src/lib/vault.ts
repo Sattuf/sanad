@@ -24,22 +24,25 @@ export interface VaultFile {
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 
+/** بايتات على ArrayBuffer عادي: WebCrypto (BufferSource) لا يقبل منذ TypeScript 5.9 بايتات على SharedArrayBuffer. */
+export type Bytes = Uint8Array<ArrayBuffer>;
+
 export const b64 = (buf: ArrayBuffer | Uint8Array) => btoa(String.fromCharCode(...new Uint8Array(buf instanceof Uint8Array ? buf : new Uint8Array(buf))));
-export const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-export const randomBytes = (n: number) => crypto.getRandomValues(new Uint8Array(n));
+export const unb64 = (s: string): Bytes => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+export const randomBytes = (n: number): Bytes => crypto.getRandomValues(new Uint8Array(n));
 
 /** IV من 12 بايت يُحفظ منفصلاً، والنص المشفّر يحمل وسم GCM (16 بايت) في آخره كما يخرجه WebCrypto. */
-export async function seal(key: CryptoKey, plain: Uint8Array, iv: Uint8Array = randomBytes(12)): Promise<Sealed> {
+export async function seal(key: CryptoKey, plain: Bytes, iv: Bytes = randomBytes(12)): Promise<Sealed> {
   const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plain);
   return { iv: b64(iv), ct: b64(ct) };
 }
 
-export async function open(key: CryptoKey, sealed: Sealed): Promise<Uint8Array> {
+export async function open(key: CryptoKey, sealed: Sealed): Promise<Bytes> {
   const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(sealed.iv) }, key, unb64(sealed.ct));
   return new Uint8Array(pt);
 }
 
-export async function pinKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
+export async function pinKey(pin: string, salt: Bytes): Promise<CryptoKey> {
   const base = await crypto.subtle.importKey("raw", enc.encode(pin), "PBKDF2", false, ["deriveKey"]);
   return crypto.subtle.deriveKey(
     { name: "PBKDF2", hash: "SHA-256", salt, iterations: PBKDF2_ITERATIONS },
@@ -50,7 +53,7 @@ export async function pinKey(pin: string, salt: Uint8Array): Promise<CryptoKey> 
   );
 }
 
-export async function importDek(raw: Uint8Array): Promise<CryptoKey> {
+export async function importDek(raw: Bytes): Promise<CryptoKey> {
   return crypto.subtle.importKey("raw", raw, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
 }
 
@@ -61,7 +64,7 @@ export class WrongPinError extends Error {
 }
 
 /** ينشئ ملف خزنة جديداً: DEK عشوائي مغلّف بالرمز، والبيانات مشفّرة بالـ DEK. */
-export async function createVaultFile<T>(pin: string, initial: T): Promise<{ file: VaultFile; raw: Uint8Array }> {
+export async function createVaultFile<T>(pin: string, initial: T): Promise<{ file: VaultFile; raw: Bytes }> {
   const salt = randomBytes(16);
   const raw = randomBytes(32);
   const file: VaultFile = {
@@ -74,7 +77,7 @@ export async function createVaultFile<T>(pin: string, initial: T): Promise<{ fil
 }
 
 /** يفكّ DEK بالرمز — يرمي WrongPinError إن لم يطابق. */
-export async function unwrapWithPin(file: VaultFile, pin: string): Promise<Uint8Array> {
+export async function unwrapWithPin(file: VaultFile, pin: string): Promise<Bytes> {
   try {
     return await open(await pinKey(pin, unb64(file.salt)), file.pin);
   } catch {
@@ -82,15 +85,15 @@ export async function unwrapWithPin(file: VaultFile, pin: string): Promise<Uint8
   }
 }
 
-export async function readVaultData<T>(file: VaultFile, raw: Uint8Array): Promise<T> {
+export async function readVaultData<T>(file: VaultFile, raw: Bytes): Promise<T> {
   return JSON.parse(dec.decode(await open(await importDek(raw), file.data))) as T;
 }
 
-export async function writeVaultData<T>(file: VaultFile, raw: Uint8Array, data: T): Promise<VaultFile> {
+export async function writeVaultData<T>(file: VaultFile, raw: Bytes, data: T): Promise<VaultFile> {
   return { ...file, data: await seal(await importDek(raw), enc.encode(JSON.stringify(data))) };
 }
 
-export async function rewrapPin(file: VaultFile, raw: Uint8Array, newPin: string): Promise<VaultFile> {
+export async function rewrapPin(file: VaultFile, raw: Bytes, newPin: string): Promise<VaultFile> {
   const salt = randomBytes(16);
   return { ...file, salt: b64(salt), pin: await seal(await pinKey(newPin, salt), raw) };
 }
