@@ -155,3 +155,7 @@ npx playwright test                                  # E2E (Chrome وFirefox وW
 | `/privacy-mode` | الوضع المتحفّظ، الخروج السريع، مسح البيانات المحلية |
 
 النص القرآني من المصحف المدقّق المشترك (`packages/shared/src/content/quran.ts`، يُولَّد بـ `frontend/scripts/gen-quran.py`). التموضع والتسويق في `docs/growth/positioning.md`.
+
+## الحقوق
+
+جميع الحقوق محفوظة: المستودع منشور للاطلاع فقط، ولا يجوز نسخ الكود أو استخدامه دون إذن كتابي. التفاصيل في [LICENSE](LICENSE).
