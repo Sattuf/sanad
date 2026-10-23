@@ -43,35 +43,53 @@ export function AboutVerificationPage() {
   );
 }
 
-export function TermsPage() {
+// النص المعتمد منشور على GitHub Pages (site/ في المستودع)؛ التطبيق والمتجر يشيران إليه أيضاً
+const LEGAL_BASE = "https://sattuf.github.io/sanad";
+
+function LegalPage({ title, summary, path }: { title: string; summary: string[]; path: string }) {
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="شروط الاستخدام (مسودة أكاديمية)" subtitle="نسخة 1.0 — تتطلب مراجعة قانونية محلية قبل أي تشغيل فعلي." />
+      <PageHeader title={title} />
       <Card>
         <ul className="list-inside list-disc space-y-2 leading-8">
-          <li>سند طبقة توثيق إداري ووساطة وحجز، ومكتبة محتوى شرعي. لا تعد بأي نتيجة، والشفاء بيد الله وحده.</li>
-          <li>التوثيق إداري فقط، ولا يعني حكماً مهنياً أو شرعياً على مقدّم الخدمة.</li>
-          <li>ممنوع نشر أي وعد بشفاء أو بنتيجة مضمونة، في أي نص بالمنصة.</li>
-          <li>المحادثات إدارية وغير مراقَبة لحظياً.</li>
-          <li>سند مجانية بالكامل؛ لا اشتراكات ولا خدمات مدفوعة داخلها.</li>
+          {summary.map((s) => (
+            <li key={s}>{s}</li>
+          ))}
         </ul>
+        <a className="mt-4 inline-block text-primary underline" href={`${LEGAL_BASE}${path}/`} target="_blank" rel="noopener noreferrer">
+          النص الكامل
+        </a>
       </Card>
     </div>
   );
 }
 
+export function TermsPage() {
+  return (
+    <LegalPage
+      title="شروط الاستخدام"
+      path="/terms"
+      summary={[
+        "سند مكتبة محتوى شرعي ورفيق للرقية والأذكار وطبقة حجز مع مختصين؛ لا يعد بأي نتيجة، والشفاء بيد الله وحده.",
+        "لا يقدّم تشخيصاً ولا علاجاً طبياً، ولا يغني عن الطبيب.",
+        "توثيق المختصين إداري، ولا يعني حكماً مهنياً أو شرعياً.",
+        "سند مجاني بالكامل؛ لا اشتراكات ولا مدفوعات داخله.",
+      ]}
+    />
+  );
+}
+
 export function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-3xl">
-      <PageHeader title="سياسة الخصوصية (مسودة أكاديمية)" subtitle="نسخة 1.0 — تتطلب مراجعة قانونية محلية قبل أي تشغيل فعلي." />
-      <Card>
-        <ul className="list-inside list-disc space-y-2 leading-8">
-          <li>ملاحظاتك للمختص، ورسائلك، والتوصيات الموجّهة لك تُحفظ مشفّرة، ولا تظهر في السجلات.</li>
-          <li>لا يوجد في النظام أي تصنيف لحالتك.</li>
-          <li>ملاحظة المختص الخاصة لا يطّلع عليها إلا كاتبها، أو المنسق عند تصعيد موثّق.</li>
-          <li>يمكنك تصدير بياناتك أو حذف حسابك في أي وقت من صفحة "حسابي".</li>
-        </ul>
-      </Card>
-    </div>
+    <LegalPage
+      title="سياسة الخصوصية"
+      path="/privacy"
+      summary={[
+        "لا إعلانات ولا متتبّعات، ولا نبيع بياناتك.",
+        "مذكّرتك وتقدّمك على جهازك فقط؛ ملاحظتك للمختص ورسائلك محفوظة مشفّرة.",
+        "كل اطلاع على ملاحظتك غير المختص يُسجَّل وتراه في حسابك.",
+        "تحذف حسابك أو تصدّر بياناتك متى شئت من «حسابي».",
+      ]}
+    />
   );
 }

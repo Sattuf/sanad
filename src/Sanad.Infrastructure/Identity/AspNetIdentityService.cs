@@ -339,8 +339,14 @@ public sealed class AspNetIdentityService(
         await userManager.ResetAuthenticatorKeyAsync(user);
 
         if (phone is not null) db.OtpChallenges.RemoveRange(await db.OtpChallenges.Where(c => c.PhoneNumberE164 == phone).ToListAsync(ct));
+        // لا يبقى ما يربط بالمستخدم: إشعاراته، والردود المحفوظة لمفاتيح التكرار (قد تحوي بياناته)
+        db.UserNotifications.RemoveRange(await db.UserNotifications.Where(n => n.UserId == user.Id).ToListAsync(ct));
+        db.IdempotencyRecords.RemoveRange(await db.IdempotencyRecords.Where(r => r.UserId == user.Id).ToListAsync(ct));
         await db.SaveChangesAsync(ct);
         await RevokeAllSessionsAsync(user.Id, ct);
+        // بعد الإبطال (وما يتبعه من إبطال رموز الوصول) تُحذف صفوف الجلسات نفسها
+        db.RefreshTokens.RemoveRange(await db.RefreshTokens.Where(t => t.UserId == user.Id).ToListAsync(ct));
+        await db.SaveChangesAsync(ct);
         await audit.LogForActorAsync(Domain.Audit.AuditLogEntry.AnonymizedActorId, "Accounts.AccountDeleted", "User", null, ct: ct);
     }
 

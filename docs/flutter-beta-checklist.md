@@ -42,7 +42,7 @@
    flutter build appbundle --release --dart-define=SANAD_API_BASE=https://<الخادم>
    ```
 4. **في Play Console:**
-   - رابط سياسة الخصوصية؛
+   - رابط سياسة الخصوصية: `https://sattuf.github.io/sanad/privacy/` (من `site/`، ويُنشر تلقائياً بـ `pages.yml`). استبدل فيه علامة البريد ببريدك أولاً؛
    - نموذج «أمان البيانات» (Data safety)، وإجاباته في الجدول أدناه؛
    - تصنيف المحتوى؛
    - الفئة المستهدفة.
