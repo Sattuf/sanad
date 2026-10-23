@@ -21,7 +21,7 @@ public sealed class UnhandledExceptionBehavior<TRequest, TResponse>(ILogger<TReq
     {
         try
         {
-            return await next();
+            return await next(cancellationToken);
         }
         catch (Exception ex) when (ex is not (DomainException or RequestValidationException or NotFoundException
                                        or ForbiddenAccessException or UnauthenticatedException or MfaRequiredException
@@ -39,12 +39,12 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!validators.Any()) return await next();
+        if (!validators.Any()) return await next(cancellationToken);
 
         var context = new ValidationContext<TRequest>(request);
         var results = await Task.WhenAll(validators.Select(v => v.ValidateAsync(context, cancellationToken)));
         var failures = results.SelectMany(r => r.Errors).Where(f => f is not null).ToList();
-        if (failures.Count == 0) return await next();
+        if (failures.Count == 0) return await next(cancellationToken);
 
         var errors = failures
             .GroupBy(f => ToCamelCase(f.PropertyName), f => f.ErrorMessage)
@@ -70,7 +70,7 @@ public sealed class AuthorizationBehavior<TRequest, TResponse>(ICurrentUser curr
         var (anonymous, roles) = Cache.GetOrAdd(typeof(TRequest), t =>
             (t.GetCustomAttribute<AllowAnonymousRequestAttribute>() is not null, t.GetCustomAttribute<RequireRolesAttribute>()));
 
-        if (anonymous) return next();
+        if (anonymous) return next(cancellationToken);
         if (currentUser.UserId is null) throw new UnauthenticatedException();
 
         if (roles is not null)
@@ -78,7 +78,7 @@ public sealed class AuthorizationBehavior<TRequest, TResponse>(ICurrentUser curr
             if (!roles.Roles.Any(currentUser.IsInRole)) throw new ForbiddenAccessException();
             if (roles.RequireMfa && !currentUser.IsMfaAuthenticated) throw new MfaRequiredException();
         }
-        return next();
+        return next(cancellationToken);
     }
 }
 
@@ -92,14 +92,14 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(IRequestContext req
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (request is not IIdempotentCommand || string.IsNullOrWhiteSpace(requestContext.IdempotencyKey)) return await next();
+        if (request is not IIdempotentCommand || string.IsNullOrWhiteSpace(requestContext.IdempotencyKey)) return await next(cancellationToken);
 
         var key = requestContext.IdempotencyKey!;
         var name = typeof(TRequest).Name;
         var cached = await store.GetResponseAsync(key, currentUser.UserId, name, cancellationToken);
         if (cached is not null) return JsonSerializer.Deserialize<TResponse>(cached, JsonOptions)!;
 
-        var response = await next();
+        var response = await next(cancellationToken);
         await store.SaveResponseAsync(key, currentUser.UserId, name, JsonSerializer.Serialize(response, JsonOptions), cancellationToken);
         return response;
     }
@@ -113,13 +113,13 @@ public sealed class AuditLoggingBehavior<TRequest, TResponse>(IAuditLogger audit
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!IsCommand(typeof(TRequest))) return await next();
+        if (!IsCommand(typeof(TRequest))) return await next(cancellationToken);
 
         var action = ActionName(typeof(TRequest));
         var module = ModuleName(typeof(TRequest));
         try
         {
-            var response = await next();
+            var response = await next(cancellationToken);
             await auditLogger.LogAsync(action, module, ExtractId(response), null, true, cancellationToken);
             return response;
         }

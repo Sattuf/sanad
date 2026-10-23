@@ -25,7 +25,7 @@ public class AuthorizationBehaviorTests
     }
 
     private static Task<TResponse> Run<TRequest, TResponse>(TRequest request, ICurrentUser user) where TRequest : notnull =>
-        new AuthorizationBehavior<TRequest, TResponse>(user).Handle(request, () => Task.FromResult(default(TResponse)!), CancellationToken.None);
+        new AuthorizationBehavior<TRequest, TResponse>(user).Handle(request, _ => Task.FromResult(default(TResponse)!), CancellationToken.None);
 
     [Fact]
     public async Task Requests_require_authentication_by_default()
@@ -72,7 +72,7 @@ public class ValidationBehaviorTests
     public async Task Invalid_request_is_rejected_with_field_errors()
     {
         var sut = new ValidationBehavior<AssignRoleCommand, Unit>([new AssignRoleCommandValidator()]);
-        var act = () => sut.Handle(new AssignRoleCommand(Guid.NewGuid(), SanadRole.SystemAdmin), () => Task.FromResult(Unit.Value), CancellationToken.None);
+        var act = () => sut.Handle(new AssignRoleCommand(Guid.NewGuid(), SanadRole.SystemAdmin), _ => Task.FromResult(Unit.Value), CancellationToken.None);
         var ex = await act.Should().ThrowAsync<RequestValidationException>();
         ex.Which.Errors.Should().ContainKey("role");
     }
@@ -92,7 +92,7 @@ public class IdempotencyBehaviorTests
         var sut = new IdempotencyBehavior<CreateBookingRequestCommand, BookingCreatedDto>(request, user, store);
         var cmd = new CreateBookingRequestCommand(Guid.NewGuid(), Guid.NewGuid(), null, false);
         var calls = 0;
-        Task<BookingCreatedDto> Next()
+        Task<BookingCreatedDto> Next(CancellationToken _ = default)
         {
             calls++;
             return Task.FromResult(new BookingCreatedDto(Guid.NewGuid(), "UnderReview", DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch));
