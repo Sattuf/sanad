@@ -50,6 +50,15 @@ jobs:
             echo "Storage__UrlSigningKeyBase64=$(openssl rand -base64 32)"
           } >> "$GITHUB_ENV"
       - run: dotnet build src/Sanad.Api --configuration Release
+      # المشروع يسمح لـ Gradle بـ 8 GB (android/gradle.properties)، ومعه Kotlin daemon والمحاكي والخادم
+      # يتجاوز ذاكرة المشغّل (16 GB) فيُطفأ أحياناً وسط البناء؛ ملف ~/.gradle يتقدّم على ملف المشروع
+      - name: Cap Gradle memory
+        run: |
+          mkdir -p ~/.gradle
+          {
+            echo "org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError"
+            echo "kotlin.daemon.jvmargs=-Xmx2g"
+          } >> ~/.gradle/gradle.properties
       - name: Start the API
         run: |
           nohup dotnet run --project src/Sanad.Api --configuration Release --no-build --urls http://localhost:5080 > api.log 2>&1 &
