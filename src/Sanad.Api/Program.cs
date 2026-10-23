@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Sanad.Api;
 using Sanad.Api.Authorization;
 using Sanad.Api.Endpoints;
@@ -173,9 +173,10 @@ builder.Services.AddSwaggerGen(o =>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
     });
-    o.AddSecurityRequirement(new OpenApiSecurityRequirement
+    // Microsoft.OpenApi 2 (Swashbuckle 10): المتطلب يشير إلى المخطط بمرجع ضمن المستند
+    o.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } }] = [],
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = [],
     });
     o.CustomSchemaIds(t => t.FullName!.Replace("+", ".", StringComparison.Ordinal));
 });
