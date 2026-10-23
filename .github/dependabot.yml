@@ -10,6 +10,15 @@ updates:
     schedule: { interval: weekly, day: monday }
     open-pull-requests-limit: 5
     cooldown: { default-days: 7 }
+    ignore:
+      # من الإصدار 8 صار ترخيصها مدفوعاً للاستخدام التجاري (Xceed)؛ نبقى على 7.x
+      - dependency-name: FluentAssertions
+        versions: [">=8"]
+      # إصدارات .NET 10 الكبرى تأتي مع ترقية المشروع كله إلى .NET 10 في طلب واحد، لا متفرّقة
+      - dependency-name: dotnet-ef
+        update-types: [version-update:semver-major]
+      - dependency-name: Microsoft.*
+        update-types: [version-update:semver-major]
     groups:
       dotnet-minor:
         update-types: [minor, patch]
@@ -19,6 +28,21 @@ updates:
     schedule: { interval: weekly, day: monday }
     open-pull-requests-limit: 5
     cooldown: { default-days: 7 }
+    ignore:
+      # ترقيات كبرى تُجرى عمداً في طلب خاص: React 19 مع react-dom وأنواعهما معاً،
+      # وeslint 10 بعد أن تدعمه إضافاته (typescript-eslint)
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/react"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/react-dom"
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: "@eslint/js"
+        update-types: [version-update:semver-major]
     groups:
       npm-minor:
         update-types: [minor, patch]
