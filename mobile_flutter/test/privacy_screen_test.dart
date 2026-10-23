@@ -61,6 +61,9 @@ void main() {
       'sanad.discreet': 'true',
       'sanad.reminders': jsonEncode(['morning']),
       'sanad.companion.v1': jsonEncode({'activeProgramId': 'foundation-7', 'startedOn': '2026-10-14', 'done': {}, 'activeDays': {}, 'finished': []}),
+      'sanad.ruqyah.progress.morning.2026-10-15': jsonEncode({'a1': 3}),
+      'sanad.ruqyah.reciter': 'alafasy',
+      'sanad.ruqyah.fontScale': 1.3,
     });
     final container = ProviderScope.containerOf(tester.element(find.byType(MaterialApp)));
     await tester.runAsync(() => container.read(journalProvider.notifier).create('1234'));
@@ -77,6 +80,7 @@ void main() {
 
     expect(prefs.getString(vaultKey), isNull);
     expect(prefs.getString('sanad.companion.v1'), isNull);
+    expect(prefs.getKeys().where((k) => k.startsWith('sanad.ruqyah.progress.') || k == 'sanad.ruqyah.reciter' || k == 'sanad.ruqyah.fontScale'), isEmpty);
     expect(prefs.getString('sanad.discreet'), 'false');
     expect(device.reminders.scheduled, isEmpty);
     expect(device.privacy.calls, contains(('setNeutralIcon', false)));

@@ -10,13 +10,16 @@ import '../../core/platform_services.dart';
 import '../../theme/theme.dart';
 import '../../theme/tokens.g.dart';
 import '../../ui/components.dart';
-import '../../ui/share_card.dart' show siteHost;
 import 'auth.dart';
 
 /*
   الدخول — نظير LoginScreen في frontend/src/features/auth/LoginScreen.tsx بالتصميم والنصوص نفسها:
   زر جوجل (وأبل على iPhone فوقه — إرشاد Apple 4.8)، بلا كلمات مرور ولا نماذج تسجيل، والرفيق يعمل بلا حساب.
 */
+
+/// الخصوصية والشروط منشورتان على GitHub Pages (site/ في المستودع)، فتعملان قبل نشر الموقع الكامل وبعده.
+const legalBase = String.fromEnvironment('SANAD_LEGAL_BASE', defaultValue: 'https://sattuf.github.io/sanad');
+Uri legalUrl(String path) => Uri.parse('$legalBase$path/');
 
 const _promises = ['لا كلمة مرور تحفظها ولا رمز ينتظرك', 'لا نطلب أي مستند — حسابك جاهز من أول دخول', 'مجاني بالكامل، ويمكنك حذف حسابك متى شئت'];
 
@@ -221,7 +224,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              _LegalLine(onOpen: (path) => ref.read(outboundProvider).openUrl(Uri.https(siteHost, path))),
+              _LegalLine(onOpen: (path) => ref.read(outboundProvider).openUrl(legalUrl(path))),
             ],
           );
         },
@@ -453,7 +456,7 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    void open(String path) => ref.read(outboundProvider).openUrl(Uri.https(siteHost, path));
+    void open(String path) => ref.read(outboundProvider).openUrl(legalUrl(path));
     Widget check(String key, bool value, ValueChanged<bool> onChanged, Widget label) => CheckboxListTile(
           key: ValueKey(key),
           value: value,
