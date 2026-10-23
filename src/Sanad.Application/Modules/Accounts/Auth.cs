@@ -41,16 +41,27 @@ public sealed class RegisterWithEmailCommandValidator : AbstractValidator<Regist
     }
 }
 
-public sealed class RegisterWithEmailCommandHandler(IIdentityService identity, IApplicationDbContext db, IDateTime clock, IPolicyVersionProvider policies)
+public sealed class RegisterWithEmailCommandHandler(IIdentityService identity, SignUpConsents consents)
     : IRequestHandler<RegisterWithEmailCommand, AuthResponse>
 {
-    public async Task<AuthResponse> Handle(RegisterWithEmailCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(RegisterWithEmailCommand request, CancellationToken cancellationToken) =>
+        AuthResponse.From(await consents.RecordIfNewAsync(
+            await identity.RegisterWithEmailAsync(request.Email.Trim(), request.Password, request.DisplayName.Trim(), cancellationToken), cancellationToken));
+}
+
+/// <summary>
+/// الموافقة على الشروط وسياسة الخصوصية تُسجَّل عند إنشاء الحساب بأي طريقة: بالبريد (مربعا الموافقة)،
+/// وبجوجل وأبل والجوال (نص «بالمتابعة توافق على…» فوق الأزرار). كانت تُسجَّل للبريد وحده.
+/// </summary>
+public sealed class SignUpConsents(IApplicationDbContext db, IDateTime clock, IPolicyVersionProvider policies)
+{
+    public async Task<AuthResult> RecordIfNewAsync(AuthResult result, CancellationToken ct)
     {
-        var result = await identity.RegisterWithEmailAsync(request.Email.Trim(), request.Password, request.DisplayName.Trim(), cancellationToken);
+        if (!result.IsNewUser) return result;
         db.ConsentRecords.Add(ConsentRecord.Accept(result.UserId, ConsentType.TermsOfService, policies.CurrentVersion(ConsentType.TermsOfService), clock.UtcNow));
         db.ConsentRecords.Add(ConsentRecord.Accept(result.UserId, ConsentType.PrivacyPolicy, policies.CurrentVersion(ConsentType.PrivacyPolicy), clock.UtcNow));
-        await db.SaveChangesAsync(cancellationToken);
-        return AuthResponse.From(result);
+        await db.SaveChangesAsync(ct);
+        return result;
     }
 }
 
@@ -77,21 +88,23 @@ public sealed class LoginWithEmailCommandHandler(IIdentityService identity) : IR
 [AllowAnonymousRequest]
 public sealed record CompleteGoogleLoginCommand(string ExternalProviderKey, string VerifiedEmail, string? DisplayName) : ICommand<AuthResponse>;
 
-public sealed class CompleteGoogleLoginCommandHandler(IIdentityService identity) : IRequestHandler<CompleteGoogleLoginCommand, AuthResponse>
+public sealed class CompleteGoogleLoginCommandHandler(IIdentityService identity, SignUpConsents consents) : IRequestHandler<CompleteGoogleLoginCommand, AuthResponse>
 {
     public async Task<AuthResponse> Handle(CompleteGoogleLoginCommand request, CancellationToken cancellationToken) =>
-        AuthResponse.From(await identity.CompleteGoogleLoginAsync(request.ExternalProviderKey, request.VerifiedEmail, request.DisplayName, cancellationToken));
+        AuthResponse.From(await consents.RecordIfNewAsync(
+            await identity.CompleteGoogleLoginAsync(request.ExternalProviderKey, request.VerifiedEmail, request.DisplayName, cancellationToken), cancellationToken));
 }
 
 // ── أبل (من الجوال): يُستدعى بعد التحقق من رمز الهوية وnonce في الـ Endpoint ───────────
 [AllowAnonymousRequest]
 public sealed record CompleteAppleLoginCommand(string ExternalProviderKey, string? VerifiedEmail, string? DisplayName) : ICommand<AuthResponse>;
 
-public sealed class CompleteAppleLoginCommandHandler(IIdentityService identity) : IRequestHandler<CompleteAppleLoginCommand, AuthResponse>
+public sealed class CompleteAppleLoginCommandHandler(IIdentityService identity, SignUpConsents consents) : IRequestHandler<CompleteAppleLoginCommand, AuthResponse>
 {
     public async Task<AuthResponse> Handle(CompleteAppleLoginCommand request, CancellationToken cancellationToken) =>
-        AuthResponse.From(await identity.CompleteExternalLoginAsync(ExternalLoginProvider.Apple, request.ExternalProviderKey, request.VerifiedEmail,
-            request.DisplayName, cancellationToken));
+        AuthResponse.From(await consents.RecordIfNewAsync(
+            await identity.CompleteExternalLoginAsync(ExternalLoginProvider.Apple, request.ExternalProviderKey, request.VerifiedEmail,
+                request.DisplayName, cancellationToken), cancellationToken));
 }
 
 // ── الهاتف OTP (خلف CAPTCHA وحد معدل صارم في الـ Endpoint) ──────────────────────
@@ -127,10 +140,11 @@ public sealed class VerifyPhoneOtpCommandValidator : AbstractValidator<VerifyPho
     }
 }
 
-public sealed class VerifyPhoneOtpCommandHandler(IIdentityService identity) : IRequestHandler<VerifyPhoneOtpCommand, AuthResponse>
+public sealed class VerifyPhoneOtpCommandHandler(IIdentityService identity, SignUpConsents consents) : IRequestHandler<VerifyPhoneOtpCommand, AuthResponse>
 {
     public async Task<AuthResponse> Handle(VerifyPhoneOtpCommand request, CancellationToken cancellationToken) =>
-        AuthResponse.From(await identity.VerifyPhoneOtpAsync(request.PhoneNumber, request.Code, request.Email?.Trim(), cancellationToken));
+        AuthResponse.From(await consents.RecordIfNewAsync(
+            await identity.VerifyPhoneOtpAsync(request.PhoneNumber, request.Code, request.Email?.Trim(), cancellationToken), cancellationToken));
 }
 
 // ── مراحل الدخول الوسيطة (كلمة مرور مؤقتة، إعداد/إدخال 2FA) ─────────────────────
