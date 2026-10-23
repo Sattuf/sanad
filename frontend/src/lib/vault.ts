@@ -7,6 +7,7 @@
 */
 
 import {
+  type Bytes,
   VAULT_KEY as KEY,
   WrongPinError,
   b64,
@@ -45,7 +46,7 @@ function save(file: VaultFile) {
 export interface UnlockedVault {
   dek: CryptoKey;
   /** المادة الخام للمفتاح لإعادة تغليفه عند تفعيل البصمة أو تغيير الرمز — تُمسح عند القفل */
-  raw: Uint8Array;
+  raw: Bytes;
 }
 
 export const vault = {
@@ -139,7 +140,7 @@ export const vault = {
   },
 };
 
-async function prfKey(credentialId: Uint8Array, prfSalt: Uint8Array): Promise<CryptoKey> {
+async function prfKey(credentialId: Bytes, prfSalt: Bytes): Promise<CryptoKey> {
   const assertion = (await navigator.credentials.get({
     publicKey: {
       challenge: random(32),
