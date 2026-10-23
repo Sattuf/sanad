@@ -46,3 +46,9 @@ app.*.map.json
 
 # ذاكرة Kotlin المؤقتة لبناء أندرويد
 /android/.kotlin/
+
+# إعدادات Firebase المحلية (--dart-define-from-file=firebase.json) وملفات Google — لا تُرفع إلى المستودع العام
+/firebase.json
+google-services.json
+GoogleService-Info.plist
+*service-account*.json

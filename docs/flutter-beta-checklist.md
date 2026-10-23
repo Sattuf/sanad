@@ -68,10 +68,11 @@
 الكود جاهز ومعطّل: بلا الإعدادات التالية لا يبدأ Firebase ولا يُرسل شيء، ويعمل التطبيق كما هو.
 
 1. **أنشئ مشروع Firebase** وأضف إليه تطبيق أندرويد باسم الحزمة `app.sanad`.
-2. **إعدادات التطبيق:** من «إعدادات المشروع ← عام» انسخ أربع قيم، ومرّرها عند البناء. لا حاجة إلى `google-services.json`:
+2. **إعدادات التطبيق:** القيم الأربع (`FIREBASE_API_KEY` و`FIREBASE_APP_ID` و`FIREBASE_SENDER_ID` و`FIREBASE_PROJECT_ID`) تُستخرج من `google-services.json` إلى `mobile_flutter/firebase.json`، وهو ملف محلي مستثنى من Git. لا تضع `google-services.json` في المشروع. ثم تُمرَّر عند البناء:
    ```bash
-   flutter build appbundle --release --dart-define=SANAD_API_BASE=https://<الخادم> --dart-define=FIREBASE_API_KEY=… --dart-define=FIREBASE_APP_ID=… --dart-define=FIREBASE_SENDER_ID=… --dart-define=FIREBASE_PROJECT_ID=…
+   flutter build appbundle --release --dart-define=SANAD_API_BASE=https://<الخادم> --dart-define-from-file=firebase.json
    ```
+   **لا تُضف إضافة Gradle الخاصة بـ Google Services ولا `firebase-analytics`** كما تقترح صفحة Firebase. التطبيق لا يحتاجهما، و`firebase-analytics` تتبّع يخالف سياسة الخصوصية.
 3. **حساب الخدمة:** من «إعدادات المشروع ← حسابات الخدمة» أنشئ مفتاحاً خاصاً (ملف JSON). ضع محتواه سرّاً في الخادم باسم `Fcm:ServiceAccountJson`، في Key Vault أو متغير البيئة `Fcm__ServiceAccountJson`. لا تضعه في المستودع.
 4. **فعّل الإرسال في الخادم:** `FeatureManagement:PushNotifications=true`.
 
