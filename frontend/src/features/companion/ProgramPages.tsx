@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ItemView, ProgressBar, ProgressRing, ShareButton } from "../../components/companion";
 import { Button, Card, PageHeader } from "../../components/ui";
@@ -210,11 +210,10 @@ export function TodayPage() {
   const reduce = useReducedMotion();
   const committedDays = Object.keys(activeDays).length;
 
-  const grouped = useMemo(() => {
-    const m = new Map<Slot, ProgramTask[]>();
-    day?.tasks.forEach((t) => m.set(t.slot, [...(m.get(t.slot) ?? []), t]));
-    return SLOT_ORDER.filter((s) => m.has(s)).map((s) => [s, m.get(s)!] as const);
-  }, [day]);
+  // حساب صغير لكل رسم؛ React Compiler يتولى الحفظ (useMemo اليدوي هنا كان يمنعه)
+  const slots = new Map<Slot, ProgramTask[]>();
+  day?.tasks.forEach((t) => slots.set(t.slot, [...(slots.get(t.slot) ?? []), t]));
+  const grouped = SLOT_ORDER.filter((s) => slots.has(s)).map((s) => [s, slots.get(s)!] as const);
 
   if (!program || !day) {
     return (

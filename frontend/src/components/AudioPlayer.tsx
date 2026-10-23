@@ -14,23 +14,28 @@ export function AudioPlayer({ src, title, durationSeconds, requiresAuth }: { src
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [failed, setFailed] = useState(false);
-  const duration = ref.current?.duration && Number.isFinite(ref.current.duration) ? ref.current.duration : durationSeconds;
+  // المدة الحقيقية من الملف حين يعرفها العنصر (durationchange)، وإلا مدة الكتالوج — حالةً لا قراءةً من العنصر أثناء الرسم
+  const [mediaDuration, setMediaDuration] = useState<number | null>(null);
+  const duration = mediaDuration ?? durationSeconds;
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const onTime = () => setTime(el.currentTime);
+    const onDuration = () => setMediaDuration(Number.isFinite(el.duration) && el.duration > 0 ? el.duration : null);
     const onEnd = () => setPlaying(false);
     const onPause = () => setPlaying(false);
     const onPlay = () => setPlaying(true);
     const onError = () => setFailed(true);
     el.addEventListener("timeupdate", onTime);
+    el.addEventListener("durationchange", onDuration);
     el.addEventListener("ended", onEnd);
     el.addEventListener("pause", onPause);
     el.addEventListener("play", onPlay);
     el.addEventListener("error", onError);
     return () => {
       el.removeEventListener("timeupdate", onTime);
+      el.removeEventListener("durationchange", onDuration);
       el.removeEventListener("ended", onEnd);
       el.removeEventListener("pause", onPause);
       el.removeEventListener("play", onPlay);

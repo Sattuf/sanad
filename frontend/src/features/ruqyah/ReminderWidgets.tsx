@@ -98,18 +98,29 @@ const sameTimes = (a: ReminderTimes, b: ReminderTimes) => a.morning === b.mornin
 function PushReminders({ times, enabled, onLoaded }: { times: Times; enabled: Enabled; onLoaded: (t: Times, e: Enabled) => void }) {
   const { data: me, isLoading: meLoading } = useMe();
   const config = useQuery({ queryKey: ["push-config"], queryFn: getPushConfig, staleTime: Infinity, retry: false });
-  const [state, setState] = useState<PushState>({ kind: "loading" });
+  // ما يُعرف دون انتظار (دعم المتصفح، الإعداد، الدخول) يُحسب أثناء الرسم؛ الحالة المخزّنة لنتيجة فحص الاشتراك فقط
+  const [subState, setState] = useState<PushState>({ kind: "loading" });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "warn"; text: string } | null>(null);
   const current = toReminderTimes(times, enabled);
 
+  const support = pushSupport();
+  const gate: PushState | null =
+    support === "needs-install"
+      ? { kind: "needs-install" }
+      : support === "unsupported" || config.isError || (config.data && !config.data.enabled)
+        ? { kind: "unavailable" }
+        : meLoading || !config.data
+          ? { kind: "loading" }
+          : !me
+            ? { kind: "signed-out" }
+            : null;
+  const state = gate ?? subState;
+  const ready = gate === null;
+
   useEffect(() => {
+    if (!ready) return;
     let cancelled = false;
-    const support = pushSupport();
-    if (support === "needs-install") return setState({ kind: "needs-install" });
-    if (support === "unsupported" || config.isError || (config.data && !config.data.enabled)) return setState({ kind: "unavailable" });
-    if (meLoading || !config.data) return;
-    if (!me) return setState({ kind: "signed-out" });
     void (async () => {
       const sub = await currentSubscription().catch(() => null);
       const devices = sub ? await getMyDevices().catch(() => []) : [];
@@ -124,8 +135,8 @@ function PushReminders({ times, enabled, onLoaded }: { times: Times; enabled: En
       setState({ kind: "on", sub, saved });
     })();
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- التحميل الأول فقط؛ onLoaded وtimes لا يعيدان الفحص
-  }, [me, meLoading, config.data, config.isError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- عند الجاهزية أو تغيّر الحساب فقط؛ onLoaded وtimes لا يعيدان الفحص
+  }, [ready, me]);
 
   const run = async (action: () => Promise<void>) => {
     setBusy(true);

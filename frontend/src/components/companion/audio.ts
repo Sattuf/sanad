@@ -66,31 +66,35 @@ export function usePlaylist(urls: string[], repeat = 1) {
   }, []);
 
   const playAt = useCallback(
-    async (i: number, r: number) => {
-      if (state.current.stopped) return;
-      if (i >= urls.length) {
-        if (r < repeat) return playAt(0, r + 1);
-        stop();
-        return;
-      }
-      state.current = { index: i, round: r, stopped: false };
-      setIndex(i);
-      setRound(r);
-      setLoading(true);
-      const src = await localAudioUrl(urls[i]);
-      setLoading(false);
-      if (state.current.stopped) return;
-      const el = (audio.current ??= new Audio());
-      el.src = src;
-      el.onended = () => void playAt(i + 1, r);
-      el.onerror = () => {
-        setFailed(true);
-        stop();
+    (start: number, startRound: number) => {
+      // التكرار عبر دالة داخلية: الاستدعاء الذاتي لـ playAt قبل اكتمال تعريفها لا يتتبّعه React Compiler
+      const step = async (i: number, r: number): Promise<void> => {
+        if (state.current.stopped) return;
+        if (i >= urls.length) {
+          if (r < repeat) return step(0, r + 1);
+          stop();
+          return;
+        }
+        state.current = { index: i, round: r, stopped: false };
+        setIndex(i);
+        setRound(r);
+        setLoading(true);
+        const src = await localAudioUrl(urls[i]);
+        setLoading(false);
+        if (state.current.stopped) return;
+        const el = (audio.current ??= new Audio());
+        el.src = src;
+        el.onended = () => void step(i + 1, r);
+        el.onerror = () => {
+          setFailed(true);
+          stop();
+        };
+        await el.play().catch(() => {
+          setFailed(true);
+          stop();
+        });
       };
-      await el.play().catch(() => {
-        setFailed(true);
-        stop();
-      });
+      return step(start, startRound);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [key, repeat, stop],
