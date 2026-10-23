@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ApiError, api } from "../../api/client";
@@ -35,13 +35,15 @@ export function ProviderProfilePage() {
   const [form, setForm] = useState({ displayName: "", declaredTitle: "", practiceScope: "", languages: "ar", deliveryMode: "Remote" as DeliveryMode, city: "", professionalBoundariesNote: "" });
   const [msg, setMsg] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
 
-  useEffect(() => {
-    if (data)
-      setForm({
-        displayName: data.displayName, declaredTitle: data.declaredTitle, practiceScope: data.practiceScope, languages: data.languages.join("، ") || "ar",
-        deliveryMode: data.deliveryMode, city: data.city ?? "", professionalBoundariesNote: data.professionalBoundariesNote,
-      });
-  }, [data]);
+  // تعبئة النموذج حين يصل الملف (أو يتغيّر بعد الحفظ): تعديل الحالة أثناء الرسم بدل effect يرسم مرتين
+  const [loadedFrom, setLoadedFrom] = useState<typeof data>(undefined);
+  if (data && data !== loadedFrom) {
+    setLoadedFrom(data);
+    setForm({
+      displayName: data.displayName, declaredTitle: data.declaredTitle, practiceScope: data.practiceScope, languages: data.languages.join("، ") || "ar",
+      deliveryMode: data.deliveryMode, city: data.city ?? "", professionalBoundariesNote: data.professionalBoundariesNote,
+    });
+  }
 
   const onError = (err: unknown) => setMsg({ tone: "danger", text: err instanceof ApiError ? err.friendly : "تعذّر الحفظ." });
   const save = useMutation({

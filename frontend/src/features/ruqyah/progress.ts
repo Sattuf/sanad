@@ -66,12 +66,14 @@ export function useDailyProgress(collectionId: string, entries: Entry[]) {
   const [counts, setCounts] = useState<Record<string, number>>(() => readLocal(storageKey));
   const dirty = useRef(false);
 
-  // دمج ما في الحساب مع ما في الجهاز (الأكبر يغلب) — لا يضيع تقدّم أي منهما
-  useEffect(() => {
-    const server = remote.data?.collections.find((c) => c.collectionId === collectionId)?.counts;
-    if (!server) return;
+  // دمج ما في الحساب مع ما في الجهاز (الأكبر يغلب) — لا يضيع تقدّم أي منهما.
+  // عند وصول نسخة جديدة من الخادم، أثناء الرسم لا في effect (لا رسم إضافي بالقيم القديمة)
+  const server = remote.data?.collections.find((c) => c.collectionId === collectionId)?.counts;
+  const [mergedFrom, setMergedFrom] = useState<typeof server>(undefined);
+  if (server && server !== mergedFrom) {
+    setMergedFrom(server);
     setCounts((local) => mergeCounts(local, server));
-  }, [remote.data, collectionId]);
+  }
 
   useEffect(() => {
     try {

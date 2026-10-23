@@ -37,23 +37,28 @@ function LockScreen() {
   const [pin, setPin] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  // مع البصمة يُطلب الفتح فور الدخول، فالأزرار معطّلة من أول رسم حتى يُجاب الطلب
+  const [busy, setBusy] = useState(hasBio);
 
+  const failure = (e: unknown) => setError(e instanceof WrongPinError ? "الرمز غير صحيح." : e instanceof Error ? e.message : "تعذّر الفتح.");
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
     setError(null);
     try {
       await fn();
     } catch (e) {
-      setError(e instanceof WrongPinError ? "الرمز غير صحيح." : e instanceof Error ? e.message : "تعذّر الفتح.");
+      failure(e);
     } finally {
       setBusy(false);
     }
   };
 
   useEffect(() => {
-    if (hasBio) void run(unlockBio);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!hasBio) return;
+    unlockBio()
+      .catch(failure)
+      .finally(() => setBusy(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- مرة واحدة عند الدخول
   }, []);
 
   return (
