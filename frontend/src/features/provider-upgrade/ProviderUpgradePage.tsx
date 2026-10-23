@@ -7,7 +7,6 @@ import type { PractitionerType, UploadedFile, VerificationSummary } from "@sanad
 import { Badge, Banner, Button, Card, Field, Input, Loading, PageHeader, Select } from "../../components/ui";
 import { cx } from "../../lib/cx";
 import { formatDateTime } from "@sanad/shared/lib/format";
-import { captchaHeader } from "../../lib/captcha";
 
 const docsByType: Record<PractitionerType, Array<{ value: string; hint: string }>> = {
   ReligiousPractitioner: [
@@ -40,7 +39,6 @@ export function ProviderUpgradePage() {
       return api.post<VerificationSummary>(
         "/api/v1/me/provider-upgrade-request",
         { requestedType: type, declaredTitle: title.trim(), documentType, issuingAuthority: authority.trim(), uploadedDocumentFileId: uploaded.id },
-        { headers: captchaHeader() },
       );
     },
     onSuccess: async () => {

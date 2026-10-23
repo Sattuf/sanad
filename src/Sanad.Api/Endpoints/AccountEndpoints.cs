@@ -54,8 +54,9 @@ public static class AccountEndpoints
             await using var stream = file.OpenReadStream();
             return Results.Ok(await s.Send(new UploadVerificationDocumentCommand(stream, file.Length)));
         }).DisableAntiforgery().WithMetadata(new RequestSizeLimitAttribute(12 * 1024 * 1024)).RequireRateLimiting("uploads");
+        // حساب مسجَّل: حد لكل حساب بدل CAPTCHA (لا ودجت في أي واجهة، فكان الطلب يُرفض في الإنتاج)
         me.MapPost("/provider-upgrade-request", async (RequestProviderUpgradeCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)))
-            .RequireCaptcha();
+            .RequireRateLimiting("uploads");
         me.MapGet("/provider-upgrade-requests", async (ISender s) => Results.Ok(await s.Send(new GetMyUpgradeRequestsQuery())));
         me.MapPost("/provider-upgrade-requests/{id:guid}/resubmit", async (Guid id, ResubmitRequest req, ISender s) =>
             Results.Ok(await s.Send(new ResubmitUpgradeDocumentCommand(id, req.DocumentType, req.UploadedDocumentFileId))));

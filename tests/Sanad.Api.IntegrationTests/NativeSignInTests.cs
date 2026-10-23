@@ -117,6 +117,8 @@ public sealed class NativeSignInTests(NativeSignInFixture fixture) : IClassFixtu
 
         var me = await Ok(await _api.Client(session).GetAsync("/api/v1/me"));
         me["roles"]!.AsArray().Select(r => r!.GetValue<string>()).Should().Equal("Beneficiary");
+        // «بالمتابعة توافق على الشروط والخصوصية» فوق زر جوجل: الموافقة تُسجَّل كما في التسجيل بالبريد
+        me["activeConsents"]!.AsArray().Select(c => c!.GetValue<string>()).Should().Contain(["TermsOfService", "PrivacyPolicy"]);
 
         var again = await Ok(await PostGoogle(Google(sub, email)));
         again["isNewUser"]!.GetValue<bool>().Should().BeFalse();
@@ -160,7 +162,9 @@ public sealed class NativeSignInTests(NativeSignInFixture fixture) : IClassFixtu
         var first = await Ok(await PostApple(Apple(sub, NewEmail(), "nonce-1"), "nonce-1", "عبدالله"));
         first["isNewUser"]!.GetValue<bool>().Should().BeTrue();
         var session = ToSession(first);
-        (await Ok(await _api.Client(session).GetAsync("/api/v1/me")))["displayName"]!.GetValue<string>().Should().Be("عبدالله");
+        var me = await Ok(await _api.Client(session).GetAsync("/api/v1/me"));
+        me["displayName"]!.GetValue<string>().Should().Be("عبدالله");
+        me["activeConsents"]!.AsArray().Select(c => c!.GetValue<string>()).Should().Contain(["TermsOfService", "PrivacyPolicy"]);
 
         // أبل لا ترسل البريد غالباً بعد أول دخول — المعرّف المربوط يكفي
         var again = await Ok(await PostApple(Apple(sub, null, "nonce-2"), "nonce-2"));

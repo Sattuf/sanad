@@ -66,11 +66,13 @@ public static class BookingEndpoints
         c.MapPost("/{id:guid}/messages", async (Guid id, PostMessageRequest req, ISender s) =>
             Results.Ok(await s.Send(new PostMessageCommand(id, req.Body)))).RequireRateLimiting("messages");
         c.MapPost("/{id:guid}/report", async (Guid id, ReportConversationRequest req, ISender s) =>
-            Results.Ok(await s.Send(new ReportConversationCommand(id, req.MessageId, req.Category, req.Severity, req.Description))));
+            Results.Ok(await s.Send(new ReportConversationCommand(id, req.MessageId, req.Category, req.Severity, req.Description))))
+            .RequireRateLimiting("reports");
 
-        // ── البلاغات العامة: CAPTCHA + Idempotency-Key ──
+        // ── البلاغات العامة: حد لكل حساب + Idempotency-Key ──
+        // بلا CAPTCHA: المُبلِّغ مسجَّل الدخول، وتطبيق الجوال لا يستطيع عرض ودجت Turnstile أصلاً، فكان كل بلاغ منه يُرفض في الإنتاج
         app.MapPost("/api/v1/reports", async (SubmitReportCommand cmd, ISender s) => Results.Ok(await s.Send(cmd)))
-            .WithTags("Safety").RequireAuthorization().RequireCaptcha().RequireIdempotencyKey();
+            .WithTags("Safety").RequireAuthorization().RequireRateLimiting("reports").RequireIdempotencyKey();
 
         return app;
     }

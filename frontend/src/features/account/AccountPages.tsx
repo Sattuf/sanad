@@ -8,7 +8,6 @@ import { ACCESS_LOG_ACTION_LABELS, ACCESS_LOG_ROLE_LABELS, DELETE_CONFIRMATION }
 import type { AccessLogEntry, AppNotification, BookingSummary, ConsentHistoryItem, ConsentStatus, ConsentType, Recommendation, ReportCategory, ReportSeverity } from "@sanad/shared/api/types";
 import { Badge, Banner, Button, Card, Checkbox, EmptyState, ErrorState, Field, Input, Loading, PageHeader, Select, Textarea } from "../../components/ui";
 import { formatDate, formatDateTime } from "@sanad/shared/lib/format";
-import { captchaHeader } from "../../lib/captcha";
 import { statusTone } from "@sanad/shared/lib/status";
 
 export function DashboardPage() {
@@ -351,7 +350,7 @@ export function NotificationsPage() {
   );
 }
 
-/** نموذج بلاغ عام (مقدّم خدمة / جهة / مستخدم) — خلف CAPTCHA ومفتاح تكرار. */
+/** نموذج بلاغ عام (مقدّم خدمة / جهة / مستخدم) — بحد لكل حساب ومفتاح تكرار. */
 export function ReportPage() {
   const { t } = useTranslation();
   const [params] = useSearchParams();
@@ -362,7 +361,7 @@ export function ReportPage() {
   const submit = useMutation({
     mutationFn: () =>
       api.post("/api/v1/reports", { targetType: params.get("targetType"), targetId: params.get("targetId"), category, severity, description: description.trim() || null }, {
-        headers: { "Idempotency-Key": key, ...captchaHeader() },
+        headers: { "Idempotency-Key": key },
       }),
   });
   if (submit.isSuccess)

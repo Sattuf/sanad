@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Sanad.Application.Common.Access;
 using Sanad.Application.Common.Behaviors;
+using Sanad.Application.Modules.Accounts;
 using Sanad.Application.Modules.Safety;
 
 namespace Sanad.Application;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<AccessContext>();
         services.AddScoped<FileUploadService>();
         services.AddScoped<EscalationService>();
+        services.AddScoped<SignUpConsents>();
         return services;
     }
 }

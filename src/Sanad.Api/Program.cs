@@ -137,6 +137,7 @@ builder.Services.AddRateLimiter(o =>
     o.AddPolicy("otp-verify", ctx => Fixed(ctx, Ip(ctx), "OtpVerifyPerMinute", 10, TimeSpan.FromMinutes(1)));
     o.AddPolicy("share", ctx => Fixed(ctx, Partition(ctx), "ShareLinksPerHour", 30, TimeSpan.FromHours(1)));
     o.AddPolicy("uploads", ctx => Fixed(ctx, Partition(ctx), "UploadsPerHour", 20, TimeSpan.FromHours(1)));
+    o.AddPolicy("reports", ctx => Fixed(ctx, Partition(ctx), "ReportsPerHour", 10, TimeSpan.FromHours(1)));
     o.AddPolicy("messages", ctx => Fixed(ctx, Partition(ctx), "MessagesPerMinute", 30, TimeSpan.FromMinutes(1)));
     // تخمين رموز الدعوة: لكل حساب حد بالساعة على المعاينة والانضمام معاً
     o.AddPolicy("invite", ctx => Fixed(ctx, Partition(ctx), "KhatmaInvitesPerHour", 30, TimeSpan.FromHours(1)));
