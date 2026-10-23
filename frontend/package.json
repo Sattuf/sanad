@@ -23,7 +23,7 @@
     "i18next": "^24.2.3",
     "qrcode": "1.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.3.1",
     "react-i18next": "^15.7.4",
     "react-router-dom": "^7.18.4",
     "zustand": "^5.0.15"
@@ -37,7 +37,7 @@
     "@testing-library/react": "^16.3.3",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.4.1",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
