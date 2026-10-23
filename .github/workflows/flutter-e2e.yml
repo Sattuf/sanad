@@ -1,10 +1,10 @@
 name: Flutter E2E
 
 # رحلات المستخدم السبع (mobile_flutter/integration_test) على محاكي أندرويد 16 وخادم حقيقي في Development.
-# بطيئة (بناء Gradle + إقلاع المحاكي) فلا تعمل مع كل push: كل ليلة، ويدوياً من تبويب Actions.
+# بطيئة (بناء Gradle + إقلاع المحاكي، 25–40 دقيقة) ودقائق Actions محدودة: أسبوعياً، ويدوياً من تبويب Actions.
 on:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: "0 1 * * 0"
   workflow_dispatch:
   # وعند تعديل هذا الملف نفسه، ليُختبر قبل الدمج
   pull_request:

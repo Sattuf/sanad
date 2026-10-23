@@ -445,11 +445,14 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      // سطر واحد عادةً؛ مع الخط الكبير تنزل الحالة تحت الخدمة بدل أن تخرج من الشاشة
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
-                          Expanded(
-                            child: Text(b.serviceCategory, style: const TextStyle(fontWeight: FontWeight.w700)),
-                          ),
+                          Text(b.serviceCategory, style: const TextStyle(fontWeight: FontWeight.w700)),
                           SanadBadge(tone: statusTone(b.status), label: content.label('bookingStatus.${b.status}')),
                         ],
                       ),

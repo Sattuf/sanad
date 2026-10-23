@@ -121,10 +121,14 @@ class _RuqyahReminderCardState extends ConsumerState<RuqyahReminderCard> {
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(Radii.xl), border: Border.all(color: t.border)),
               child: Row(
                 children: [
-                  Switch(
-                    key: ValueKey('ruqyah-reminder-${s.id}'),
-                    value: on.containsKey(s.id),
-                    onChanged: (v) => v ? _enable(s.id, on[s.id] ?? s.defaultTime) : ref.read(ruqyahRemindersProvider.notifier).disable(s.id),
+                  // TalkBack يقرأ المفتاح باسم الوقت، لا «مفتاح» وحده
+                  Semantics(
+                    label: 'تذكير ${s.label}',
+                    child: Switch(
+                      key: ValueKey('ruqyah-reminder-${s.id}'),
+                      value: on.containsKey(s.id),
+                      onChanged: (v) => v ? _enable(s.id, on[s.id] ?? s.defaultTime) : ref.read(ruqyahRemindersProvider.notifier).disable(s.id),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(child: Text(s.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),

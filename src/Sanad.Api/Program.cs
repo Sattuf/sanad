@@ -29,7 +29,8 @@ if (builder.Configuration["KeyVault:Uri"] is { Length: > 0 } vaultUri)
 builder.Host.UseSerilog((ctx, cfg) => cfg
     .ReadFrom.Configuration(ctx.Configuration)
     .Enrich.FromLogContext()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] ({CorrelationId}) {SourceContext}: {Message:lj}{NewLine}{Exception}"));
+    // الكتابة إلى الطرفية متزامنة وتحجز خيط الطلب: تحت 100 مستخدم متزامن رفعت p95 من 72 إلى 380 ms (tests/load)
+    .WriteTo.Async(a => a.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] ({CorrelationId}) {SourceContext}: {Message:lj}{NewLine}{Exception}")));
 
 StartupGuards.Validate(builder.Configuration, builder.Environment);
 
@@ -41,7 +42,8 @@ builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
     o.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
 });
-builder.Services.AddProblemDetails();
+// traceId في جسم الخطأ = معرّف الترابط في الرأس وفي كل سطر سجل (الافتراضي معرّف Activity المختلف عنهما)
+builder.Services.AddProblemDetails(o => o.CustomizeProblemDetails = c => c.ProblemDetails.Extensions["traceId"] = c.HttpContext.TraceIdentifier);
 builder.Services.AddExceptionHandler<SanadExceptionHandler>();
 
 // ── المصادقة: JWT لكل الـ API + جوجل كمزود خارجي (إن أُعدّ) ────────────────────
@@ -182,6 +184,13 @@ var app = builder.Build();
 // ── ترتيب الـ Middleware — references/05-api-layer-and-security.md §5.5 ─────────
 // خلف موازن أحمال موثوق فقط — وإلا يستطيع العميل تزوير IP وتجاوز حدود المعدل
 if (app.Configuration.GetValue("ReverseProxy:Enabled", false)) app.UseForwardedHeaders();
+// سجل الطلبات خارج معالج الاستثناءات: يرى الحالة النهائية (404/403/400) لا 500 لكل استثناء معالَج،
+// ومعرّف الترابط خارجهما ليصل إلى كل سطر سجل بما فيه سطر الخطأ
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseSerilogRequestLogging(o => o.GetLevel = (ctx, _, ex) =>
+    ex is not null || ctx.Response.StatusCode >= 500 ? Serilog.Events.LogEventLevel.Error : Serilog.Events.LogEventLevel.Information);
+// سطر «An unhandled exception has occurred» من الإطار مكتوم في appsettings (Serilog Override):
+// كان يُكتب ERROR لكل 404 و403 معالَج، والـ 500 الحقيقي يسجّله SanadExceptionHandler مع الاستثناء
 app.UseExceptionHandler();
 if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"))
 {
@@ -189,9 +198,6 @@ if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"
     app.UseHttpsRedirection();
 }
 app.UseMiddleware<SecurityHeadersMiddleware>();
-app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseSerilogRequestLogging(o => o.GetLevel = (ctx, _, ex) =>
-    ex is not null || ctx.Response.StatusCode >= 500 ? Serilog.Events.LogEventLevel.Error : Serilog.Events.LogEventLevel.Information);
 app.UseCors();
 app.UseAuthentication();
 app.UseRateLimiter();

@@ -26,6 +26,7 @@ public class ValidatorNullSafetyTests
     public static TheoryData<IValidator, object> NullCollections() => new()
     {
         { new RecordCompanionEventsCommandValidator(), new RecordCompanionEventsCommand(null!) },
+        { new RecordCompanionEventsCommandValidator(), new RecordCompanionEventsCommand([new CompanionEventInput("plan_started", "x"), null!]) },
         { new SyncMyPlanProgressCommandValidator(Clock), new SyncMyPlanProgressCommand(Guid.NewGuid(), null!, null) },
         { new SaveMyWirdCommandValidator(Clock), new SaveMyWirdCommand("morning", new DateOnly(2026, 10, 19), null!, 0, 1) },
         { new CreatePlanCommandValidator(), new CreatePlanCommand("k", "عنوان", "ملخص", "المحتوى", Guid.NewGuid(), 7, 10, null!) },
