@@ -16,7 +16,7 @@
     <!-- قراءة مدة MP3/M4A من الوسوم مباشرة بلا الاعتماد على ffmpeg خارجي (خفة + بلا عمليات تحويل) -->
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
     <!-- تحليل CSV يتحمّل فواصل واقتباسات داخل الحقول العربية بأمان -->
-    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
   </ItemGroup>
 
   <ItemGroup>
