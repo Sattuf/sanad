@@ -168,26 +168,35 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
         ),
         data: (list) => Column(
           children: [
-            Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0), child: const UnmonitoredChatWarning()),
-            if (reporting)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: ReportForm(
-                  title: 'الإبلاغ عن هذه المحادثة',
-                  categories: conversationReportCategories,
-                  initialCategory: 'Harassment',
-                  withSeverity: false,
-                  submit: (category, severity, description) => ref
-                      .read(apiProvider)
-                      .post<Object?>(
-                        '/api/v1/conversations/${widget.id}/report',
-                        body: {'category': category, 'severity': 'Medium', 'description': description},
-                      ),
-                  onDone: () => setState(() => reporting = false),
-                ),
+            // التنبيه ثابت أعلى المحادثة بحد ربع الشاشة: مع الخط الكبير يُمرَّر داخل حدّه ولا يأخذ مساحة الرسائل كلها
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.25),
+              child: const SingleChildScrollView(
+                child: Padding(padding: EdgeInsets.fromLTRB(16, 8, 16, 0), child: UnmonitoredChatWarning()),
               ),
+            ),
             Expanded(
-              child: Semantics(
+              // نموذج الإبلاغ يأخذ مكان الرسائل ما دام مفتوحاً، فيُمرَّر بمساحة كاملة بأي حجم خط
+              child: reporting
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      children: [
+                        ReportForm(
+                          title: 'الإبلاغ عن هذه المحادثة',
+                          categories: conversationReportCategories,
+                          initialCategory: 'Harassment',
+                          withSeverity: false,
+                          submit: (category, severity, description) => ref
+                              .read(apiProvider)
+                              .post<Object?>(
+                                '/api/v1/conversations/${widget.id}/report',
+                                body: {'category': category, 'severity': 'Medium', 'description': description},
+                              ),
+                          onDone: () => setState(() => reporting = false),
+                        ),
+                      ],
+                    )
+                  : Semantics(
                 liveRegion: true,
                 child: list.isEmpty
                     ? Center(
@@ -199,7 +208,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                         itemCount: list.length,
                         itemBuilder: (_, i) => _Bubble(message: list[i]),
                       ),
-              ),
+                  ),
             ),
             if (!active)
               const Padding(

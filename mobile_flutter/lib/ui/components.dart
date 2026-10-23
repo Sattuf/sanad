@@ -711,14 +711,18 @@ class _PacedDhikrCircleState extends State<PacedDhikrCircle> with SingleTickerPr
                     ],
                   );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(d.text, textAlign: TextAlign.center, style: TextStyle(fontFamily: kNaskh, fontSize: 27, height: 1.8, color: t.sakinaDhikr)),
-                      Text(arNum(count), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300, color: t.sakinaAccent)),
-                    ],
+                // الدائرة بحجم ثابت: الخط المكبَّر يُحدّ داخلها فقط، وقارئ الشاشة يقرأ الذكر كاملاً من التسمية أعلاه
+                child: MediaQuery.withClampedTextScaling(
+                  maxScaleFactor: 1.3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(d.text, textAlign: TextAlign.center, style: TextStyle(fontFamily: kNaskh, fontSize: 27, height: 1.8, color: t.sakinaDhikr)),
+                        Text(arNum(count), style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300, color: t.sakinaAccent)),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -755,6 +759,26 @@ class _PacedDhikrCircleState extends State<PacedDhikrCircle> with SingleTickerPr
   }
 }
 
+/// يوسّع هدف اللمس إلى 48×48 على الأقل (إرشاد أندرويد، وWCAG 2.5.5) حول عنصر أصغر بصرياً — شريحة أو رابط نصي:
+/// المساحة الشفافة حوله تستقبل اللمس أيضاً، ويُقرأ الكل عقدة واحدة بتسمية العنصر. الشكل نفسه لا يتغير.
+class TapTarget extends StatelessWidget {
+  const TapTarget({super.key, required this.onTap, required this.child});
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => MergeSemantics(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            child: Align(widthFactor: 1, heightFactor: 1, child: child),
+          ),
+        ),
+      );
+}
+
 /// زر بيضاوي خافت في وضع السكينة (الحالات والأذكار).
 class SakinaChip extends StatelessWidget {
   const SakinaChip({super.key, required this.label, required this.selected, required this.onTap, this.small = false});
@@ -766,18 +790,21 @@ class SakinaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.t;
-    return Semantics(
-      selected: selected,
-      button: true,
-      child: Material(
-        color: selected ? t.sakinaGlow.withValues(alpha: 0.18) : Colors.transparent,
-        shape: const StadiumBorder(),
-        child: InkWell(
-          customBorder: const StadiumBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: small ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4) : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(label, style: TextStyle(fontSize: small ? 12 : 14, color: selected ? t.sakinaInk : t.sakinaMuted)),
+    return TapTarget(
+      onTap: onTap,
+      child: Semantics(
+        selected: selected,
+        button: true,
+        child: Material(
+          color: selected ? t.sakinaGlow.withValues(alpha: 0.18) : Colors.transparent,
+          shape: const StadiumBorder(),
+          child: InkWell(
+            customBorder: const StadiumBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: small ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4) : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(label, style: TextStyle(fontSize: small ? 12 : 14, color: selected ? t.sakinaInk : t.sakinaMuted)),
+            ),
           ),
         ),
       ),
@@ -803,23 +830,24 @@ class CalmnessScale extends StatelessWidget {
           Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           Wrap(
-            spacing: 6,
-            runSpacing: 6,
             children: [
               for (var n = 0; n <= 10; n++)
-                Semantics(
-                  selected: value == n,
-                  button: true,
-                  child: Material(
-                    color: value == n ? t.primary : t.surface,
-                    shape: CircleBorder(side: BorderSide(color: value == n ? t.primary : t.border)),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: () => onChanged(n),
-                      child: SizedBox.square(
-                        dimension: 40,
-                        child: Center(
-                          child: Text(arNum(n), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: value == n ? t.primaryContrast : t.text)),
+                TapTarget(
+                  onTap: () => onChanged(n),
+                  child: Semantics(
+                    selected: value == n,
+                    button: true,
+                    child: Material(
+                      color: value == n ? t.primary : t.surface,
+                      shape: CircleBorder(side: BorderSide(color: value == n ? t.primary : t.border)),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => onChanged(n),
+                        child: SizedBox.square(
+                          dimension: 40,
+                          child: Center(
+                            child: Text(arNum(n), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: value == n ? t.primaryContrast : t.text)),
+                          ),
                         ),
                       ),
                     ),

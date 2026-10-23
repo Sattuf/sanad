@@ -79,15 +79,18 @@ class _AwarenessScreenState extends ConsumerState<AwarenessScreen> {
             runSpacing: 8,
             children: [
               for (final s in content.mythSuggestions)
-                Material(
-                  color: t.surface2,
-                  shape: const StadiumBorder(),
-                  child: InkWell(
-                    customBorder: const StadiumBorder(),
-                    onTap: () => setState(() => _q.text = s),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      child: Text(s, style: TextStyle(fontSize: 14, color: t.muted)),
+                TapTarget(
+                  onTap: () => setState(() => _q.text = s),
+                  child: Material(
+                    color: t.surface2,
+                    shape: const StadiumBorder(),
+                    child: InkWell(
+                      customBorder: const StadiumBorder(),
+                      onTap: () => setState(() => _q.text = s),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        child: Text(s, style: TextStyle(fontSize: 14, color: t.muted)),
+                      ),
                     ),
                   ),
                 ),
@@ -98,23 +101,25 @@ class _AwarenessScreenState extends ConsumerState<AwarenessScreen> {
             label: 'تصفية حسب الحكم',
             child: Wrap(
               spacing: 4,
-              runSpacing: 4,
               children: [
                 for (final v in _filters)
-                  Semantics(
-                    selected: filter == v,
-                    button: true,
-                    child: Material(
-                      color: filter == v ? t.primary : Colors.transparent,
-                      shape: const StadiumBorder(),
-                      child: InkWell(
-                        customBorder: const StadiumBorder(),
-                        onTap: () => setState(() => filter = v),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          child: Text(
-                            v == 'all' ? 'الكل' : content.verdictLabel[v]!,
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: filter == v ? t.primaryContrast : t.muted),
+                  TapTarget(
+                    onTap: () => setState(() => filter = v),
+                    child: Semantics(
+                      selected: filter == v,
+                      button: true,
+                      child: Material(
+                        color: filter == v ? t.primary : Colors.transparent,
+                        shape: const StadiumBorder(),
+                        child: InkWell(
+                          customBorder: const StadiumBorder(),
+                          onTap: () => setState(() => filter = v),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            child: Text(
+                              v == 'all' ? 'الكل' : content.verdictLabel[v]!,
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: filter == v ? t.primaryContrast : t.muted),
+                            ),
                           ),
                         ),
                       ),
