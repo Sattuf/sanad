@@ -145,7 +145,7 @@ void main() {
     await _openLogin(tester);
     await reveal(tester, find.text('سياسة الخصوصية'));
     await tester.tap(find.text('سياسة الخصوصية'));
-    expect(device.outbound.opened.single.toString(), 'https://sanad.app/privacy');
+    expect(device.outbound.opened.single.toString(), 'https://sattuf.github.io/sanad/privacy/');
   });
 
   testWidgets('جلسة محفوظة: أول طلب بعد التشغيل 401 ثم تجديد صامت واحد، ويظهر الحساب', (tester) async {
