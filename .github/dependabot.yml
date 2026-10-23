@@ -1,0 +1,38 @@
+# تحديثات المكتبات الأسبوعية (Dependabot). تحديثات الثغرات تصل فوراً بمعزل عن هذا الجدول (مفعّلة من الإعدادات).
+# الإصدارات الصغرى والتصحيحية مجمّعة في طلب دمج واحد لكل منظومة، والكبرى كلٌّ في طلبه لأنها قد تكسر.
+# كل طلب يمر بـ CI كاملاً قبل الدمج (حماية main).
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      dotnet-minor:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directories: [/frontend, /ruqyah-app, /packages/shared]
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor:
+        update-types: [minor, patch]
+
+  - package-ecosystem: pub
+    directory: /mobile_flutter
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      pub-minor:
+        update-types: [minor, patch]
+
+  # الـ Actions مثبّتة على commit بعينه؛ Dependabot يحدّث المعرّف والإصدار في التعليق معاً
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
