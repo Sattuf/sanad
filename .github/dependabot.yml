@@ -46,6 +46,12 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: "@eslint/js"
         update-types: [version-update:semver-major]
+      # TypeScript 7 هو المترجم الجديد بلغة Go: تنتقل إليه الحزم الثلاث معاً حين تدعمه أدواتها (typescript-eslint وغيرها)
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # react-hooks 7 يضيف قواعد React Compiler: 13 موضعاً (المشغّل الصوتي، المذكّرة…) تُصلح بعناية في طلب خاص
+      - dependency-name: eslint-plugin-react-hooks
+        update-types: [version-update:semver-major]
     groups:
       npm-minor:
         update-types: [minor, patch]
