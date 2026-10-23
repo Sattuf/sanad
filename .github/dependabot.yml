@@ -52,6 +52,9 @@ updates:
       # react-hooks 7 يضيف قواعد React Compiler: 13 موضعاً (المشغّل الصوتي، المذكّرة…) تُصلح بعناية في طلب خاص
       - dependency-name: eslint-plugin-react-hooks
         update-types: [version-update:semver-major]
+      # أوصاف الأنواع بإصدار Node نفسه الذي يعمل عليه CI (22): إصدار أحدث يسمح بدوال غير موجودة وقت التشغيل
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
     groups:
       npm-minor:
         update-types: [minor, patch]

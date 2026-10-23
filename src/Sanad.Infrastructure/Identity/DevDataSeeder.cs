@@ -77,7 +77,7 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
         if (await users.FindByEmailAsync(email) is not null) return;
         await CreateUserAsync(users, db, email, "مدير محتوى (تجريبي)", SanadRoles.ContentManager, DateTimeOffset.UtcNow);
         await db.SaveChangesAsync(ct);
-        logger.LogWarning("DEV SEED: content manager {Email} created (password: DevDataSeeder.DemoPassword); 2FA setup is required on first sign-in.", email);
+        logger.LogWarning("DEV SEED: content manager account created (see EnsureContentManagerAsync; password: DevDataSeeder.DemoPassword); 2FA setup is required on first sign-in.");
     }
 
     private static async Task<ApplicationUser> CreateUserAsync(UserManager<ApplicationUser> users, SanadDbContext db, string email, string name, string role, DateTimeOffset now)
