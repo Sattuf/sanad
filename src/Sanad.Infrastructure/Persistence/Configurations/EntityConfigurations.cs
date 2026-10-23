@@ -427,3 +427,16 @@ public sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Appl
         b.HasIndex(x => x.PhoneNumber);
     }
 }
+
+public sealed class PushDeviceConfiguration : IEntityTypeConfiguration<PushDevice>
+{
+    public void Configure(EntityTypeBuilder<PushDevice> b)
+    {
+        b.ToTable("PushDevices");
+        b.HasKey(x => x.Id);
+        b.Property(x => x.Token).HasMaxLength(512).IsRequired();
+        b.Property(x => x.Platform).HasMaxLength(16).IsRequired();
+        b.HasIndex(x => x.Token).IsUnique();
+        b.HasIndex(x => x.UserId);
+    }
+}

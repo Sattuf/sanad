@@ -128,6 +128,8 @@ DELETE /api/v1/me/provider-profile/slots/{id:guid}  anon=401 beneficiary=403 coo
 POST   /api/v1/me/provider-upgrade-request  anon=401 beneficiary=400 coordinator=400 admin=400
 GET    /api/v1/me/provider-upgrade-requests  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
 POST   /api/v1/me/provider-upgrade-requests/{id:guid}/resubmit  anon=401 beneficiary=404 coordinator=404 admin=404
+PUT    /api/v1/me/push-devices  anon=401 beneficiary=400 coordinator=400 admin=400
+POST   /api/v1/me/push-devices/remove  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
 GET    /api/v1/me/recommendations  anon=401 beneficiary=2xx coordinator=2xx admin=2xx
 POST   /api/v1/me/recommendations/{id:guid}/acknowledge  anon=401 beneficiary=404 coordinator=404 admin=404
 PUT    /api/v1/me/reminders/device  anon=401 beneficiary=400 coordinator=400 admin=400

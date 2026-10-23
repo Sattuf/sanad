@@ -144,6 +144,7 @@ public static class DependencyInjection
         services.AddSingleton<IRealtimePublisher, SignalRRealtimePublisher>();
         services.AddFeatureManagement();
         services.AddScoped<INotificationDispatcher, CompositeNotificationDispatcher>();
+        services.AddSingleton<IFcmSender, FirebaseFcmSender>();
         services.AddScoped<IExternalNotificationChannel, FcmNotificationChannel>();
         services.AddScoped<IExternalNotificationChannel, WhatsAppNotificationChannel>();
 

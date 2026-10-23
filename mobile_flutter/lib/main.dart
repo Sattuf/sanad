@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/router.dart';
 import 'content/content_repository.dart';
 import 'core/platform_services.dart';
+import 'core/push.dart';
 import 'core/session.dart';
 import 'features/care/realtime.dart';
 import 'features/companion/companion_store.dart';
@@ -62,6 +64,8 @@ Future<ProviderContainer> startApp({List<Override> overrides = const []}) async 
   final discreet = container.read(discreetProvider);
   await container.read(privacyPlatformProvider).setNeutralIcon(discreet);
   await reminders.init();
+  // إشعارات الخادم إن أُعدّ Firebase؛ جلسة قائمة تسجّل رمز الجهاز (قد يتغيّر بين التشغيلات)
+  if (await initPush() && container.read(signedInProvider)) unawaited(container.read(pushRegistrationProvider).register());
   await container.read(remindersProvider.notifier).refresh();
   await container.read(ruqyahRemindersProvider.notifier).refresh();
   return container;

@@ -34,3 +34,19 @@ public sealed class UserNotification
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DateTimeOffset? ReadAtUtc { get; set; }
 }
+
+/// <summary>
+/// رمز جهاز لإشعارات FCM (تطبيق الجوال). الرمز وحده، بلا أي معلومة عن الجهاز؛ يُحذف مع الحساب،
+/// وحين يرفضه FCM (أزيل التطبيق)، وعند الخروج من التطبيق.
+/// </summary>
+public sealed class PushDevice
+{
+    public const int MaxPerUser = 10;
+
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public string Token { get; set; } = null!;
+    public string Platform { get; set; } = null!;
+    public DateTimeOffset CreatedAtUtc { get; set; }
+    public DateTimeOffset LastSeenAtUtc { get; set; }
+}
