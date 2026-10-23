@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Sanad.Application.Common.Interfaces;
@@ -56,16 +57,29 @@ public sealed class CompositeNotificationDispatcher(
 }
 
 /// <summary>
-/// FCM — خلف Feature Flag. يتطلب حساب خدمة Firebase ورموز أجهزة مسجّلة؛ غير مُفعّل في هذا الإصدار (ADR-0009).
+/// FCM إلى أجهزة المستلم المسجّلة — خلف Feature Flag (PushNotifications) وحساب خدمة Firebase (ADR-0009).
+/// يرسل نوع الإشعار ورابطه فقط (لا العنوان ولا النص)، ويحذف الرموز التي رفضها FCM.
 /// </summary>
-public sealed class FcmNotificationChannel(ILogger<FcmNotificationChannel> logger) : IExternalNotificationChannel
+public sealed class FcmNotificationChannel(SanadDbContext db, IFcmSender sender, ILogger<FcmNotificationChannel> logger) : IExternalNotificationChannel
 {
     public string FeatureFlag => FeatureFlags.PushNotifications;
 
-    public Task SendAsync(NotificationMessage message, CancellationToken ct)
+    public async Task SendAsync(NotificationMessage message, CancellationToken ct)
     {
-        logger.LogInformation("FCM channel enabled but no provider credentials configured — skipped ({Kind})", message.Kind);
-        return Task.CompletedTask;
+        if (!sender.IsConfigured)
+        {
+            logger.LogInformation("FCM channel enabled but Fcm:ServiceAccountJson is not configured — skipped ({Kind})", message.Kind);
+            return;
+        }
+        var tokens = await db.PushDevices.Where(d => d.UserId == message.RecipientUserId).Select(d => d.Token).ToListAsync(ct);
+        if (tokens.Count == 0) return;
+
+        var data = new Dictionary<string, string> { ["kind"] = message.Kind };
+        if (message.Link is not null) data["link"] = message.Link;
+        var gone = await sender.SendAsync(tokens, data, ct);
+        if (gone.Count == 0) return;
+        db.PushDevices.RemoveRange(await db.PushDevices.Where(d => gone.Contains(d.Token)).ToListAsync(ct));
+        await db.SaveChangesAsync(ct);
     }
 }
 

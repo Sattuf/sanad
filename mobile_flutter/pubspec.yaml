@@ -42,6 +42,9 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   local_auth: ^3.0.2
   flutter_local_notifications: ^22.3.2
+  # إشعارات الخادم (FCM) — تبدأ فقط إن مُرّرت إعدادات Firebase بـ --dart-define (lib/core/push.dart)
+  firebase_core: 4.15.0
+  firebase_messaging: 16.7.0
   timezone: ^0.11.2
   flutter_timezone: ^5.1.1
   share_plus: ^13.3.1

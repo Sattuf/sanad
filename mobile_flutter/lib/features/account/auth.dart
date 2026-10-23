@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -8,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../core/push.dart';
 import '../../core/session.dart';
 
 /*
@@ -189,6 +191,7 @@ class AuthService {
     if (res['stage'] == 'Succeeded' && access != null && refresh != null) {
       ref.read(sessionProvider.notifier).setTokens(access, refresh);
       ref.invalidate(meProvider);
+      unawaited(ref.read(pushRegistrationProvider).register());
       return SignedIn(isNewUser: res['isNewUser'] == true);
     }
     if (res['stage'] == 'RequiresTwoFactorCode' && res['ticket'] is String) return NeedsTwoFactor(res['ticket'] as String);
@@ -205,6 +208,8 @@ class AuthService {
   /// الخروج: إبطال الرمز على الخادم ثم مسحه محلياً — المسح يتم حتى لو تعذّر الاتصال.
   Future<void> signOut() async {
     final session = ref.read(sessionProvider.notifier);
+    // رمز الجهاز أولاً، والجلسة ما زالت صالحة: لا تصل إشعارات حساب خرج منه
+    await ref.read(pushRegistrationProvider).unregister();
     try {
       await ref.read(apiProvider).post<Object?>('/api/v1/auth/revoke', body: {'refreshToken': session.refreshToken});
     } catch (_) {

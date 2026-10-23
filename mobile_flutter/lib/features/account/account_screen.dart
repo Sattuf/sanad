@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api.dart';
 import '../../core/format.dart';
 import '../../core/platform_services.dart';
+import '../../core/push.dart';
 import '../../core/session.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
@@ -670,6 +671,8 @@ class _DeleteAccountState extends ConsumerState<_DeleteAccount> {
       error = null;
     });
     try {
+      // الخادم يحذف رموز الأجهزة مع الحساب؛ نبطله هنا أيضاً قبل أن تنتهي الجلسة
+      await ref.read(pushRegistrationProvider).unregister();
       await ref.read(apiProvider).del<Object?>('/api/v1/me', body: {'confirmation': _confirm.text});
       // المسح قبل إنهاء الجلسة: إنهاؤها يُخرج هذا القسم من الشاشة
       await wipeLocalData(ref);

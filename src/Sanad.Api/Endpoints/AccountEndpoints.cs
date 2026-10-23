@@ -25,6 +25,8 @@ public static class AccountEndpoints
     public sealed record ConsentRequest(ConsentType Type);
     public sealed record FavoriteRequest(Guid AudioTrackId);
     public sealed record ResubmitRequest(string DocumentType, Guid UploadedDocumentFileId);
+    public sealed record PushDeviceRequest(string Token, string Platform);
+    public sealed record PushDeviceRemoveRequest(string Token);
     public sealed record NotificationDto(Guid Id, string Kind, string Title, string Body, string? Link, DateTimeOffset CreatedAtUtc, bool IsRead);
 
     public static IEndpointRouteBuilder MapAccountEndpoints(this IEndpointRouteBuilder app)
@@ -100,6 +102,37 @@ public static class AccountEndpoints
         {
             var uid = user.UserId!.Value;
             foreach (var n in await db.UserNotifications.Where(n => n.UserId == uid && n.ReadAtUtc == null).ToListAsync()) n.ReadAtUtc = clock.UtcNow;
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
+        // ── رموز أجهزة الجوال لإشعارات FCM: رمز الجهاز فقط، ويُنقل إلى الحساب الحالي إن سُجّل لغيره (تبديل حساب على الجهاز نفسه) ──
+        me.MapPut("/push-devices", async (PushDeviceRequest req, SanadDbContext db, ICurrentUser user, IDateTime clock) =>
+        {
+            var token = req.Token?.Trim() ?? "";
+            if (token.Length is < 20 or > 512 || token.Any(char.IsWhiteSpace) || req.Platform is not ("android" or "ios"))
+                return Results.Problem(statusCode: 400, title: "رمز جهاز أو منصة غير صالحة.", extensions: new Dictionary<string, object?> { ["code"] = "invalid_push_device" });
+            var uid = user.UserId!.Value;
+            var device = await db.PushDevices.FirstOrDefaultAsync(d => d.Token == token);
+            if (device is null)
+            {
+                var mine = await db.PushDevices.Where(d => d.UserId == uid).OrderBy(d => d.LastSeenAtUtc).ToListAsync();
+                if (mine.Count >= PushDevice.MaxPerUser) db.PushDevices.RemoveRange(mine.Take(mine.Count - PushDevice.MaxPerUser + 1));
+                db.PushDevices.Add(new PushDevice { UserId = uid, Token = token, Platform = req.Platform, CreatedAtUtc = clock.UtcNow, LastSeenAtUtc = clock.UtcNow });
+            }
+            else
+            {
+                device.UserId = uid;
+                device.Platform = req.Platform;
+                device.LastSeenAtUtc = clock.UtcNow;
+            }
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        }).RequireRateLimiting("uploads");
+        me.MapPost("/push-devices/remove", async (PushDeviceRemoveRequest req, SanadDbContext db, ICurrentUser user) =>
+        {
+            var uid = user.UserId!.Value;
+            db.PushDevices.RemoveRange(await db.PushDevices.Where(d => d.UserId == uid && d.Token == req.Token).ToListAsync());
             await db.SaveChangesAsync();
             return Results.NoContent();
         });

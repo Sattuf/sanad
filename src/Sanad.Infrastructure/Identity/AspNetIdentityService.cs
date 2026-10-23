@@ -342,6 +342,7 @@ public sealed class AspNetIdentityService(
         // لا يبقى ما يربط بالمستخدم: إشعاراته، والردود المحفوظة لمفاتيح التكرار (قد تحوي بياناته)
         db.UserNotifications.RemoveRange(await db.UserNotifications.Where(n => n.UserId == user.Id).ToListAsync(ct));
         db.IdempotencyRecords.RemoveRange(await db.IdempotencyRecords.Where(r => r.UserId == user.Id).ToListAsync(ct));
+        db.PushDevices.RemoveRange(await db.PushDevices.Where(d => d.UserId == user.Id).ToListAsync(ct));
         await db.SaveChangesAsync(ct);
         await RevokeAllSessionsAsync(user.Id, ct);
         // بعد الإبطال (وما يتبعه من إبطال رموز الوصول) تُحذف صفوف الجلسات نفسها
