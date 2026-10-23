@@ -27,7 +27,7 @@ jobs:
           sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL /usr/local/lib/node_modules /usr/local/share/powershell /usr/share/miniconda /usr/share/dotnet
           sudo docker image prune --all --force > /dev/null
           df -h /
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with: { distribution: temurin, java-version: "21" }
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -54,7 +54,7 @@ jobs:
       - name: Findings
         run: python3 .mobsf/check.py mobsf-scorecard.json .mobsf/accepted.json mobsf-report.json mobile_flutter/build/app/outputs/mapping/release/mapping.txt
       - if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mobsf-report
           path: |
