@@ -65,7 +65,7 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
         await SeedTracksAsync(db, storage, policy, sheikh.Id, now);
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
-        logger.LogWarning("DEV SEED: synthetic demo data created. Accounts (password {Password}): beneficiary@ / sheikh@sanad.local", DemoPassword);
+        logger.LogWarning("DEV SEED: synthetic demo data created. Accounts: beneficiary@ / sheikh@sanad.local (password: DevDataSeeder.DemoPassword).");
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
@@ -77,7 +77,7 @@ public sealed class DevDataSeeder(IServiceScopeFactory scopes, IHostEnvironment 
         if (await users.FindByEmailAsync(email) is not null) return;
         await CreateUserAsync(users, db, email, "مدير محتوى (تجريبي)", SanadRoles.ContentManager, DateTimeOffset.UtcNow);
         await db.SaveChangesAsync(ct);
-        logger.LogWarning("DEV SEED: content manager {Email} created (password {Password}); 2FA setup is required on first sign-in.", email, DemoPassword);
+        logger.LogWarning("DEV SEED: content manager {Email} created (password: DevDataSeeder.DemoPassword); 2FA setup is required on first sign-in.", email);
     }
 
     private static async Task<ApplicationUser> CreateUserAsync(UserManager<ApplicationUser> users, SanadDbContext db, string email, string name, string role, DateTimeOffset now)
