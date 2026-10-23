@@ -18,7 +18,7 @@
 
 | المجلد | ما هو | الحالة | توثيقه |
 |---|---|---|---|
-| `src/`، `tests/` | الخادم: ‎.NET 9، Clean Architecture داخل Modular Monolith | فعّال | [README الرئيسي](../README.md)، [ADR-0001](adr/0001-architecture-and-adr-process.md)، `references/01`–`06` |
+| `src/`، `tests/` | الخادم: ‎.NET 10 (LTS)، Clean Architecture داخل Modular Monolith | فعّال | [README الرئيسي](../README.md)، [ADR-0001](adr/0001-architecture-and-adr-process.md)، `references/01`–`06` |
 | `frontend/` | الويب: React 18 + TypeScript + Vite، عربي RTL، ورفيق السكينة اليومي | فعّال | [README الرئيسي](../README.md#رفيق-السكينة-اليومي-على-الويب)، [ADR-0014](adr/0014-frontend-client-and-session.md)، [ADR-0022](adr/0022-local-first-daily-companion.md) |
 | `mobile_flutter/` | تطبيق الجوال بـ Flutter (Android وiOS) بواجهة الويب نفسها | قيد البناء (الأسابيع 1–7 منجزة) | [mobile_flutter/README.md](../mobile_flutter/README.md) |
 | `packages/shared/` | المحتوى والمنطق المشترك: المصحف والأذكار والبرامج وعميل الـ API، ومولّدات Dart ومتجهات التطابق | فعّال | [ADR-0023](adr/0023-mobile-app-flutter.md) §3–4 |

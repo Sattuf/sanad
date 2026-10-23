@@ -14,7 +14,10 @@ updates:
       # من الإصدار 8 صار ترخيصها مدفوعاً للاستخدام التجاري (Xceed)؛ نبقى على 7.x
       - dependency-name: FluentAssertions
         versions: [">=8"]
-      # إصدارات .NET 10 الكبرى تأتي مع ترقية المشروع كله إلى .NET 10 في طلب واحد، لا متفرّقة
+      # ومن الإصدار 13 يتطلب MediatR مفتاح ترخيص تجاري؛ نبقى على 12.x
+      - dependency-name: MediatR
+        versions: [">=13"]
+      # الإصدار الكبير التالي لـ .NET (11 وما بعده) يأتي مع ترقية المشروع كله في طلب واحد، لا متفرّقاً
       - dependency-name: dotnet-ef
         update-types: [version-update:semver-major]
       - dependency-name: Microsoft.*

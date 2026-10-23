@@ -198,16 +198,17 @@ if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"
     app.UseHttpsRedirection();
 }
 app.UseMiddleware<SecurityHeadersMiddleware>();
+// Swagger وسيط لا نقطة نهاية، فيأتي قبل التفويض: منذ .NET 10 تسري سياسة FallbackPolicy (مستخدم مسجَّل)
+// على كل طلب بلا نقطة نهاية أيضاً، فكان swagger.json يُرفض بـ 401 (وفحص ZAP يعتمد عليه)
+if (app.Environment.IsDevelopment())
+    app.UseSwagger().UseSwaggerUI(o => o.DocumentTitle = "Sanad API");
 app.UseCors();
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger().UseSwaggerUI(o => o.DocumentTitle = "Sanad API");
     app.MapGet("/", () => Results.Redirect("/swagger")).AllowAnonymous().ExcludeFromDescription();
-}
 
 app.MapAuthEndpoints();
 app.MapAccountEndpoints();
