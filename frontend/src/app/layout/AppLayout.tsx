@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, Outlet, ScrollRestoration, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { STAFF_ROLES, useMe, useSignOut } from "../../api/hooks";
 import type { AppNotification } from "@sanad/shared/api/types";
@@ -9,7 +9,8 @@ import { AdministrativeDisclaimerFooter } from "../../components/safety";
 import { cx } from "../../lib/cx";
 import { useRealtime } from "../../features/realtime/useRealtime";
 import { useTheme } from "../theme";
-import { applyDiscreet, quickExit, useDiscreet, useLabel } from "../../stores/discreet";
+import { applyDiscreet, quickExit, useDiscreet } from "../../stores/discreet";
+import { DOOR_ORDER, DoorTabs, doorHome, doorOf, useDoorLabel } from "./doors";
 
 export function AppLayout() {
   useRealtime();
@@ -21,6 +22,7 @@ export function AppLayout() {
       </a>
       <SiteHeader />
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+        <DoorTabs />
         <Outlet />
       </main>
       <AdministrativeDisclaimerFooter />
@@ -75,28 +77,22 @@ function SiteHeader() {
   const navigate = useNavigate();
   const { pref, cycle } = useTheme();
   const [open, setOpen] = useState(false);
-  const label = useLabel();
   const discreet = useDiscreet((s) => s.on);
+  const doorLabel = useDoorLabel();
+  const current = doorOf(useLocation().pathname);
   const isPractitioner = me?.roles.includes("Practitioner");
   const isStaff = me?.roles.some((r) => STAFF_ROLES.includes(r));
 
-  const links: Array<{ to: string; label: string; show: boolean; primary?: boolean }> = [
-    { to: "/today", label: "يومي", show: true, primary: true },
-    { to: "/programs", label: "البرامج", show: true, primary: true },
-    { to: "/ruqyah", label: label(t("nav.ruqyah"), "الأذكار"), show: true, primary: true },
-    { to: "/self-ruqyah", label: label("ارقِ نفسك", "جلسة"), show: true, primary: true },
-    { to: "/journal", label: "مذكّرتي", show: true, primary: true },
-    { to: "/awareness", label: "ميزان الوعي", show: true, primary: true },
-    { to: "/directory", label: t("nav.directory"), show: true },
-    { to: "/library", label: label(t("nav.library"), "الاستماع"), show: Boolean(me) },
-    { to: "/bookings", label: t("nav.bookings"), show: Boolean(me) },
-    { to: "/recommendations", label: t("nav.recommendations"), show: Boolean(me) },
+  // الأبواب الأربعة في الترويسة، وما سواها في القائمة فقط
+  const doors = DOOR_ORDER.map((d) => ({ id: d, to: doorHome(d), label: doorLabel(d) }));
+  const extras: Array<{ to: string; label: string; show: boolean }> = [
     { to: "/provider", label: t("nav.providerPortal"), show: Boolean(isPractitioner) },
     { to: "/staff", label: t("nav.staff"), show: Boolean(isStaff) },
   ];
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     cx("rounded-lg px-3 py-2 text-sm font-semibold transition-colors", isActive ? "bg-surface-2 text-primary" : "text-muted hover:text-text");
+  const doorClass = (id: string) => navClass({ isActive: id === current });
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-bg/90 backdrop-blur">
@@ -107,10 +103,10 @@ function SiteHeader() {
         </Link>
 
         <nav className="ms-4 hidden items-center gap-1 lg:flex" aria-label="التنقل الرئيسي">
-          {links.filter((l) => l.show && l.primary).map((l) => (
-            <NavLink key={l.to} to={l.to} className={navClass}>
-              {l.label}
-            </NavLink>
+          {doors.map((d) => (
+            <Link key={d.id} to={d.to} className={doorClass(d.id)} aria-current={d.id === current ? "page" : undefined}>
+              {d.label}
+            </Link>
           ))}
         </nav>
 
@@ -152,8 +148,13 @@ function SiteHeader() {
       </div>
       {open && (
         <nav className="mx-auto grid max-w-6xl gap-x-4 border-t border-border px-4 py-2 sm:grid-cols-3" aria-label="القائمة الكاملة">
-          {links.filter((l) => l.show).map((l) => (
-            <NavLink key={l.to} to={l.to} className={({ isActive }) => cx(navClass({ isActive }), "block", l.primary && "lg:hidden")} onClick={() => setOpen(false)}>
+          {doors.map((d) => (
+            <Link key={d.id} to={d.to} className={cx(doorClass(d.id), "block lg:hidden")} onClick={() => setOpen(false)}>
+              {d.label}
+            </Link>
+          ))}
+          {extras.filter((l) => l.show).map((l) => (
+            <NavLink key={l.to} to={l.to} className={({ isActive }) => cx(navClass({ isActive }), "block")} onClick={() => setOpen(false)}>
               {l.label}
             </NavLink>
           ))}

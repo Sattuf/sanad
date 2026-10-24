@@ -29,8 +29,26 @@ void main() {
     for (final g in r.guidesOf('method')) {
       await reveal(tester, find.text(g.title));
     }
-    await reveal(tester, find.text('توعية وتحذير'));
     await reveal(tester, find.text('ذكّرني بأذكاري'));
+  });
+
+  testWidgets('الأبواب: تبويبات «ارقِ نفسك»، وأدلة التوعية في باب الوعي وتُفتح داخله', (tester) async {
+    await pumpApp(tester, location: '/ruqyah');
+    expect(find.byKey(const ValueKey('door-tab-/programs')), findsOneWidget);
+    expect(find.byKey(const ValueKey('door-tab-/self-ruqyah')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('door-tab-/programs')));
+    await tester.pumpAndSettle();
+    expect(find.text('برامج الالتزام'), findsOneWidget);
+
+    await pumpApp(tester, location: '/awareness');
+    await reveal(tester, find.text('توعية وتحذير'));
+    final first = r.guidesOf('awareness').first;
+    expect(first.path, '/awareness/guide/${first.id}');
+    await reveal(tester, find.text(first.title));
+    await tester.tap(find.text(first.title));
+    await tester.pumpAndSettle();
+    expect(find.text(first.intro), findsOneWidget);
+    expect(find.text('الوعي'), findsWidgets);
   });
 
   testWidgets('الآية الأولى في الواجهة من المصحف المشترك، والنقاط تبدّلها', (tester) async {
@@ -198,7 +216,7 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الأذكار'));
+    await tester.tap(find.text('وِردي')); // باب الرقية باسمه في وضع التمويه
     await tester.pumpAndSettle();
     await reveal(tester, find.byKey(ValueKey('ruqyah-reminder-${morning.id}')));
     await tester.tap(find.byKey(ValueKey('ruqyah-reminder-${morning.id}')));

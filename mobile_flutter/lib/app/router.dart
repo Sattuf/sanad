@@ -10,6 +10,7 @@ import '../features/care/directory_screens.dart';
 import '../features/care/sign_in_gate.dart';
 import '../features/library/library_screens.dart';
 import '../features/companion/awareness_screen.dart';
+import '../features/companion/companion_store.dart';
 import '../features/companion/programs_screen.dart';
 import '../features/companion/sakina_screen.dart';
 import '../features/companion/self_ruqyah_screen.dart';
@@ -31,14 +32,13 @@ final router = GoRouter(
       builder: (context, state, shell) => AppShell(shell: shell, location: state.uri.path),
       branches: [
         StatefulShellBranch(routes: [GoRoute(path: '/today', builder: (_, _) => const TodayScreen())]),
+        // الأبواب (doors في النصوص المشتركة): يومي، ارقِ نفسك، شيخ موثوق، الوعي — ثم حسابي
         StatefulShellBranch(routes: [
           GoRoute(
             path: '/programs',
             builder: (_, _) => const ProgramsScreen(),
             routes: [GoRoute(path: ':id', builder: (_, state) => ProgramDetailScreen(id: state.pathParameters['id']!))],
           ),
-        ]),
-        StatefulShellBranch(routes: [
           GoRoute(
             path: '/ruqyah',
             builder: (_, _) => const RuqyahHubScreen(),
@@ -52,8 +52,22 @@ final router = GoRouter(
             ],
           ),
         ]),
+        // الدليل عام؛ الحجز والمحادثة والتوصيات تطلب الدخول وتُفتح فوقه
         StatefulShellBranch(routes: [
-          GoRoute(path: '/awareness', builder: (_, _) => const AwarenessScreen(), routes: [GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen())]),
+          GoRoute(path: '/directory', builder: (_, state) => DirectoryScreen(initialTrack: state.uri.queryParameters['track'] ?? '')),
+          GoRoute(path: '/providers/:id', builder: (_, state) => ProviderScreen(id: state.pathParameters['id']!)),
+          GoRoute(path: '/organizations/:id', builder: (_, state) => OrganizationScreen(id: state.pathParameters['id']!)),
+        ]),
+        // أدلة «توعية وتحذير» من باب الوعي، ورابطها على /ruqyah/guide يعمل أيضاً كالويب
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: '/awareness',
+            builder: (_, _) => const AwarenessScreen(),
+            routes: [
+              GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen()),
+              GoRoute(path: 'guide/:guideId', builder: (_, state) => GuideScreen(guideId: state.pathParameters['guideId']!)),
+            ],
+          ),
         ]),
         StatefulShellBranch(routes: [
           GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
@@ -72,10 +86,7 @@ final router = GoRouter(
     GoRoute(path: '/consent', builder: (_, _) => const ConsentScreen()),
     GoRoute(path: '/library', builder: (_, _) => const LibraryScreen()),
     GoRoute(path: '/favorites', builder: (_, _) => const FavoritesScreen()),
-    // الدليل عام؛ الحجز والمحادثة والتوصيات والإشعارات والبلاغ تطلب الدخول (الأسابيع 7–9)
-    GoRoute(path: '/directory', builder: (_, state) => DirectoryScreen(initialTrack: state.uri.queryParameters['track'] ?? '')),
-    GoRoute(path: '/providers/:id', builder: (_, state) => ProviderScreen(id: state.pathParameters['id']!)),
-    GoRoute(path: '/organizations/:id', builder: (_, state) => OrganizationScreen(id: state.pathParameters['id']!)),
+    // الحجز والمحادثة والتوصيات والإشعارات والبلاغ تطلب الدخول (الأسابيع 7–9)
     GoRoute(
       path: '/book/:providerId',
       builder: (_, state) => SignInGate(child: BookScreen(providerId: state.pathParameters['providerId']!, offeringId: state.uri.queryParameters['offering'])),
@@ -104,6 +115,12 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.t;
     final discreet = ref.watch(discreetProvider);
+    final content = ref.watch(contentProvider);
+    // اسم الباب من النصوص المشتركة؛ ما بعد «|» اسمه في وضع التمويه
+    String door(String id) {
+      final names = content.label('doors.$id').split('|');
+      return discreet && names.length > 1 ? names[1] : names[0];
+    }
     return Scaffold(
       // الخروج السريع في الوضع المتحفّظ (✕ أعلى الشاشة كالويب): في شريط رفيع خاص به فوق المحتوى،
       // لا عائماً فوقه — كان يغطّي زاوية بطاقات المشاهد في صفحات الرقية
@@ -146,10 +163,10 @@ class AppShell extends ConsumerWidget {
           selectedIndex: shell.currentIndex,
           onDestinationSelected: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
           destinations: [
-            const NavigationDestination(icon: Icon(Icons.wb_twilight_outlined), selectedIcon: Icon(Icons.wb_twilight), label: 'يومي'),
-            const NavigationDestination(icon: Icon(Icons.shield_outlined), selectedIcon: Icon(Icons.shield), label: 'البرامج'),
-            NavigationDestination(icon: const Icon(Icons.menu_book_outlined), selectedIcon: const Icon(Icons.menu_book), label: discreetLabel(ref, 'الرقية', 'الأذكار')),
-            const NavigationDestination(icon: Icon(Icons.balance_outlined), selectedIcon: Icon(Icons.balance), label: 'الميزان'),
+            NavigationDestination(icon: const Icon(Icons.wb_twilight_outlined), selectedIcon: const Icon(Icons.wb_twilight), label: door('today')),
+            NavigationDestination(icon: const Icon(Icons.menu_book_outlined), selectedIcon: const Icon(Icons.menu_book), label: door('ruqyah')),
+            NavigationDestination(icon: const Icon(Icons.verified_user_outlined), selectedIcon: const Icon(Icons.verified_user), label: door('directory')),
+            NavigationDestination(icon: const Icon(Icons.balance_outlined), selectedIcon: const Icon(Icons.balance), label: door('awareness')),
             const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'حسابي'),
           ],
         ),

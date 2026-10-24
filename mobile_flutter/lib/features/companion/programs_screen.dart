@@ -7,6 +7,7 @@ import '../../content/content_repository.dart';
 import '../../content/models.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/door_tabs.dart';
 import 'companion_store.dart';
 
 /*
@@ -27,6 +28,7 @@ class ProgramsScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
         children: [
+          const DoorTabs(tabs: ruqyahDoorTabs, current: '/programs'),
           const PageHeader(
             title: 'برامج الالتزام',
             subtitle:

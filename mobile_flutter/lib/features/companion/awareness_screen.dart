@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../content/arabic.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/door_tabs.dart';
 import '../../ui/share_card.dart';
+import '../ruqyah/ruqyah_screens.dart' show GuideGrid;
 import 'companion_store.dart';
 
 /*
@@ -46,6 +48,7 @@ class _AwarenessScreenState extends ConsumerState<AwarenessScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
         children: [
+          const DoorTabs(tabs: awarenessDoorTabs, current: '/awareness'),
           const PageHeader(
             title: 'ميزان الوعي: هل هذا صحيح؟',
             subtitle:
@@ -154,6 +157,15 @@ class _AwarenessScreenState extends ConsumerState<AwarenessScreen> {
                 ],
               ),
             ),
+          const SizedBox(height: 40),
+          Semantics(header: true, child: const Text('توعية وتحذير', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700))),
+          const SizedBox(height: 4),
+          Text(
+            'السحر وحكمه، وإتيان السحرة والكهّان، ومخالفات باب الرقية، واليوغا و«الطاقة» والممارسات المعاصرة — بالدليل.',
+            style: TextStyle(color: t.muted, height: 1.8),
+          ),
+          const SizedBox(height: 20),
+          GuideGrid(guides: content.ruqyah.guidesOf('awareness'), action: 'اقرأ ←'),
           const SizedBox(height: 20),
           Text(
             'محتوى توعوي عام مبني على نصوص معروفة ومصادرها — ليس فتوى في حالة بعينها. راجعه مختصون قبل النشر، ونرحّب بتصويباتكم عبر صفحة البلاغات.',

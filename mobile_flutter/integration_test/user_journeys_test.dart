@@ -101,8 +101,8 @@ void main() {
 
     router.go('/today');
     await settle(tester);
-    expect(find.text('الأذكار'), findsOneWidget);
-    expect(find.text('الرقية'), findsNothing);
+    expect(find.text('وِردي'), findsOneWidget);
+    expect(find.text('ارقِ نفسك'), findsNothing);
     expect(find.byKey(const ValueKey('quick-exit')), findsOneWidget);
 
     // إعادة الأيقونة والاسم: لا يبقى المحاكي بأيقونة «ملاحظاتي»

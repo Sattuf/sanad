@@ -8,6 +8,7 @@ import '../../content/content_repository.dart';
 import '../../content/models.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/door_tabs.dart';
 import '../../ui/share_card.dart';
 import '../privacy/discreet.dart';
 import 'companion_store.dart';
@@ -54,6 +55,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
         children: [
+          const DoorTabs(tabs: todayDoorTabs, current: '/today'),
           _Header(title: g.title, sub: g.sub, date: '${_weekdays[now.weekday - 1]}، ${arNum(now.day)} ${_months[now.month - 1]}'),
           const SizedBox(height: 24),
           if (program == null) const _EmptyToday() else ..._programDay(context, content, s, program),

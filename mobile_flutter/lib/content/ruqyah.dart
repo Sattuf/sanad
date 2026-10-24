@@ -90,8 +90,8 @@ class Guide {
   final String intro;
   final List<GuideSection> sections;
 
-  /// رابط الدليل حسب قسمه (guidePath في ruqyah.ts).
-  String get path => '/ruqyah/guide/$id';
+  /// رابط الدليل حسب قسمه (guidePath في ruqyah.ts). أدلة التوعية تُفتح داخل باب الوعي فلا ينتقل الشريط السفلي.
+  String get path => kind == 'awareness' ? '/awareness/guide/$id' : '/ruqyah/guide/$id';
 }
 
 typedef WirdSlot = ({String id, String label, String collection, String defaultTime});
