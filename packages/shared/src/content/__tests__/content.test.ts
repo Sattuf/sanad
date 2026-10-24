@@ -46,7 +46,7 @@ describe("guides", () => {
 
   it("guide ids are unique and awareness pages exist", () => {
     expect(new Set(guides.map((g) => g.id)).size).toBe(guides.length);
-    expect(awarenessGuides.map((g) => g.id)).toEqual(["sihr", "sihr-response", "yoga", "energy", "occult"]);
+    expect(awarenessGuides.map((g) => g.id)).toEqual(["sihr", "sihr-response", "kuhhan", "yoga", "energy", "occult", "ruqyah-mistakes"]);
   });
 });
 
