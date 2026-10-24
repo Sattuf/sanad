@@ -152,6 +152,39 @@ export const PROGRAMS: Program[] = [
       ["وقفة الأسبوع", [t("reflect", "anytime", "/journal")]],
     ]),
   },
+  {
+    // مأخوذ من «البرنامج اليومي» الذي يجمع ما يوصي به أهل العلم عادة، دون الإضافات المبنية على نوع الحالة
+    id: "daily-ruqyah-30",
+    title: "ورد الرقية اليومي",
+    tagline: "٣٠ يوماً من الرقية الذاتية وأذكار اليوم والليلة",
+    description:
+      "وِرد أطول يجمع ما يوصي به أهل العلم عادةً: أذكار الصباح والمساء، وجلسة رقية ذاتية كل يوم، وسورة البقرة في البيت، وأذكار النوم على طهارة. المدة وسيلة للمداومة، لا عدد مسنون.",
+    days: 30,
+    minutesPerDay: 30,
+    tint: "sky",
+    forWhom: "لمن أتمّ الأساس ويريد وِرداً يومياً أطول",
+    plan: build(
+      30,
+      [
+        t("bismillah-3", "morning"), t("muawwidhat", "morning"), t("ajwa", "morning"),
+        t("self-ruqyah", "anytime", "/self-ruqyah"),
+        t("kalimat-tammat", "evening"), t("muawwidhat", "evening"),
+        t("wudu-sleep", "night"), t("kursi", "night"), t("baqarah-end", "night"), t("sleep-nafth", "night"),
+      ],
+      [
+        ["النية واليقين", [t("intention", "anytime")]],
+        ["آيات موسى مع السحرة", [t("musa-sahara", "anytime")]],
+        ["سورة البقرة في البيت", [t("baqarah-home", "anytime")]],
+        ["الرقية بوضع اليد", [t("hand-on-pain", "anytime")]],
+        ["حِرز اليوم كله", [t("tahlil-100", "morning")]],
+        ["رقية النبي ﷺ", [t("ruqyah-nabawiyyah", "anytime")]],
+        ["دعاء في آخر الليل", [t("last-third", "night")]],
+        ["سيّد الاستغفار", [t("sayyid-istighfar", "morning")]],
+        ["دعوة ذي النون", [t("dhunnun", "anytime")]],
+        ["وقفة مع نفسك", [t("reflect", "anytime", "/journal")]],
+      ],
+    ),
+  },
 ];
 
 export function programById(id: string | null | undefined) {
