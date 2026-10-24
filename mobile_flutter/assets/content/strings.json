@@ -20,6 +20,12 @@
    "logout": "خروج",
    "becomeProvider": "كن مقدّم خدمة"
   },
+  "doors": {
+   "today": "يومي",
+   "ruqyah": "ارقِ نفسك|وِردي",
+   "directory": "شيخ موثوق|الدليل",
+   "awareness": "الوعي"
+  },
   "practitionerType": {
    "ReligiousPractitioner": "شيخ / راقٍ شرعي"
   },

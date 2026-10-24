@@ -68,13 +68,6 @@ export function RuqyahHubPage() {
         <GuideGrid items={methodGuides} action="اقرأ المنهج ←" />
       </section>
 
-      <section aria-labelledby="awareness-title">
-        <Ornament className="mb-6" />
-        <h2 id="awareness-title" className="text-2xl font-bold">توعية وتحذير</h2>
-        <p className="mt-1 text-muted">السحر وأنواعه والموقف الشرعي منه، وحكم اليوغا و«الطاقة» والممارسات المعاصرة — تعريف وتحذير بالدليل.</p>
-        <GuideGrid items={awarenessGuides} action="اقرأ ←" />
-      </section>
-
       <ReminderCard />
 
       <section className="rounded-3xl border border-border bg-surface p-6 md:flex md:items-center md:justify-between md:gap-6">
@@ -528,7 +521,7 @@ function Counter({ count, repeat, onCount }: { count: number; repeat: number; on
 /** مسار التنقل والأدلة ذات الصلة لكل قسم. */
 const guideSections: Record<NonNullable<Guide["kind"]>, { root: { to: string; label: string }; crumb?: string; tag: string; list: Guide[] }> = {
   method: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "المنهج", tag: "منهج", list: methodGuides },
-  awareness: { root: { to: "/ruqyah", label: "الرقية والتحصين" }, crumb: "توعية وتحذير", tag: "توعية", list: awarenessGuides },
+  awareness: { root: { to: "/awareness", label: "الوعي" }, crumb: "توعية وتحذير", tag: "توعية", list: awarenessGuides },
 };
 
 export function RuqyahGuidePage() {

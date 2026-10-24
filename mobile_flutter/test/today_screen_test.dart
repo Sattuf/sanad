@@ -176,8 +176,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('النية قبل العمل'), findsOneWidget);
     expect(find.textContaining('أساس التحصين · اليوم ١ من ٧'), findsOneWidget);
-    expect(find.text('الصباح'), findsOneWidget);
-    expect(find.text('ذكر الحفظ'), findsOneWidget);
+    // تبويبات «يومي» أعلى الشاشة تدفع المهام للأسفل
+    await reveal(tester, find.text('الصباح'));
+    await reveal(tester, find.text('ذكر الحفظ'));
   });
 
   testWidgets('إنجاز مهمة يُحفظ بصيغة الويب نفسها (sanad.companion.v1)', (tester) async {
@@ -187,8 +188,7 @@ void main() {
     expect(find.textContaining('اليوم ٢ من ٧'), findsOneWidget);
 
     final check = find.descendant(of: find.byKey(const ValueKey('task-morning-bismillah-3')), matching: find.byKey(const ValueKey('check')));
-    await tester.ensureVisible(check); // قد تقع المهمة تحت شريط التبويب حسب طول التحية
-    await tester.pumpAndSettle();
+    await reveal(tester, check); // قد تقع المهمة تحت شريط التبويب حسب طول التحية
     await tester.tap(check);
     await tester.pumpAndSettle();
 

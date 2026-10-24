@@ -10,6 +10,8 @@ import { MAX_SCORE, QUIZ, evaluateQuiz } from "@sanad/shared/content/companion/q
 import { cx } from "../../lib/cx";
 import { arNum } from "../../lib/dates";
 import { useCompanion } from "../../stores/companion";
+import { awarenessGuides } from "@sanad/shared/content/ruqyah";
+import { GuideGrid } from "../ruqyah/RuqyahPages";
 
 /** «ميزان الوعي» — هل هذا صحيح شرعاً؟ */
 export function AwarenessPage() {
@@ -70,6 +72,12 @@ export function AwarenessPage() {
           </Card>
         )}
       </div>
+
+      <section aria-labelledby="awareness-guides" className="mt-12">
+        <h2 id="awareness-guides" className="text-2xl font-bold">توعية وتحذير</h2>
+        <p className="mt-1 text-muted">السحر وحكمه، وإتيان السحرة والكهّان، ومخالفات باب الرقية، واليوغا و«الطاقة» والممارسات المعاصرة — بالدليل.</p>
+        <GuideGrid items={awarenessGuides} action="اقرأ ←" />
+      </section>
 
       <p className="mt-8 text-center text-xs leading-6 text-muted">
         محتوى توعوي عام مبني على نصوص معروفة ومصادرها — ليس فتوى في حالة بعينها. راجعه مختصون قبل النشر، ونرحّب بتصويباتكم عبر صفحة البلاغات.

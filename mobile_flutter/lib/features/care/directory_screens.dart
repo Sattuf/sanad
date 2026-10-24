@@ -7,6 +7,7 @@ import '../../core/platform_services.dart';
 import '../../core/session.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/door_tabs.dart';
 import '../companion/companion_store.dart';
 import 'care_models.dart';
 
@@ -103,6 +104,7 @@ class _DirectoryScreenState extends ConsumerState<DirectoryScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
           children: [
+            const DoorTabs(tabs: directoryDoorTabs, current: '/directory'),
             const PageHeader(title: 'الدليل', subtitle: 'جهات ومقدّمو خدمة موثّقون إدارياً. الترتيب من مطابقة بحثك وحالة التوثيق فقط — لا ترتيب مموَّل.'),
             SanadCard(
               padding: const EdgeInsets.all(16),

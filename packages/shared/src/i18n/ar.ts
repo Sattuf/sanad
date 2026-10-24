@@ -15,6 +15,13 @@ export const ar = {
     logout: "خروج",
     becomeProvider: "كن مقدّم خدمة",
   },
+  // الأبواب الرئيسية في الويب وتطبيق Flutter — وما بعد «|» هو الاسم في وضع التمويه
+  doors: {
+    today: "يومي",
+    ruqyah: "ارقِ نفسك|وِردي",
+    directory: "شيخ موثوق|الدليل",
+    awareness: "الوعي",
+  },
   practitionerType: { ReligiousPractitioner: "شيخ / راقٍ شرعي" },
   track: {
     WaqfFree: "وقفي مجاني",

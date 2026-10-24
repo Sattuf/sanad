@@ -11,6 +11,7 @@ import '../../content/ruqyah.dart';
 import '../../core/session.dart';
 import '../../theme/theme.dart';
 import '../../ui/components.dart';
+import '../../ui/door_tabs.dart';
 import '../../ui/share_card.dart';
 import '../companion/companion_store.dart';
 import '../companion/programs_screen.dart' show NotFound;
@@ -24,8 +25,9 @@ import 'scene.dart';
   المحتوى كله من ruqyah.json المولَّد (المجموعات والأدلة والآيات من المصحف المشترك).
 */
 
-/// روابط الأدلة الموجودة في التطبيق؛ الدليل (/directory) في الأسابيع 7–9.
-bool _routeInApp(String to) => to.startsWith('/ruqyah') || to == '/self-ruqyah' || to == '/sakina' || to == '/journal';
+/// روابط الأدلة الموجودة في التطبيق، ومنها الدليل (/directory?track=…).
+bool _routeInApp(String to) =>
+    to.startsWith('/ruqyah') || to.startsWith('/directory') || to.startsWith('/awareness') || to == '/self-ruqyah' || to == '/sakina' || to == '/journal';
 
 class _LampButton extends StatelessWidget {
   const _LampButton({required this.label, required this.onPressed});
@@ -102,6 +104,7 @@ class RuqyahHubScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
         children: [
+          const DoorTabs(tabs: ruqyahDoorTabs, current: '/ruqyah'),
           Scene(
             theme: SceneTheme.lantern,
             radius: Radii.x3l,
@@ -153,11 +156,6 @@ class RuqyahHubScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _sectionTitle(context, 'منهج الوقاية والعلاج الشرعي', 'خطوات عملية مدعومة بالدليل: كيف تتحصّن، وكيف ترقي نفسك، وما الذي تحذره.'),
           GuideGrid(guides: r.guidesOf('method'), action: 'اقرأ المنهج ←'),
-          const SizedBox(height: 40),
-          const Ornament(),
-          const SizedBox(height: 24),
-          _sectionTitle(context, 'توعية وتحذير', 'السحر وأنواعه والموقف الشرعي منه، وحكم اليوغا و«الطاقة» والممارسات المعاصرة — تعريف وتحذير بالدليل.'),
-          GuideGrid(guides: r.guidesOf('awareness'), action: 'اقرأ ←'),
           const SizedBox(height: 40),
           const RuqyahReminderCard(),
           const SizedBox(height: 24),
@@ -1158,7 +1156,7 @@ class GuideScreen extends ConsumerWidget {
     final g = r.guide(guideId);
     if (g == null) return const Scaffold(body: NotFound());
     final meta = switch (g.kind) {
-      'awareness' => (root: '/ruqyah', label: 'الرقية والتحصين', crumb: 'توعية وتحذير', tag: 'توعية'),
+      'awareness' => (root: '/awareness', label: 'الوعي', crumb: 'توعية وتحذير', tag: 'توعية'),
       _ => (root: '/ruqyah', label: 'الرقية والتحصين', crumb: 'المنهج', tag: 'منهج'),
     };
     final related = r.guidesOf(g.kind).where((x) => x.id != g.id).toList();
@@ -1261,7 +1259,11 @@ class GuideScreen extends ConsumerWidget {
                     if (s.cta != null && _routeInApp(s.cta!.to))
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
-                        child: FilledButton(onPressed: () => context.push(s.cta!.to), child: Text(s.cta!.label)),
+                        // الدليل باب مستقل في الشريط السفلي، فيُنتقل إليه لا يُفتح فوق الدليل الحالي
+                        child: FilledButton(
+                          onPressed: () => s.cta!.to.startsWith('/directory') ? context.go(s.cta!.to) : context.push(s.cta!.to),
+                          child: Text(s.cta!.label),
+                        ),
                       ),
                   ],
                 ),

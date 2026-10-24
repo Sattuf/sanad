@@ -22,7 +22,9 @@ void main() {
 
     router.go('/today');
     await tester.pumpAndSettle();
-    expect(find.text('الأذكار'), findsOneWidget);
+    // اسم باب الرقية في الشريط السفلي يتبدّل في وضع التمويه
+    expect(find.text('وِردي'), findsOneWidget);
+    expect(find.text('ارقِ نفسك'), findsNothing);
     expect(find.text('الرقية'), findsNothing);
     await reveal(tester, find.text('جلسة'));
     expect(find.byKey(const ValueKey('quick-exit')), findsOneWidget);
@@ -50,7 +52,8 @@ void main() {
   testWidgets('خارج الوضع المتحفّظ لا زر خروج والتسميات كما هي', (tester) async {
     await pumpApp(tester);
     expect(find.byKey(const ValueKey('quick-exit')), findsNothing);
-    expect(find.text('الرقية'), findsOneWidget);
+    expect(find.text('ارقِ نفسك'), findsWidgets);
+    expect(find.text('وِردي'), findsNothing);
   });
 
   testWidgets('مسح كل البيانات: المذكّرة والتقدّم والتذكير والتلاوات والوضع المتحفّظ', (tester) async {
